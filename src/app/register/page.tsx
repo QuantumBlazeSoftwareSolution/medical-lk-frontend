@@ -197,6 +197,11 @@ export default function RegisterWizard() {
           username: username.trim(),
           email: businessEmail.trim(),
           password: password,
+          nmra_number: regNumber.trim(),
+          br_number: brNumber.trim() || null,
+          contact_number: contactNumber.trim(),
+          city: city,
+          full_name: fullName.trim(),
         }),
       });
 
@@ -247,15 +252,17 @@ export default function RegisterWizard() {
 
         {/* Dynamic Image Graphic */}
         <div className="relative z-10 flex-grow flex items-center justify-center py-6">
-          <div className="w-full max-w-sm aspect-square bg-white/5 rounded-2xl border border-white/10 relative overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-[#0f3d57]/60 mix-blend-multiply" />
-            <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
-              <span className="text-xs uppercase font-bold tracking-widest text-teal-400 mb-2">
-                Sri Lanka B2B Enterprise
-              </span>
+          <div className="w-full max-w-sm aspect-square bg-[#00273b] rounded-2xl border border-white/10 relative overflow-hidden shadow-2xl">
+            <img 
+              src="/onboarding-pitch-banner.png" 
+              alt="Pharmacy SaaS Interface" 
+              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-lighten"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#001e2f] via-[#001e2f]/50 to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-end p-8 text-white z-10">
+              <span className="text-xs uppercase font-bold tracking-widest text-teal-400 mb-2">Sri Lanka B2B Enterprise</span>
               <h3 className="font-display text-xl font-bold leading-snug">
-                Clinical-clean software architecture tailored for regulatory
-                compliance.
+                Clinical-clean software architecture tailored for regulatory compliance.
               </h3>
             </div>
           </div>
