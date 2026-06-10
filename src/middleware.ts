@@ -31,8 +31,8 @@ export function middleware(request: NextRequest) {
   }
 
   if (subdomain) {
-    // Rewrite path internally to _tenants sub-directory
-    url.pathname = `/_tenants/${subdomain}${url.pathname}`;
+    // Rewrite path internally to tenants sub-directory
+    url.pathname = `/tenants/${subdomain}${url.pathname}`;
     return NextResponse.rewrite(url);
   }
 

@@ -569,7 +569,7 @@ export default function RegisterWizard() {
                             setSubdomain(
                               e.target.value
                                 .toLowerCase()
-                                .replace(/[^a-z0-9]/g, ""),
+                                .replace(/[^a-z0-9-]/g, ""),
                             )
                           }
                           className="flex-grow pl-4 pr-2 py-3 bg-transparent border-0 outline-none text-sm font-mono"
