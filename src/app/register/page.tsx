@@ -245,7 +245,7 @@ export default function RegisterWizard() {
               <Shield className="h-6 w-6" />
             </div>
             <span className="font-display text-2xl font-bold tracking-tight text-white">
-              PharmacyHub.lk
+              Medical.lk
             </span>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function RegisterWizard() {
           {/* Testimonial Quote */}
           <div className="bg-[#0f3d57]/50 backdrop-blur-sm p-4 rounded-xl border border-teal-500/10">
             <p className="text-slate-300 text-xs italic mb-2 leading-relaxed">
-              "Signing up for PharmacyHub streamlined our stock logistics and
+              "Signing up for Medical.lk streamlined our stock logistics and
               POS checkout. Highly recommended."
             </p>
             <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wide">
@@ -305,7 +305,7 @@ export default function RegisterWizard() {
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-[#00273b]" />
             <span className="font-display font-bold text-base text-[#00273b]">
-              PharmacyHub.lk
+              Medical.lk
             </span>
           </div>
           <Link
@@ -1000,7 +1000,7 @@ export default function RegisterWizard() {
 
         {/* Global Footer (Desktop) */}
         <footer className="hidden md:block py-6 border-t border-[#e6e8eb] bg-white text-center text-[10px] text-slate-400 shrink-0">
-          <p>&copy; 2026 PharmacyHub.lk Solutions. All rights reserved.</p>
+          <p>&copy; 2026 Medical.lk Solutions. All rights reserved.</p>
         </footer>
       </main>
     </div>
