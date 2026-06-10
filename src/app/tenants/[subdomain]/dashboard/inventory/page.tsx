@@ -36,7 +36,20 @@ function batchExpiry(dateStr: string) {
 const ITEMS_PER_PAGE = 20;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-interface Medicine { id: string; name: string; generic_name?: string; category?: string; barcode?: string; min_stock_level: number; }
+interface Medicine {
+  id: string;
+  name: string;
+  generic_name?: string;
+  brand_name?: string;
+  category?: string;
+  barcode?: string;
+  uom?: string;
+  min_stock_level: number;
+  purchase_price?: number;
+  selling_price?: number;
+  description?: string;
+  image_url?: string;
+}
 interface Batch    { id: string; medicine_id: string; medicine_name: string; generic_name?: string; batch_number: string; expiry_date: string; quantity_remaining: number; purchase_price: number; selling_price: number; is_expired: boolean; }
 interface AlertData { low_stock_alerts: any[]; expiry_alerts: any[]; }
 
@@ -57,9 +70,15 @@ export default function InventoryPage() {
   // Add medicine form
   const [medName, setMedName]         = useState('');
   const [medGeneric, setMedGeneric]   = useState('');
+  const [medBrand, setMedBrand]       = useState('');
   const [medBarcode, setMedBarcode]   = useState('');
-  const [medCategory, setMedCategory] = useState('Tablet');
+  const [medCategory, setMedCategory] = useState('');
+  const [medUom, setMedUom]           = useState('strip');
   const [medMinStock, setMedMinStock] = useState(10);
+  const [medPurchasePrice, setMedPurchasePrice] = useState('');
+  const [medSellingPrice, setMedSellingPrice]   = useState('');
+  const [medDescription, setMedDescription]   = useState('');
+  const [medImage, setMedImage]       = useState<string | null>(null);
   const [formError, setFormError]     = useState('');
 
   // ── Queries ─────────────────────────────────────────────────────────────────
@@ -89,7 +108,20 @@ export default function InventoryPage() {
     onError: (e: any) => setFormError(e.message || 'Failed to create medicine.'),
   });
 
-  const resetForm = () => { setMedName(''); setMedGeneric(''); setMedBarcode(''); setMedCategory('Tablet'); setMedMinStock(10); setFormError(''); };
+  const resetForm = () => {
+    setMedName('');
+    setMedGeneric('');
+    setMedBrand('');
+    setMedBarcode('');
+    setMedCategory('');
+    setMedUom('strip');
+    setMedMinStock(10);
+    setMedPurchasePrice('');
+    setMedSellingPrice('');
+    setMedDescription('');
+    setMedImage(null);
+    setFormError('');
+  };
 
   // ── Derived data ─────────────────────────────────────────────────────────────
   const batchMap = useMemo(() => {
@@ -130,8 +162,8 @@ export default function InventoryPage() {
 
   const drawerBatches = drawerMed ? (batchMap[drawerMed.id] || []) : [];
   const drawerTotalQty = drawerBatches.reduce((s, b) => s + b.quantity_remaining, 0);
-  const drawerBuyAvg = drawerBatches.length > 0 ? drawerBatches.reduce((s,b) => s + b.purchase_price, 0) / drawerBatches.length : 0;
-  const drawerSellPrice = drawerBatches.length > 0 ? drawerBatches[drawerBatches.length - 1].selling_price : 0;
+  const drawerBuyAvg = drawerBatches.length > 0 ? drawerBatches.reduce((s,b) => s + b.purchase_price, 0) / drawerBatches.length : (drawerMed?.purchase_price ?? 0);
+  const drawerSellPrice = drawerBatches.length > 0 ? drawerBatches[drawerBatches.length - 1].selling_price : (drawerMed?.selling_price ?? 0);
   const drawerMargin = drawerBuyAvg > 0 ? ((drawerSellPrice - drawerBuyAvg) / drawerBuyAvg * 100) : 0;
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -277,8 +309,8 @@ export default function InventoryPage() {
                 const pct         = Math.min(100, Math.max(0, status.pct));
                 const activeBat   = medBatches.filter(b => b.quantity_remaining > 0).length;
                 const lastBatch   = medBatches[medBatches.length - 1];
-                const sellPrice   = lastBatch?.selling_price ?? 0;
-                const buyAvg      = medBatches.length > 0 ? medBatches.reduce((s,b) => s+b.purchase_price, 0) / medBatches.length : 0;
+                const sellPrice   = lastBatch?.selling_price ?? med.selling_price ?? 0;
+                const buyAvg      = medBatches.length > 0 ? medBatches.reduce((s,b) => s+b.purchase_price, 0) / medBatches.length : (med.purchase_price ?? 0);
                 const margin      = buyAvg > 0 ? ((sellPrice - buyAvg) / buyAvg * 100) : 0;
                 const isExpanded  = expandedId === med.id;
                 const isSelected  = selectedIds.has(med.id);
@@ -548,61 +580,199 @@ export default function InventoryPage() {
 
       {/* ── Add Medicine Modal ─────────────────────────────────────────────── */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[#2d3133]/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.16)] w-full max-w-md overflow-hidden">
-            <div className="px-5 py-4 bg-[#00273b] flex items-center justify-between">
-              <h3 className="font-display text-[17px] font-bold text-white">Add New Product</h3>
-              <button className="text-[#80a8c6] hover:text-white hover:bg-white/10 rounded p-1 transition-colors cursor-pointer" onClick={() => setShowAddModal(false)}>
+        <div aria-labelledby="modal-title" aria-modal="true" className="fixed inset-0 bg-[#0b1c30]/40 backdrop-blur-sm z-[200] transition-opacity flex items-center justify-center p-4 md:p-margin-desktop overflow-y-auto animate-in fade-in duration-200" role="dialog">
+          {/* Modal Container (Level 2 Elevation) */}
+          <div className="relative bg-surface-container-lowest rounded-xl shadow-[0_10px_15px_rgba(15,61,87,0.1)] w-full max-w-3xl my-8 mx-auto flex flex-col max-h-[92vh] border border-outline-variant transform transition-all animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-lg py-md border-b border-outline-variant bg-surface-container-lowest rounded-t-xl shrink-0">
+              <h2 className="font-display text-[20px] font-semibold text-on-surface m-0" id="modal-title">Add New Product</h2>
+              <button aria-label="Close modal" className="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low p-2 rounded-full transition-colors flex items-center justify-center cursor-pointer" type="button" onClick={() => setShowAddModal(false)}>
                 <X size={18} />
               </button>
             </div>
-            <div className="px-5 py-5">
+            
+            {/* Modal Body (Scrollable) */}
+            <div className="px-lg py-lg overflow-y-auto grow text-left">
               {formError && (
-                <div className="mb-4 p-3 text-[13px] text-[#ba1a1a] bg-[#ffdad6] border border-[#ba1a1a]/20 rounded-lg flex items-center gap-2">
+                <div className="mb-4 p-3 text-[13px] text-error bg-error-container border border-error/20 rounded-lg flex items-center gap-2">
                   <AlertCircle size={15} /> {formError}
                 </div>
               )}
-              <form className="space-y-4" onSubmit={e => { e.preventDefault(); setFormError(''); if (!medName.trim()) return; createMed.mutate({ name: medName.trim(), generic_name: medGeneric.trim() || null, barcode: medBarcode.trim() || null, category: medCategory, min_stock_level: medMinStock }); }}>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#42474d] uppercase tracking-wider mb-1">Medicine Name *</label>
-                  <input required type="text" placeholder="e.g. Paracetamol 500mg" value={medName} onChange={e => setMedName(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#f7f9fc] border border-[#c2c7cd] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#00273b]/30 focus:border-[#00273b] transition-all" />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#42474d] uppercase tracking-wider mb-1">Generic / Formula</label>
-                  <input type="text" placeholder="e.g. Paracetamol" value={medGeneric} onChange={e => setMedGeneric(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-[#f7f9fc] border border-[#c2c7cd] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#00273b]/30 focus:border-[#00273b] transition-all" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#42474d] uppercase tracking-wider mb-1">Barcode</label>
-                    <input type="text" placeholder="Scan / Type" value={medBarcode} onChange={e => setMedBarcode(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#f7f9fc] border border-[#c2c7cd] rounded-lg text-[13px] font-mono focus:outline-none focus:ring-2 focus:ring-[#00273b]/30 focus:border-[#00273b] transition-all" />
+              
+              <form className="space-y-lg" id="add-product-form" onSubmit={e => {
+                e.preventDefault();
+                setFormError('');
+                if (!medName.trim()) return;
+                createMed.mutate({
+                  name: medName.trim(),
+                  generic_name: medGeneric.trim() || null,
+                  brand_name: medBrand.trim() || null,
+                  barcode: medBarcode.trim() || null,
+                  category: medCategory || null,
+                  uom: medUom,
+                  min_stock_level: medMinStock,
+                  purchase_price: parseFloat(medPurchasePrice) || 0.0,
+                  selling_price: parseFloat(medSellingPrice) || 0.0,
+                  description: medDescription.trim() || null,
+                  image_url: medImage || null
+                });
+              }}>
+                {/* Row 1: Product Name (Full Width) */}
+                <div className="grid grid-cols-1 gap-md">
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="productName">Product Name <span className="text-error">*</span></label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="productName" name="productName" placeholder="e.g. Paracetamol 500mg" required type="text" value={medName} onChange={e => setMedName(e.target.value)} />
                   </div>
-                  <div>
-                    <label className="block text-[11px] font-bold text-[#42474d] uppercase tracking-wider mb-1">Category</label>
-                    <select value={medCategory} onChange={e => setMedCategory(e.target.value)}
-                      className="w-full px-3.5 py-2.5 bg-[#f7f9fc] border border-[#c2c7cd] rounded-lg text-[13px] text-[#191c1e] focus:outline-none focus:ring-2 focus:ring-[#00273b]/30 cursor-pointer">
-                      {['Tablet','Capsule','Syrup','Ointment','Injection','Drops','Analgesics','Antibiotics','Vitamins','Dermatology','Hormones','Anti-Diabetic','Cardiovascular','Other'].map(c => <option key={c}>{c}</option>)}
-                    </select>
+                </div>
+                
+                {/* Row 2: Generic Name, Brand Name */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="genericName">Generic Name</label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="genericName" name="genericName" placeholder="e.g. Acetaminophen" type="text" value={medGeneric} onChange={e => setMedGeneric(e.target.value)} />
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="brandName">Brand Name</label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="brandName" name="brandName" placeholder="e.g. Panadol" type="text" value={medBrand} onChange={e => setMedBrand(e.target.value)} />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-[11px] font-bold text-[#42474d] uppercase tracking-wider mb-1">Low Stock Alert Level</label>
-                  <input type="number" min={0} value={medMinStock} onChange={e => setMedMinStock(parseInt(e.target.value) || 0)}
-                    className="w-full px-3.5 py-2.5 bg-[#f7f9fc] border border-[#c2c7cd] rounded-lg text-[13px] font-mono text-right focus:outline-none focus:ring-2 focus:ring-[#00273b]/30 focus:border-[#00273b] transition-all" />
+                
+                {/* Row 3: Category, Barcode */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="category">Category</label>
+                    <div className="relative">
+                      <select className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 pr-10 font-sans text-[14px] text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow cursor-pointer" id="category" name="category" value={medCategory} onChange={e => setMedCategory(e.target.value)}>
+                        <option value="">Select Category</option>
+                        {['Tablet','Capsule','Syrup','Ointment','Injection','Drops','Analgesics','Antibiotics','Vitamins','Dermatology','Hormones','Anti-Diabetic','Cardiovascular','Other'].map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+                        <ChevronDown size={18} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="barcode">Barcode / SKU</label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
+                        <Package size={18} />
+                      </div>
+                      <input className="w-full bg-surface-bright border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="barcode" name="barcode" placeholder="e.g. 4901234001" type="text" value={medBarcode} onChange={e => setMedBarcode(e.target.value)} />
+                    </div>
+                  </div>
                 </div>
-                <div className="flex gap-3 pt-2 border-t border-[#eceef1] mt-2">
-                  <button type="button" onClick={() => setShowAddModal(false)}
-                    className="flex-1 py-2.5 border border-[#72787e] text-[#191c1e] rounded-lg text-[13px] font-semibold hover:bg-[#f7f9fc] transition-colors cursor-pointer">
-                    Cancel
-                  </button>
-                  <button type="submit" disabled={createMed.isPending}
-                    className="flex-1 py-2.5 bg-[#00273b] text-white rounded-lg text-[13px] font-semibold hover:bg-[#0f3d57] disabled:opacity-60 transition-colors cursor-pointer flex items-center justify-center gap-1.5">
-                    {createMed.isPending ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : 'Add Medicine'}
-                  </button>
+                
+                {/* Row 4: Unit of Measure, Reorder Level */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="uom">Unit of Measure</label>
+                    <div className="relative">
+                      <select className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 pr-10 font-sans text-[14px] text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow cursor-pointer" id="uom" name="uom" value={medUom} onChange={e => setMedUom(e.target.value)}>
+                        <option value="strip">Strip</option>
+                        <option value="box">Box</option>
+                        <option value="bottle">Bottle</option>
+                        <option value="tablet">Tablet</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+                        <ChevronDown size={18} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="reorderLevel">Reorder Level <span className="text-error">*</span></label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="reorderLevel" min="0" name="reorderLevel" placeholder="e.g. 50" required type="number" value={medMinStock} onChange={e => setMedMinStock(parseInt(e.target.value) || 0)} />
+                  </div>
+                </div>
+                
+                {/* Row 5: Selling Price, Purchase Price */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="purchasePrice">Purchase Price (LKR)</label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="purchasePrice" min="0" name="purchasePrice" placeholder="0.00" step="0.01" type="number" value={medPurchasePrice} onChange={e => setMedPurchasePrice(e.target.value)} />
+                  </div>
+                  <div className="flex flex-col gap-xs">
+                    <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="sellingPrice">Selling Price (LKR) <span className="text-error">*</span></label>
+                    <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="sellingPrice" min="0" name="sellingPrice" placeholder="0.00" required step="0.01" type="number" value={medSellingPrice} onChange={e => setMedSellingPrice(e.target.value)} />
+                  </div>
+                </div>
+                
+                {/* Row 6: Description */}
+                <div className="flex flex-col gap-xs">
+                  <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="description">Description</label>
+                  <textarea className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow resize-y" id="description" name="description" placeholder="Additional product details or notes..." rows={3} value={medDescription} onChange={e => setMedDescription(e.target.value)} />
+                </div>
+                
+                {/* Row 7: Product Image Upload */}
+                <div className="flex flex-col gap-xs">
+                  <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase">Product Image</label>
+                  {medImage ? (
+                    <div className="relative mt-1 flex justify-center items-center p-4 border border-outline-variant rounded-lg bg-surface-bright">
+                      <img src={medImage} alt="Product Preview" className="max-h-40 object-contain rounded-md" />
+                      <button
+                        type="button"
+                        onClick={() => setMedImage(null)}
+                        className="absolute top-2 right-2 p-1.5 bg-error text-white rounded-full hover:bg-error/95 transition-colors cursor-pointer shadow-md"
+                        title="Remove Image"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-outline-variant border-dashed rounded-lg bg-surface-bright hover:bg-surface-container-low transition-colors cursor-pointer group relative">
+                      <input
+                        accept="image/*"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        id="file-upload"
+                        name="file-upload"
+                        type="file"
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            if (file.size > 5 * 1024 * 1024) {
+                              setFormError('Image size must be less than 5MB.');
+                              return;
+                            }
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setMedImage(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <div className="space-y-1 text-center">
+                        <Upload className="mx-auto text-outline-variant group-hover:text-primary transition-colors h-10 w-10" />
+                        <div className="flex text-[14px] text-on-surface-variant justify-center font-sans">
+                          <span className="relative font-medium text-primary hover:underline">
+                            Upload a file
+                          </span>
+                          <p className="pl-1 text-on-surface-variant">or drag and drop</p>
+                        </div>
+                        <p className="text-[12px] text-outline font-sans">
+                          PNG, JPG, GIF up to 5MB
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </form>
+            </div>
+            
+            {/* Modal Footer */}
+            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-lowest rounded-b-xl flex justify-end gap-sm shrink-0">
+              <button className="px-4 py-2 rounded-lg font-sans text-[12px] font-semibold uppercase tracking-wider text-primary border border-primary bg-transparent hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer" type="button" onClick={() => setShowAddModal(false)}>
+                Cancel
+              </button>
+              <button className="px-4 py-2 rounded-lg font-sans text-[12px] font-semibold uppercase tracking-wider text-on-secondary bg-secondary hover:bg-secondary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-secondary/50 flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50" form="add-product-form" type="submit" disabled={createMed.isPending}>
+                {createMed.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+                )}
+                {createMed.isPending ? 'Saving...' : 'Save Product'}
+              </button>
             </div>
           </div>
         </div>
