@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import Providers from '@/components/Providers';
 
@@ -8,7 +8,7 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
-const outfit = Outfit({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-display',
 });
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full scroll-smooth">
-      <body className={`${inter.variable} ${outfit.variable} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}>
+      <body className={`${inter.variable} ${plusJakartaSans.variable} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}>
         <Providers>
           {children}
         </Providers>
