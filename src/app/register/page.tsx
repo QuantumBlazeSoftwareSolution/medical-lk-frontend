@@ -202,6 +202,7 @@ export default function RegisterWizard() {
           contact_number: contactNumber.trim(),
           city: city,
           full_name: fullName.trim(),
+          origin: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
         }),
       });
 
