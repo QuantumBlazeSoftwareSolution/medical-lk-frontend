@@ -258,8 +258,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        {/* Scrollable Main Content */}
-        <main className="flex-1 overflow-y-auto p-8 bg-[#f7f9fc]">
+        {/* Scrollable Main Content — POS gets a full-bleed, no-padding layout */}
+        <main className={`flex-1 bg-[#f7f9fc] ${
+          pathname.endsWith('/pos')
+            ? 'overflow-hidden'
+            : 'overflow-y-auto p-8'
+        }`}>
           {children}
         </main>
       </div>
