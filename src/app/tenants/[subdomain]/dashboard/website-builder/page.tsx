@@ -69,6 +69,15 @@ export default function WebsiteBuilder() {
   const [seoKeywords, setSeoKeywords] = useState('pharmacy, prescriptions, colombo healthcare, online medicine');
   const [seoDescription, setSeoDescription] = useState('Order prescription medicines online, consult with certified pharmacists, and get fast delivery.');
 
+  // Display credentials & certificates
+  const [displayNmraNumber, setDisplayNmraNumber] = useState('');
+  const [displayBrNumber, setDisplayBrNumber] = useState('');
+  const [displaySlmcNumber, setDisplaySlmcNumber] = useState('');
+  const [certificates, setCertificates] = useState<{ name: string; url: string }[]>([]);
+  const [newCertName, setNewCertName] = useState('');
+  const [newCertUrl, setNewCertUrl] = useState('');
+  const [showCertificatesModal, setShowCertificatesModal] = useState(false);
+
   // System states
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
@@ -106,6 +115,18 @@ export default function WebsiteBuilder() {
       if (config.hero_bg_image) setHeroBgImage(config.hero_bg_image);
       if (config.auto_close_holidays !== undefined && config.auto_close_holidays !== null) setAutoCloseHolidays(config.auto_close_holidays);
       if (config.seo_keywords) setSeoKeywords(config.seo_keywords);
+      
+      if (config.display_nmra_number) setDisplayNmraNumber(config.display_nmra_number);
+      if (config.display_br_number) setDisplayBrNumber(config.display_br_number);
+      if (config.display_slmc_number) setDisplaySlmcNumber(config.display_slmc_number);
+      if (config.certificates_json) {
+        try {
+          const parsedCerts = JSON.parse(config.certificates_json);
+          if (Array.isArray(parsedCerts)) setCertificates(parsedCerts);
+        } catch (e) {
+          console.error("Error parsing certificates_json", e);
+        }
+      }
 
       if (config.opening_hours) {
         try {
@@ -268,7 +289,11 @@ export default function WebsiteBuilder() {
       }),
       holiday_exceptions: JSON.stringify(exceptions),
       auto_close_holidays: autoCloseHolidays,
-      seo_keywords: seoKeywords
+      seo_keywords: seoKeywords,
+      display_nmra_number: displayNmraNumber.trim() || null,
+      display_br_number: displayBrNumber.trim() || null,
+      display_slmc_number: displaySlmcNumber.trim() || null,
+      certificates_json: JSON.stringify(certificates)
     });
   };
 
@@ -868,6 +893,103 @@ export default function WebsiteBuilder() {
                 </div>
               </div>
 
+              {/* Trust Credentials & Licensing */}
+              <div className="bg-white p-5 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#17a589] opacity-100"></div>
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#00273b] mb-4">Trust Credentials & Licensing</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Display NMRA Registration No.</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. NMRA/PH/COL/9821"
+                      value={displayNmraNumber}
+                      onChange={(e) => { setDisplayNmraNumber(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Display Business Registration (BR) No.</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. PV-108291"
+                      value={displayBrNumber}
+                      onChange={(e) => { setDisplayBrNumber(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Display SLMC Pharmacist License No.</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. SLMC-PH-8921"
+                      value={displaySlmcNumber}
+                      onChange={(e) => { setDisplaySlmcNumber(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs font-mono"
+                    />
+                  </div>
+
+                  {/* Certificates List */}
+                  <div className="border-t border-outline-variant/30 pt-4 space-y-3">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-outline mb-1">Uploaded Certificates & Licenses</div>
+                    
+                    {certificates.map((cert, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-2 bg-[#f7f9fc] border border-outline-variant/50 rounded-lg">
+                        <div className="truncate pr-2">
+                          <div className="font-semibold text-[#00273b] text-xs truncate">{cert.name}</div>
+                          <div className="text-[9px] text-outline truncate font-mono">{cert.url}</div>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => { setCertificates(prev => prev.filter((_, i) => i !== idx)); registerChange(); }} 
+                          className="text-outline hover:text-error transition-colors shrink-0 cursor-pointer"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add Certificate inline form */}
+                    <div className="bg-[#f8f9ff] p-3 rounded-lg border border-dashed border-outline-variant/60 space-y-2 mt-2">
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Certificate Name (e.g. NMRA License)"
+                          value={newCertName}
+                          onChange={(e) => setNewCertName(e.target.value)}
+                          className="w-full px-2.5 py-1.5 bg-white border border-outline-variant rounded text-xs"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Certificate Image URL (or PDF link)"
+                          value={newCertUrl}
+                          onChange={(e) => setNewCertUrl(e.target.value)}
+                          className="flex-1 px-2.5 py-1.5 bg-white border border-outline-variant rounded text-xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!newCertName.trim() || !newCertUrl.trim()) return;
+                            setCertificates(prev => [...prev, { name: newCertName.trim(), url: newCertUrl.trim() }]);
+                            setNewCertName('');
+                            setNewCertUrl('');
+                            registerChange();
+                          }}
+                          className="px-3 py-1.5 bg-secondary hover:bg-secondary/95 text-white font-semibold rounded text-xs cursor-pointer flex items-center justify-center shadow-sm"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           )}
 
@@ -1259,7 +1381,7 @@ export default function WebsiteBuilder() {
                         <div className="text-[7px] text-[#42474d] mt-0.5 font-mono">SLMC-PH-8921</div>
                       </div>
                     </div>
-
+ 
                     <div className="text-left space-y-2.5">
                       <div>
                         <div className="text-[8px] font-bold uppercase tracking-widest mb-1.5" style={{ color: secondaryColor }}>About Us</div>
@@ -1283,6 +1405,17 @@ export default function WebsiteBuilder() {
                           <span className="text-[9px] text-[#0b1c30] font-bold">Expert Pharmacist Advice</span>
                         </div>
                       </div>
+                      {certificates.length > 0 && (
+                        <button 
+                          type="button"
+                          onClick={() => setShowCertificatesModal(true)}
+                          className="mt-2 px-3 py-1 bg-white hover:bg-surface-container-low border rounded-md text-[8px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
+                          style={{ borderColor: primaryColor, color: primaryColor }}
+                        >
+                          <ShieldCheck size={11} />
+                          View Licenses &amp; Certificates
+                        </button>
+                      )}
                     </div>
                   </div>
                 </section>
@@ -1392,6 +1525,16 @@ export default function WebsiteBuilder() {
                     <div>
                       <h4 className="font-bold mb-1" style={{ color: primaryColor }}>{name || 'Pharmacy'}</h4>
                       <p className="text-[8px]">Your trusted community healthcare partner.</p>
+                      
+                      {/* Compliance Credentials Row */}
+                      {(displayNmraNumber || displayBrNumber || displaySlmcNumber) && (
+                        <div className="text-[7px] text-[#72787e] mt-1.5 space-x-2 font-mono">
+                          {displayNmraNumber && <span>NMRA: {displayNmraNumber}</span>}
+                          {displayBrNumber && <span>BR: {displayBrNumber}</span>}
+                          {displaySlmcNumber && <span>SLMC: {displaySlmcNumber}</span>}
+                        </div>
+                      )}
+                      
                       <p className="text-[7px] text-[#72787e] mt-2">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
                     </div>
                     <div className="text-right">
@@ -1401,6 +1544,53 @@ export default function WebsiteBuilder() {
                     </div>
                   </div>
                 </footer>
+
+                {/* Certificates Lightbox Modal Overlay (Simulated Preview) */}
+                {showCertificatesModal && (
+                  <div className="absolute inset-0 bg-primary-navy/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white border border-[#c2c7cd]/50 rounded-xl p-5 max-w-sm w-full shadow-2xl relative animate-in zoom-in-95 duration-200 text-left">
+                      <div className="flex justify-between items-center mb-3 border-b border-[#c2c7cd]/20 pb-2">
+                        <div className="flex items-center gap-1 text-[#006d37]" style={{ color: secondaryColor }}>
+                          <ShieldCheck size={16} />
+                          <span className="font-bold text-xs uppercase tracking-wider font-display">Verified Credentials</span>
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={() => setShowCertificatesModal(false)}
+                          className="text-outline hover:text-[#0b1c30] text-sm font-bold p-1 cursor-pointer"
+                        >
+                          &times;
+                        </button>
+                      </div>
+
+                      <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        {/* Credential items list */}
+                        <div className="space-y-1 text-[9px] font-mono border-b border-[#c2c7cd]/10 pb-2 bg-[#f8f9ff] p-2 rounded">
+                          {displayNmraNumber && <p><strong>NMRA Registration:</strong> {displayNmraNumber}</p>}
+                          {displaySlmcNumber && <p><strong>SLMC Pharmacist Reg:</strong> {displaySlmcNumber}</p>}
+                          {displayBrNumber && <p><strong>Business Registration:</strong> {displayBrNumber}</p>}
+                        </div>
+
+                        {/* Certificate images */}
+                        {certificates.map((cert, idx) => (
+                          <div key={idx} className="border border-[#c2c7cd]/35 rounded-lg p-2 bg-white flex flex-col items-center">
+                            <span className="text-[9px] font-bold text-primary-navy self-start mb-1">{cert.name}</span>
+                            <img src={cert.url} alt={cert.name} className="max-h-36 object-contain rounded border border-[#c2c7cd]/20" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=300&q=80'; }} />
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowCertificatesModal(false)}
+                        className="mt-4 w-full py-1.5 bg-primary-navy text-white font-bold rounded text-[10px] uppercase tracking-wider cursor-pointer"
+                        style={{ backgroundColor: primaryColor }}
+                      >
+                        Close Gallery
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Floating WhatsApp FAB inside desktop browser body */}
                 {phone && (
@@ -1513,7 +1703,7 @@ export default function WebsiteBuilder() {
                   </div>
                 </section>
 
-                {/* Mobile About Us */}
+                 {/* Mobile About Us */}
                 <section className="px-3 pb-4 shrink-0">
                   <div className="bg-white rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2.5">
                     <div>
@@ -1527,6 +1717,17 @@ export default function WebsiteBuilder() {
                       <ShieldCheck size={12} className="text-secondary" style={{ color: secondaryColor }} />
                       <span className="text-[8px] font-bold text-[#0b1c30]">SLMC Verified Registered Care</span>
                     </div>
+                    {certificates.length > 0 && (
+                      <button 
+                        type="button"
+                        onClick={() => setShowCertificatesModal(true)}
+                        className="mt-2 w-full py-1 border rounded text-[8px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer bg-white hover:bg-slate-50 transition-colors"
+                        style={{ borderColor: primaryColor, color: primaryColor }}
+                      >
+                        <ShieldCheck size={10} />
+                        View Licenses &amp; Certificates
+                      </button>
+                    )}
                   </div>
                 </section>
 
@@ -1585,6 +1786,16 @@ export default function WebsiteBuilder() {
                 {/* Footer */}
                 <footer className="mt-auto border-t border-[#c2c7cd]/30 p-4 bg-white shrink-0 text-center text-[8px] text-[#42474d]">
                   <p className="font-bold" style={{ color: primaryColor }}>{name}</p>
+                  
+                  {/* Compliance strip */}
+                  {(displayNmraNumber || displayBrNumber || displaySlmcNumber) && (
+                    <div className="text-[6px] text-[#72787e] mt-1 font-mono space-y-0.5">
+                      {displayNmraNumber && <div>NMRA Reg: {displayNmraNumber}</div>}
+                      {displayBrNumber && <div>BR Reg: {displayBrNumber}</div>}
+                      {displaySlmcNumber && <div>SLMC Reg: {displaySlmcNumber}</div>}
+                    </div>
+                  )}
+
                   <p className="text-[7px] text-[#72787e] mt-1">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
                 </footer>
 

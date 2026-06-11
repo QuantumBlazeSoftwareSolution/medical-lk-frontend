@@ -16,6 +16,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOpenNow, setIsOpenNow] = useState(false);
+  const [showCertificatesModal, setShowCertificatesModal] = useState(false);
 
   const { data: tenant, isLoading, error } = useQuery({
     queryKey: ['tenant-public', subdomain],
@@ -95,6 +96,19 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
       const parsedEx = JSON.parse(tenant.holiday_exceptions);
       if (Array.isArray(parsedEx)) {
         exceptions = parsedEx;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Resolve certificates
+  let certificates: Array<{ name: string; url: string }> = [];
+  if (tenant.certificates_json) {
+    try {
+      const parsedCerts = JSON.parse(tenant.certificates_json);
+      if (Array.isArray(parsedCerts)) {
+        certificates = parsedCerts;
       }
     } catch (e) {
       console.error(e);
@@ -398,6 +412,18 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   </div>
                 </div>
               </div>
+              {certificates.length > 0 && (
+                <div className="pt-4">
+                  <button 
+                    onClick={() => setShowCertificatesModal(true)}
+                    className="px-5 py-2.5 bg-white border hover:bg-slate-50 transition-colors text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 shadow-sm cursor-pointer"
+                    style={{ borderColor: primaryColor, color: primaryColor }}
+                  >
+                    <ShieldCheck size={15} />
+                    View Verified Certificates &amp; Licenses
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -624,6 +650,16 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
             {tenant.name}
           </h2>
           <p className="text-xs text-[#42474d] max-w-xs leading-relaxed">Your trusted neighborhood community healthcare partner.</p>
+          
+          {/* Compliance Credentials Row */}
+          {(tenant.display_nmra_number || tenant.display_br_number || tenant.display_slmc_number) && (
+            <div className="text-[10px] text-[#72787e] space-y-1 font-mono pt-1 leading-relaxed">
+              {tenant.display_nmra_number && <div>NMRA Reg: {tenant.display_nmra_number}</div>}
+              {tenant.display_br_number && <div>BR Number: {tenant.display_br_number}</div>}
+              {tenant.display_slmc_number && <div>SLMC Reg: {tenant.display_slmc_number}</div>}
+            </div>
+          )}
+
           <div className="text-[10px] text-[#72787e] pt-2">
             &copy; {new Date().getFullYear()} {tenant.name}. Powered by <span className="font-semibold text-[#00273b]">medical.lk</span>
           </div>
@@ -657,6 +693,53 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
             <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"></path>
           </svg>
         </a>
+      )}
+
+      {/* Certificates Lightbox Modal Overlay (Public Page) */}
+      {showCertificatesModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white border border-[#c2c7cd]/40 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex justify-between items-center mb-4 border-b border-[#c2c7cd]/20 pb-3">
+              <div className="flex items-center gap-2 text-[#006d37]" style={{ color: secondaryColor }}>
+                <ShieldCheck size={22} />
+                <h3 className="font-bold text-sm md:text-base uppercase tracking-wider font-display">Verified Credentials</h3>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setShowCertificatesModal(false)}
+                className="text-outline hover:text-[#0b1c30] text-2xl font-bold p-1 cursor-pointer"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+              {/* Credential items list */}
+              <div className="space-y-1.5 text-xs font-mono border-b border-[#c2c7cd]/10 pb-3 bg-[#eff4ff]/40 p-3 rounded-lg">
+                {tenant.display_nmra_number && <p><strong>NMRA Pharmacy Registration:</strong> {tenant.display_nmra_number}</p>}
+                {tenant.display_slmc_number && <p><strong>SLMC Certified Pharmacist Reg:</strong> {tenant.display_slmc_number}</p>}
+                {tenant.display_br_number && <p><strong>Business Registration No:</strong> {tenant.display_br_number}</p>}
+              </div>
+
+              {/* Certificate images */}
+              {certificates.map((cert, idx) => (
+                <div key={idx} className="border border-[#c2c7cd]/35 rounded-xl p-3 bg-[#f8f9ff] flex flex-col items-center">
+                  <span className="text-xs font-bold text-primary-navy self-start mb-2">{cert.name}</span>
+                  <img src={cert.url} alt={cert.name} className="max-h-64 object-contain rounded-lg border border-[#c2c7cd]/20 shadow-sm" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=400&q=80'; }} />
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowCertificatesModal(false)}
+              className="mt-6 w-full py-3 bg-[#00273b] hover:bg-[#00273b]/95 text-white font-bold rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+              style={{ backgroundColor: primaryColor }}
+            >
+              Close Gallery
+            </button>
+          </div>
+        </div>
       )}
 
     </div>
