@@ -54,16 +54,16 @@
   --color-on-tertiary: #ffffff;
 
   /* Custom Spacing / Padding / Margins */
-  --spacing-base: 4px;
-  --spacing-lg: 24px;
-  --spacing-gutter: 24px;
-  --spacing-xl: 32px;
-  --spacing-margin-desktop: 40px;
-  --spacing-grid-columns: 12;
-  --spacing-sm: 8px;
-  --spacing-xs: 4px;
-  --spacing-margin-mobile: 16px;
-  --spacing-md: 16px;
+  --spacing-ds-base: 4px;
+  --spacing-ds-lg: 24px;
+  --spacing-ds-gutter: 24px;
+  --spacing-ds-xl: 32px;
+  --spacing-ds-margin-desktop: 40px;
+  --spacing-ds-grid-columns: 12;
+  --spacing-ds-sm: 8px;
+  --spacing-ds-xs: 4px;
+  --spacing-ds-margin-mobile: 16px;
+  --spacing-ds-md: 16px;
 }
 
 :root {

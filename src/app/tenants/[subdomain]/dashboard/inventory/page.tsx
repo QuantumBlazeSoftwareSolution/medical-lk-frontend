@@ -580,11 +580,11 @@ export default function InventoryPage() {
 
       {/* ── Add Medicine Modal ─────────────────────────────────────────────── */}
       {showAddModal && (
-        <div aria-labelledby="modal-title" aria-modal="true" className="fixed inset-0 bg-[#0b1c30]/40 backdrop-blur-sm z-[200] transition-opacity flex items-center justify-center p-4 md:p-margin-desktop overflow-y-auto animate-in fade-in duration-200" role="dialog">
+        <div aria-labelledby="modal-title" aria-modal="true" className="fixed inset-0 bg-[#0b1c30]/40 backdrop-blur-sm z-[200] transition-opacity flex items-center justify-center p-4 md:p-ds-margin-desktop overflow-y-auto animate-in fade-in duration-200" role="dialog">
           {/* Modal Container (Level 2 Elevation) */}
           <div className="relative bg-surface-container-lowest rounded-xl shadow-[0_10px_15px_rgba(15,61,87,0.1)] w-full max-w-3xl my-8 mx-auto flex flex-col max-h-[92vh] border border-outline-variant transform transition-all animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-lg py-md border-b border-outline-variant bg-surface-container-lowest rounded-t-xl shrink-0">
+            <div className="flex items-center justify-between px-ds-lg py-ds-md border-b border-outline-variant bg-surface-container-lowest rounded-t-xl shrink-0">
               <h2 className="font-display text-[20px] font-semibold text-on-surface m-0" id="modal-title">Add New Product</h2>
               <button aria-label="Close modal" className="text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low p-2 rounded-full transition-colors flex items-center justify-center cursor-pointer" type="button" onClick={() => setShowAddModal(false)}>
                 <X size={18} />
@@ -592,14 +592,14 @@ export default function InventoryPage() {
             </div>
             
             {/* Modal Body (Scrollable) */}
-            <div className="px-lg py-lg overflow-y-auto grow text-left">
+            <div className="px-ds-lg py-ds-lg overflow-y-auto grow text-left">
               {formError && (
                 <div className="mb-4 p-3 text-[13px] text-error bg-error-container border border-error/20 rounded-lg flex items-center gap-2">
                   <AlertCircle size={15} /> {formError}
                 </div>
               )}
               
-              <form className="space-y-lg" id="add-product-form" onSubmit={e => {
+              <form className="space-y-ds-lg" id="add-product-form" onSubmit={e => {
                 e.preventDefault();
                 setFormError('');
                 if (!medName.trim()) return;
@@ -618,28 +618,28 @@ export default function InventoryPage() {
                 });
               }}>
                 {/* Row 1: Product Name (Full Width) */}
-                <div className="grid grid-cols-1 gap-md">
-                  <div className="flex flex-col gap-xs">
+                <div className="grid grid-cols-1 gap-ds-md">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="productName">Product Name <span className="text-error">*</span></label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="productName" name="productName" placeholder="e.g. Paracetamol 500mg" required type="text" value={medName} onChange={e => setMedName(e.target.value)} />
                   </div>
                 </div>
                 
                 {/* Row 2: Generic Name, Brand Name */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                  <div className="flex flex-col gap-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-ds-gutter">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="genericName">Generic Name</label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="genericName" name="genericName" placeholder="e.g. Acetaminophen" type="text" value={medGeneric} onChange={e => setMedGeneric(e.target.value)} />
                   </div>
-                  <div className="flex flex-col gap-xs">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="brandName">Brand Name</label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="brandName" name="brandName" placeholder="e.g. Panadol" type="text" value={medBrand} onChange={e => setMedBrand(e.target.value)} />
                   </div>
                 </div>
                 
                 {/* Row 3: Category, Barcode */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                  <div className="flex flex-col gap-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-ds-gutter">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="category">Category</label>
                     <div className="relative">
                       <select className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 pr-10 font-sans text-[14px] text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow cursor-pointer" id="category" name="category" value={medCategory} onChange={e => setMedCategory(e.target.value)}>
@@ -653,7 +653,7 @@ export default function InventoryPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-xs">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="barcode">Barcode / SKU</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
@@ -665,8 +665,8 @@ export default function InventoryPage() {
                 </div>
                 
                 {/* Row 4: Unit of Measure, Reorder Level */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                  <div className="flex flex-col gap-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-ds-gutter">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="uom">Unit of Measure</label>
                     <div className="relative">
                       <select className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 pr-10 font-sans text-[14px] text-on-surface appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow cursor-pointer" id="uom" name="uom" value={medUom} onChange={e => setMedUom(e.target.value)}>
@@ -680,32 +680,32 @@ export default function InventoryPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col gap-xs">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="reorderLevel">Reorder Level <span className="text-error">*</span></label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="reorderLevel" min="0" name="reorderLevel" placeholder="e.g. 50" required type="number" value={medMinStock} onChange={e => setMedMinStock(parseInt(e.target.value) || 0)} />
                   </div>
                 </div>
                 
                 {/* Row 5: Selling Price, Purchase Price */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                  <div className="flex flex-col gap-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-ds-gutter">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="purchasePrice">Purchase Price (LKR)</label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="purchasePrice" min="0" name="purchasePrice" placeholder="0.00" step="0.01" type="number" value={medPurchasePrice} onChange={e => setMedPurchasePrice(e.target.value)} />
                   </div>
-                  <div className="flex flex-col gap-xs">
+                  <div className="flex flex-col gap-ds-xs">
                     <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="sellingPrice">Selling Price (LKR) <span className="text-error">*</span></label>
                     <input className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow" id="sellingPrice" min="0" name="sellingPrice" placeholder="0.00" required step="0.01" type="number" value={medSellingPrice} onChange={e => setMedSellingPrice(e.target.value)} />
                   </div>
                 </div>
                 
                 {/* Row 6: Description */}
-                <div className="flex flex-col gap-xs">
+                <div className="flex flex-col gap-ds-xs">
                   <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase" htmlFor="description">Description</label>
                   <textarea className="w-full bg-surface-bright border border-outline-variant rounded-lg px-4 py-2 font-sans text-[14px] text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow resize-y" id="description" name="description" placeholder="Additional product details or notes..." rows={3} value={medDescription} onChange={e => setMedDescription(e.target.value)} />
                 </div>
                 
                 {/* Row 7: Product Image Upload */}
-                <div className="flex flex-col gap-xs">
+                <div className="flex flex-col gap-ds-xs">
                   <label className="font-sans text-[12px] font-semibold tracking-wider text-on-surface-variant uppercase">Product Image</label>
                   {medImage ? (
                     <div className="relative mt-1 flex justify-center items-center p-4 border border-outline-variant rounded-lg bg-surface-bright">
@@ -761,7 +761,7 @@ export default function InventoryPage() {
             </div>
             
             {/* Modal Footer */}
-            <div className="px-lg py-md border-t border-outline-variant bg-surface-container-lowest rounded-b-xl flex justify-end gap-sm shrink-0">
+            <div className="px-ds-lg py-ds-md border-t border-outline-variant bg-surface-container-lowest rounded-b-xl flex justify-end gap-ds-sm shrink-0">
               <button className="px-4 py-2 rounded-lg font-sans text-[12px] font-semibold uppercase tracking-wider text-primary border border-primary bg-transparent hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer" type="button" onClick={() => setShowAddModal(false)}>
                 Cancel
               </button>
