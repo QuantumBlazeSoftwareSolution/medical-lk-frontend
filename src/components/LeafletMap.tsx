@@ -112,16 +112,23 @@ export default function LeafletMap({ address, mapLink }: LeafletMapProps) {
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
+        popupAnchor: [-15, -20],
         shadowSize: [41, 41],
       });
 
       L.marker(coordinates, { icon: customIcon })
         .addTo(map)
         .bindPopup(
-          `<div style="font-family: sans-serif; font-size: 11px; color: #0b1c30;">
-             <strong style="display: block; margin-bottom: 2px;">Pharmacy Location</strong>
-             ${address}
+          `<div style="display: flex; align-items: center; gap: 10px; font-family: sans-serif; font-size: 11px; color: #0b1c30; min-width: 220px; padding: 2px;">
+             <img 
+               src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=120&h=120&q=80" 
+               alt="Pharmacy storefront" 
+               style="width: 52px; height: 52px; object-fit: cover; border-radius: 6px; flex-shrink: 0;" 
+             />
+             <div>
+               <strong style="display: block; margin-bottom: 2px; color: #0f3d57;">Pharmacy Location</strong>
+               <span style="display: block; color: #42474d; line-height: 1.3;">${address}</span>
+             </div>
            </div>`
         )
         .openPopup();

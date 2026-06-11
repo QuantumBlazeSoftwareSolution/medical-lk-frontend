@@ -1716,7 +1716,7 @@ export default function WebsiteBuilder() {
                         </div>
                       )}
                       
-                      <p className="text-[7px] text-[#72787e] mt-2">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
+                      <p className="text-[7px] text-[#72787e] mt-2">&copy; {new Date().getFullYear()} {name}. Powered by <span className="font-semibold" style={{ color: primaryColor }}>Quantum Blaze</span></p>
                     </div>
                     <div className="text-right">
                       <h4 className="font-bold mb-1 text-[#0b1c30]">Contact</h4>
@@ -1977,7 +1977,7 @@ export default function WebsiteBuilder() {
                     </div>
                   )}
 
-                  <p className="text-[7px] text-[#72787e] mt-1">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
+                  <p className="text-[7px] text-[#72787e] mt-1">&copy; {new Date().getFullYear()} {name}. Powered by <span className="font-semibold" style={{ color: primaryColor }}>Quantum Blaze</span></p>
                 </footer>
 
                 {/* Mobile Floating Action Button (WhatsApp green) inside phone screen */}

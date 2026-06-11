@@ -644,7 +644,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
           )}
 
           <div className="text-[10px] text-[#72787e] pt-2">
-            &copy; {new Date().getFullYear()} {tenant.name}. Powered by <span className="font-semibold text-[#00273b]">medical.lk</span>
+            &copy; {new Date().getFullYear()} {tenant.name}. Powered by <a href="https://quantumblaze.lk" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#00273b] hover:underline">Quantum Blaze</a>
           </div>
         </div>
 
