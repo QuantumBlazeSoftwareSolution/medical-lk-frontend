@@ -64,6 +64,37 @@
   --spacing-ds-xs: 4px;
   --spacing-ds-margin-mobile: 16px;
   --spacing-ds-md: 16px;
+
+  /* Custom Typography design tokens */
+  --font-display-lg: var(--font-display);
+  --font-headline-lg: var(--font-display);
+  --font-headline-md: var(--font-display);
+  --font-title-lg: var(--font-sans);
+  --font-body-lg: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-label-md: var(--font-sans);
+
+  --font-size-display-lg: 48px;
+  --font-size-headline-lg: 32px;
+  --font-size-headline-md: 24px;
+  --font-size-title-lg: 20px;
+  --font-size-body-lg: 16px;
+  --font-size-body-md: 14px;
+  --font-size-label-md: 12px;
+
+  --line-height-display-lg: 56px;
+  --line-height-headline-lg: 40px;
+  --line-height-headline-md: 32px;
+  --line-height-title-lg: 28px;
+  --line-height-body-lg: 24px;
+  --line-height-body-md: 20px;
+  --line-height-label-md: 16px;
+
+  /* Custom Border Radius tokens */
+  --radius-sm: 0.125rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+  --radius-full: 0.75rem;
 }
 
 :root {
