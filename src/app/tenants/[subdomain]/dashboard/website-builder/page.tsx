@@ -8,7 +8,8 @@ import {
   Laptop, ChevronDown, Plus, Trash2, HelpCircle, 
   User, CheckCircle, AlertTriangle, Rocket, Lock, 
   Image as ImageIcon, HelpCircle as HelpIcon, ArrowLeft,
-  Calendar, RotateCcw
+  Calendar, RotateCcw, ShieldCheck, Heart, Activity,
+  MessageSquare, Menu, Search, ChevronRight, Clock
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -1081,7 +1082,7 @@ export default function WebsiteBuilder() {
           
           {previewDevice === 'desktop' ? (
             /* DESKTOP VIEWPORT SCREEN */
-            <div className="w-full max-w-[1024px] bg-white rounded-xl shadow-2xl overflow-hidden border border-outline-variant/60 flex flex-col min-h-[560px] self-start transition-all duration-300">
+            <div className="w-full max-w-[1024px] bg-white rounded-xl shadow-2xl overflow-hidden border border-outline-variant/60 flex flex-col min-h-[600px] h-[75vh] self-start transition-all duration-300 relative">
               
               {/* Desktop address bar chrome */}
               <div className="h-10 bg-surface-container-low border-b border-outline-variant flex items-center px-4 gap-2.5 shrink-0">
@@ -1091,16 +1092,24 @@ export default function WebsiteBuilder() {
                   <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
                 </div>
                 <div className="ml-4 flex-1 bg-white rounded-md h-7 border border-outline-variant/50 flex items-center justify-center text-[10px] text-outline font-mono">
-                  <Lock size={10} className="mr-1 text-secondary" />
+                  <Lock size={10} className="mr-1 text-secondary" style={{ color: secondaryColor }} />
                   <span>https://{config?.subdomain || 'test'}.pharmacyhub.lk</span>
                 </div>
               </div>
 
               {/* Simulated Website Body Container */}
-              <div className="flex-1 overflow-y-auto text-on-surface bg-white font-sans text-xs select-text">
+              <div 
+                className="flex-1 overflow-y-auto text-[#0b1c30] bg-[#f8f9ff] font-sans text-xs select-text relative flex flex-col"
+                style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+              >
                 
+                {/* Announcement Banner */}
+                <div className="bg-[#ffb961] text-[#533200] py-2 px-4 text-center font-bold text-[10px] tracking-wide shadow-sm shrink-0">
+                  10% off vitamins this week. <a className="underline hover:text-[#2b1700] ml-1 transition-colors" href="#">Learn More</a>
+                </div>
+
                 {/* Header (Sticky binding) */}
-                <header className={`border-b border-outline-variant/30 bg-white/95 backdrop-blur-md z-40 px-6 py-3 flex justify-between items-center ${
+                <header className={`border-b border-[#c2c7cd]/40 bg-white/95 backdrop-blur-md z-40 px-6 py-3 flex justify-between items-center shrink-0 ${
                   stickyHeader ? 'sticky top-0' : ''
                 }`}>
                   <div className="flex items-center gap-2">
@@ -1114,97 +1123,293 @@ export default function WebsiteBuilder() {
                         {name ? name.substring(0, 2).toUpperCase() : 'PH'}
                       </div>
                     )}
-                    <span className="font-bold text-sm tracking-tight text-primary-navy" style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
+                    <span 
+                      className="font-bold text-sm tracking-tight text-primary-navy font-display" 
+                      style={{ 
+                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+                        color: primaryColor
+                      }}
+                    >
                       {name || 'Pharmacy Name'}
                     </span>
                   </div>
 
-                  <nav className="flex gap-5 text-[11px] font-semibold text-outline">
-                    <a className="text-[#2ecc71] border-b-2 border-[#2ecc71] pb-0.5" href="#" style={{ color: secondaryColor, borderBottomColor: secondaryColor }}>Home</a>
-                    <a className="hover:text-primary-navy" href="#">Medicines</a>
-                    <a className="hover:text-primary-navy" href="#">Upload Prescription</a>
-                    <a className="hover:text-primary-navy" href="#">Contact</a>
+                  <nav className="flex gap-5 text-[10px] font-semibold text-[#42474d]">
+                    <a className="transition-colors" href="#" style={{ color: secondaryColor }}>Home</a>
+                    <a className="hover:text-[#0b1c30] transition-colors" href="#">About Us</a>
+                    <a className="hover:text-[#0b1c30] transition-colors" href="#">Services</a>
+                    <a className="hover:text-[#0b1c30] transition-colors" href="#">Hours &amp; Location</a>
                   </nav>
+
+                  <div className="flex gap-2">
+                    {phone && (
+                      <a 
+                        href={`tel:${phone}`}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-colors"
+                        style={{ borderColor: primaryColor, color: primaryColor }}
+                      >
+                        <Phone size={10} />
+                        Call Now
+                      </a>
+                    )}
+                    {phone && (
+                      <a 
+                        href={`https://wa.me/${phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#25D366] text-white transition-colors text-[9px] font-bold uppercase tracking-wider shadow-sm"
+                      >
+                        <MessageSquare size={10} />
+                        WhatsApp
+                      </a>
+                    )}
+                  </div>
                 </header>
 
                 {/* Hero Section */}
-                <section className="relative px-12 py-16 flex items-center bg-[#f7f9fc] border-b border-outline-variant/20">
-                  <div className="w-1/2 pr-6 z-10 text-left">
-                    <span className="font-bold text-[10px] uppercase tracking-widest mb-1.5 block" style={{ color: secondaryColor }}>
-                      Trusted Healthcare Partner
-                    </span>
-                    <h2 className="text-3xl font-extrabold text-primary mb-3 leading-tight" style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}>
-                      {heroHeadline || 'Your Neighborhood Care.'}
-                    </h2>
-                    <p className="text-on-surface-variant mb-6 text-xs leading-relaxed max-w-sm" style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
-                      {heroSubheadline || 'Providing expert clinical services and prescriptions right in your community.'}
-                    </p>
-                    <div className="flex gap-3">
-                      <button type="button" className="px-5 py-2.5 text-white rounded font-bold text-[11px] shadow-md flex items-center gap-1.5 cursor-pointer" style={{ backgroundColor: secondaryColor }}>
-                        {heroButtonText || 'Refill Now'}
-                      </button>
-                      <button type="button" className="border-2 px-5 py-2.5 rounded font-bold text-[11px] hover:bg-primary hover:text-white transition-all cursor-pointer" style={{ borderColor: primaryColor, color: primaryColor }}>
-                        Shop Essentials
-                      </button>
-                    </div>
+                <section className="relative min-h-[280px] flex items-center bg-[#00273b] overflow-hidden shrink-0">
+                  <div className="absolute inset-0 z-0">
+                    <div 
+                      className="absolute inset-0 opacity-80 mix-blend-multiply z-10"
+                      style={{ backgroundColor: primaryColor }}
+                    ></div>
+                    <img 
+                      src={heroBgImage} 
+                      alt="Pharmacy showroom" 
+                      className="object-cover w-full h-full" 
+                    />
                   </div>
-                  <div className="w-1/2 relative h-48 rounded-xl overflow-hidden shadow-lg border border-white">
-                    <img src={heroBgImage} alt="Pharmacy interior showcase" className="object-cover w-full h-full" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"></div>
+
+                  <div className="relative z-20 w-full px-6 py-10 text-left">
+                    <div className="max-w-md text-white space-y-3">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-[9px] font-bold tracking-wide text-[#a3cbeb]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#6bfe9c]"></span>
+                        Licensed Pharmacy &bull; Est. 2010
+                      </div>
+                      <h1 
+                        className="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-white"
+                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+                      >
+                        {heroHeadline}
+                      </h1>
+                      <p className="text-[10px] md:text-xs opacity-90 leading-relaxed max-w-sm text-[#eaf1ff]">
+                        {heroSubheadline}
+                      </p>
+                      <div className="flex gap-2.5 pt-1">
+                        <button 
+                          className="px-4 py-2 rounded bg-[#006d37] text-white font-bold text-[9px] uppercase tracking-wider shadow-md flex items-center gap-1 cursor-pointer"
+                          style={{ backgroundColor: secondaryColor }}
+                        >
+                          <MapPin size={10} />
+                          {heroButtonText}
+                        </button>
+                        {phone && (
+                          <a 
+                            href={`tel:${phone}`}
+                            className="px-4 py-2 rounded bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer text-center"
+                          >
+                            <Phone size={10} />
+                            Call Us
+                          </a>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </section>
 
-                {/* Simulated Opening Hours & Location cards */}
-                <section className="p-8 bg-white grid grid-cols-2 gap-6 text-left">
-                  {/* Hours Card */}
-                  <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-xl p-5 shadow-sm">
-                    <div className="flex items-center gap-2 mb-4 text-primary" style={{ color: primaryColor }}>
-                      <Calendar size={18} />
-                      <h3 className="font-bold text-xs uppercase tracking-wider font-display">Opening Hours</h3>
+                {/* Stats Strip */}
+                <section className="bg-[#eff4ff] border-b border-[#c2c7cd]/30 relative z-30 px-6 shrink-0">
+                  <div className="max-w-3xl mx-auto">
+                    <div className="grid grid-cols-4 gap-2 py-3 bg-white rounded-lg shadow border border-[#c2c7cd]/20 -translate-y-4">
+                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>15+</div>
+                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Experience</div>
+                      </div>
+                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>5,000+</div>
+                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Patients</div>
+                      </div>
+                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>2,000+</div>
+                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Products</div>
+                      </div>
+                      <div className="text-center px-2">
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>15 Min</div>
+                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Wait Time</div>
+                      </div>
                     </div>
-                    <div className="space-y-1.5 text-xs text-on-surface-variant font-mono">
-                      <div className="flex justify-between py-1 border-b border-outline-variant/20">
-                        <span>Mon - Sat</span>
-                        <span>{mondayOpen} - {mondayClose}</span>
-                      </div>
-                      <div className="flex justify-between py-1">
-                        <span>Sunday</span>
-                        <span className="italic">{sundayOpen}</span>
-                      </div>
-                    </div>
-                    
-                    {autoCloseHolidays && (
-                      <div className="mt-4 p-2.5 bg-secondary-container/20 rounded text-[10px] text-on-secondary-container border border-secondary/15 flex gap-1.5 items-start">
-                        <CheckCircle size={12} className="shrink-0 mt-0.5 text-secondary" />
-                        <span>Closed on Christmas Day (Dec 25) and all Sri Lankan public holidays.</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Address Card */}
-                  <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-xl p-5 shadow-sm flex flex-col justify-between">
-                    <div className="flex items-center gap-2 mb-3 text-primary" style={{ color: primaryColor }}>
-                      <MapPin size={18} />
-                      <h3 className="font-bold text-xs uppercase tracking-wider font-display">Visit Us</h3>
-                    </div>
-                    <address className="not-italic text-xs text-on-surface-variant space-y-0.5">
-                      <p className="font-bold text-primary">{name || 'Pharmacy Name'}</p>
-                      <p>{address || 'No address configured yet.'}</p>
-                      {phone && <p className="font-mono text-[10px] mt-1.5">📞 {phone}</p>}
-                      {email && <p className="text-[10px]">✉️ {email}</p>}
-                    </address>
-                    
-                    {mapLink ? (
-                      <div className="h-16 mt-3 bg-white rounded-lg border border-outline-variant/40 flex items-center justify-center text-[10px] text-outline uppercase tracking-wider font-bold gap-1">
-                        <Globe size={12} className="text-secondary animate-pulse" /> Map Location Loaded
-                      </div>
-                    ) : (
-                      <div className="h-16 mt-3 rounded-lg border border-dashed border-outline-variant flex items-center justify-center text-[10px] text-outline uppercase">
-                        Location Map Not Added
-                      </div>
-                    )}
                   </div>
                 </section>
+
+                {/* About Us */}
+                <section className="py-8 bg-white px-6 shrink-0">
+                  <div className="grid grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
+                    <div className="relative">
+                      <img 
+                        alt="Pharmacist Assisting Customer" 
+                        className="rounded-lg shadow w-full object-cover aspect-square max-h-[180px]" 
+                        src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=400&q=80" 
+                      />
+                      <div className="absolute -bottom-2 -right-2 bg-white p-2.5 rounded-lg shadow-md border border-[#c2c7cd]/20 max-w-[110px] text-left">
+                        <div className="flex items-center gap-1 mb-0.5 text-secondary" style={{ color: secondaryColor }}>
+                          <ShieldCheck size={14} />
+                          <span className="font-bold text-[8px] uppercase tracking-wider">Verified</span>
+                        </div>
+                        <div className="font-bold text-[9px] text-[#0b1c30] leading-tight font-display">Licensed Care</div>
+                        <div className="text-[7px] text-[#42474d] mt-0.5 font-mono">SLMC-PH-8921</div>
+                      </div>
+                    </div>
+
+                    <div className="text-left space-y-2.5">
+                      <div>
+                        <div className="text-[8px] font-bold uppercase tracking-widest mb-1.5" style={{ color: secondaryColor }}>About Us</div>
+                        <h2 
+                          className="text-base font-bold leading-tight"
+                          style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                        >
+                          Committed to Your Health and Wellness
+                        </h2>
+                      </div>
+                      <p className="text-[10px] text-[#42474d] leading-relaxed">
+                        We combine clinical expertise with personalized care to provide you with the safest, most efficient pharmacy experience.
+                      </p>
+                      <div className="space-y-1.5 pt-1">
+                        <div className="flex items-start gap-1.5">
+                          <CheckCircle size={10} className="text-secondary mt-0.5" style={{ color: secondaryColor }} />
+                          <span className="text-[9px] text-[#0b1c30] font-bold">100% Authentic Medicines</span>
+                        </div>
+                        <div className="flex items-start gap-1.5">
+                          <CheckCircle size={10} className="text-secondary mt-0.5" style={{ color: secondaryColor }} />
+                          <span className="text-[9px] text-[#0b1c30] font-bold">Expert Pharmacist Advice</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Services Section */}
+                <section className="py-8 bg-[#eff4ff] px-6 border-t border-b border-[#c2c7cd]/20 shrink-0">
+                  <div className="max-w-3xl mx-auto">
+                    <div className="mb-4 text-center">
+                      <div className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: secondaryColor }}>Our Services</div>
+                      <h2 
+                        className="text-base font-bold"
+                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                      >
+                        Comprehensive Pharmacy Care
+                      </h2>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
+                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
+                          <Check size={12} />
+                        </div>
+                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Prescription Fulfillment</h3>
+                        <p className="text-[8px] text-[#42474d]">Dispensing of medications with thorough interaction checks.</p>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
+                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
+                          <Clock size={12} />
+                        </div>
+                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Home Delivery</h3>
+                        <p className="text-[8px] text-[#42474d]">Doorstep delivery across Colombo within 24 hours.</p>
+                      </div>
+
+                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
+                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
+                          <Heart size={12} />
+                        </div>
+                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Health Consultations</h3>
+                        <p className="text-[8px] text-[#42474d]">Private consultations to discuss side effects and wellness.</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Hours & Location Section */}
+                <section className="py-8 bg-white px-6 shrink-0">
+                  <div className="max-w-3xl mx-auto space-y-4">
+                    <div className="text-left">
+                      <div className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: secondaryColor }}>Visit Us</div>
+                      <h2 
+                        className="text-base font-bold"
+                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                      >
+                        Hours &amp; Location
+                      </h2>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Hours card */}
+                      <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-4 shadow-sm text-[9px] space-y-2">
+                        <div className="flex justify-between items-center py-1 border-b border-[#c2c7cd]/20">
+                          <span className="font-bold text-[#0b1c30]">Monday - Friday</span>
+                          <span className="font-mono text-[#42474d]">{mondayOpen} - {mondayClose}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-b border-[#c2c7cd]/20 bg-[#eff4ff]/60 -mx-4 px-4">
+                          <span className="font-bold text-[#0b1c30]">Saturday</span>
+                          <span className="font-mono text-[#42474d]">09:00 AM - 07:00 PM</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="font-bold text-[#0b1c30]">Sunday</span>
+                          <span className="font-mono text-[#42474d] italic">{sundayOpen}</span>
+                        </div>
+
+                        {autoCloseHolidays && (
+                          <div className="pt-2 border-t border-[#c2c7cd]/20 text-[7px] text-[#42474d] flex gap-1 items-start">
+                            <CheckCircle size={8} className="shrink-0 mt-0.5 text-secondary" style={{ color: secondaryColor }} />
+                            <span>Closed on public holidays.</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Map card */}
+                      <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-lg p-4 shadow-sm flex flex-col justify-between text-[9px]">
+                        <div className="text-left">
+                          <p className="font-bold text-[#0b1c30]">{address || 'No address configured yet.'}</p>
+                          {phone && <p className="font-mono text-[8px] mt-1 text-[#42474d]">📞 {phone}</p>}
+                        </div>
+                        
+                        {mapLink ? (
+                          <div className="h-10 mt-2 bg-white rounded border border-[#c2c7cd]/30 flex items-center justify-center text-[7px] text-[#42474d] uppercase font-bold gap-1">
+                            <Globe size={8} className="text-secondary animate-pulse" /> Map Loaded
+                          </div>
+                        ) : (
+                          <div className="h-10 mt-2 rounded border border-dashed border-[#c2c7cd] flex items-center justify-center text-[7px] text-[#72787e] uppercase">
+                            No Map Added
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Footer */}
+                <footer className="mt-auto border-t border-[#c2c7cd]/30 px-6 py-6 bg-white shrink-0 text-left">
+                  <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto text-[9px] text-[#42474d]">
+                    <div>
+                      <h4 className="font-bold mb-1" style={{ color: primaryColor }}>{name || 'Pharmacy'}</h4>
+                      <p className="text-[8px]">Your trusted community healthcare partner.</p>
+                      <p className="text-[7px] text-[#72787e] mt-2">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
+                    </div>
+                    <div className="text-right">
+                      <h4 className="font-bold mb-1 text-[#0b1c30]">Contact</h4>
+                      <p>{address}</p>
+                      <p>{phone}</p>
+                    </div>
+                  </div>
+                </footer>
+
+                {/* Floating WhatsApp FAB inside desktop browser body */}
+                {phone && (
+                  <div className="absolute bottom-4 right-4 w-10 h-10 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center z-50">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"></path>
+                    </svg>
+                  </div>
+                )}
 
               </div>
             </div>
@@ -1218,76 +1423,145 @@ export default function WebsiteBuilder() {
               </div>
 
               {/* simulated phone content container */}
-              <div className="flex-grow overflow-y-auto w-full pt-6 select-text text-left">
+              <div 
+                className="flex-grow overflow-y-auto w-full pt-6 select-text text-left relative flex flex-col bg-[#f8f9ff]"
+                style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+              >
                 
+                {/* Announcement Banner */}
+                <div className="bg-[#ffb961] text-[#533200] py-1 px-3 text-center font-bold text-[8px] tracking-wide shadow-sm shrink-0">
+                  10% off vitamins this week.
+                </div>
+
                 {/* Mobile simulated header */}
-                <header className="flex justify-between items-center px-4 py-3 border-b border-outline-variant/20 bg-white/95 sticky top-0 z-40">
+                <header className="flex justify-between items-center px-4 py-2.5 border-b border-[#c2c7cd]/30 bg-white/95 sticky top-0 z-40 shrink-0">
                   <div className="flex items-center gap-1.5">
                     {logoUrl ? (
-                      <img src={logoUrl} alt="logo" style={{ height: '24px' }} className="object-contain" />
+                      <img src={logoUrl} alt="logo" style={{ height: '20px' }} className="object-contain" />
                     ) : (
                       <div 
-                        className="w-6 h-6 rounded flex items-center justify-center text-white font-bold text-[10px]"
+                        className="w-5 h-5 rounded flex items-center justify-center text-white font-bold text-[9px]"
                         style={{ backgroundColor: primaryColor }}
                       >
                         {name ? name.substring(0, 2).toUpperCase() : 'PH'}
                       </div>
                     )}
-                    <span className="font-bold text-xs tracking-tight text-primary-navy" style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
+                    <span 
+                      className="font-bold text-xs tracking-tight" 
+                      style={{ 
+                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+                        color: primaryColor
+                      }}
+                    >
                       {name || 'Pharmacy'}
                     </span>
                   </div>
                   
                   {/* Hamburger icon */}
-                  <div className="w-6 h-6 rounded flex flex-col justify-center gap-1 items-end p-1 cursor-pointer">
+                  <div className="w-6 h-6 rounded flex flex-col justify-center gap-0.5 items-end p-1 cursor-pointer">
                     <span className="w-4 h-0.5 bg-[#00273b]"></span>
-                    <span className="w-3.5 h-0.5 bg-[#00273b]"></span>
+                    <span className="w-3 h-0.5 bg-[#00273b]"></span>
                     <span className="w-4 h-0.5 bg-[#00273b]"></span>
                   </div>
                 </header>
 
                 {/* Mobile Hero section (Stacked Layout) */}
-                <section className="bg-[#f7f9fc] flex flex-col">
-                  <div className="h-40 w-full relative shrink-0">
+                <section className="bg-[#f7f9fc] flex flex-col relative shrink-0">
+                  <div className="h-32 w-full relative">
                     <img src={heroBgImage} alt="store showcase" className="object-cover w-full h-full" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent mix-blend-multiply"></div>
+                    <div className="absolute inset-0 opacity-80 mix-blend-multiply" style={{ backgroundColor: primaryColor }}></div>
                   </div>
-                  <div className="p-5 -mt-6 bg-white mx-3 rounded-xl border border-outline-variant/20 shadow-md text-center relative z-10 mb-4">
-                    <div className="inline-block px-2.5 py-0.5 bg-secondary-container/30 text-[#00743a] text-[9px] font-bold uppercase tracking-wider rounded-full mb-2">
-                      Open Today until 9PM
+                  <div className="p-4 -mt-4 bg-white mx-3 rounded-lg border border-[#c2c7cd]/20 shadow-md text-center relative z-10 mb-4">
+                    <div className="inline-block px-2.5 py-0.5 bg-secondary-container/30 text-[#00743a] text-[8px] font-bold uppercase tracking-wider rounded-full mb-1.5">
+                      Open Today &bull; Reg: SLMC-8921
                     </div>
-                    <h2 className="text-xl font-bold text-primary mb-2 leading-tight" style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}>
-                      {heroHeadline || 'Your Neighborhood Care.'}
+                    <h2 
+                      className="text-base font-bold mb-1.5 leading-tight" 
+                      style={{ 
+                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', 
+                        color: primaryColor 
+                      }}
+                    >
+                      {heroHeadline}
                     </h2>
-                    <p className="text-on-surface-variant text-[11px] leading-relaxed mb-4" style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
-                      {heroSubheadline || 'Providing expert clinical services and prescriptions right in your community.'}
+                    <p className="text-[#42474d] text-[9px] leading-relaxed mb-3">
+                      {heroSubheadline}
                     </p>
-                    <div className="flex flex-col gap-2">
-                      <button type="button" className="w-full py-2 bg-[#2ecc71] text-white rounded font-bold text-xs shadow cursor-pointer" style={{ backgroundColor: secondaryColor }}>
-                        {heroButtonText || 'Refill Now'}
-                      </button>
-                      <button type="button" className="w-full py-2 bg-white text-primary border border-outline-variant rounded font-bold text-xs cursor-pointer" style={{ color: primaryColor, borderColor: primaryColor }}>
-                        Shop Essentials
+                    <div className="flex flex-col gap-1.5">
+                      <button 
+                        type="button" 
+                        className="w-full py-1.5 text-white rounded font-bold text-[9px] uppercase tracking-wider shadow cursor-pointer animate-none" 
+                        style={{ backgroundColor: secondaryColor }}
+                      >
+                        {heroButtonText}
                       </button>
                     </div>
                   </div>
                 </section>
 
+                {/* Mobile Stats Strip */}
+                <section className="px-3 pb-4 shrink-0">
+                  <div className="grid grid-cols-2 gap-2 bg-white rounded-lg border border-[#c2c7cd]/20 p-2.5 shadow-sm text-center">
+                    <div>
+                      <div className="text-xs font-bold" style={{ color: primaryColor }}>15+ Years</div>
+                      <div className="text-[7px] text-[#42474d] uppercase font-bold">Experience</div>
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold" style={{ color: primaryColor }}>5,000+</div>
+                      <div className="text-[7px] text-[#42474d] uppercase font-bold">Patients</div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Mobile About Us */}
+                <section className="px-3 pb-4 shrink-0">
+                  <div className="bg-white rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2.5">
+                    <div>
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-secondary" style={{ color: secondaryColor }}>About Us</span>
+                      <h3 className="text-xs font-bold leading-tight" style={{ color: primaryColor }}>Committed to Your Health</h3>
+                    </div>
+                    <p className="text-[9px] text-[#42474d] leading-relaxed">
+                      We combine clinical expertise with personalized care to provide you with the safest pharmacy experience.
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <ShieldCheck size={12} className="text-secondary" style={{ color: secondaryColor }} />
+                      <span className="text-[8px] font-bold text-[#0b1c30]">SLMC Verified Registered Care</span>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Mobile Services */}
+                <section className="px-3 pb-4 shrink-0">
+                  <div className="bg-[#eff4ff] rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2">
+                    <h3 className="text-xs font-bold text-center" style={{ color: primaryColor }}>Our Services</h3>
+                    <div className="space-y-1.5">
+                      <div className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2">
+                        <Check size={10} className="text-secondary" style={{ color: secondaryColor }} />
+                        <span className="text-[8px] font-bold text-[#0b1c30]">Prescription Fulfillment</span>
+                      </div>
+                      <div className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2">
+                        <Clock size={10} className="text-secondary" style={{ color: secondaryColor }} />
+                        <span className="text-[8px] font-bold text-[#0b1c30]">Home Delivery (Colombo)</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
                 {/* Mobile opening hours stacked */}
-                <section className="px-4 pb-6 space-y-4">
+                <section className="px-3 pb-6 space-y-3 shrink-0">
                   
                   {/* Hours */}
-                  <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-xl p-4 shadow-sm text-xs">
-                    <div className="flex items-center gap-2 mb-3 text-primary" style={{ color: primaryColor }}>
-                      <Calendar size={16} />
+                  <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-3 shadow-sm text-[9px]">
+                    <div className="flex items-center gap-1.5 mb-2" style={{ color: primaryColor }}>
+                      <Calendar size={12} />
                       <span className="font-bold font-display uppercase tracking-wider">Opening Hours</span>
                     </div>
-                    <div className="space-y-1.5 font-mono">
-                      <div className="flex justify-between border-b border-outline-variant/15 py-1">
+                    <div className="space-y-1 font-mono">
+                      <div className="flex justify-between border-b border-[#c2c7cd]/15 py-0.5">
                         <span>Mon - Sat</span>
                         <span>{mondayOpen} - {mondayClose}</span>
                       </div>
-                      <div className="flex justify-between py-1">
+                      <div className="flex justify-between py-0.5">
                         <span>Sunday</span>
                         <span className="italic">{sundayOpen}</span>
                       </div>
@@ -1295,18 +1569,33 @@ export default function WebsiteBuilder() {
                   </div>
 
                   {/* Visit Us */}
-                  <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-xl p-4 shadow-sm text-xs">
-                    <div className="flex items-center gap-2 mb-2 text-primary" style={{ color: primaryColor }}>
-                      <MapPin size={16} />
+                  <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-3 shadow-sm text-[9px] flex flex-col justify-between">
+                    <div className="flex items-center gap-1.5 mb-1.5" style={{ color: primaryColor }}>
+                      <MapPin size={12} />
                       <span className="font-bold font-display uppercase tracking-wider">Visit Us</span>
                     </div>
-                    <address className="not-italic text-on-surface-variant space-y-0.5 leading-relaxed">
-                      <p className="font-bold text-primary">{name || 'Pharmacy Name'}</p>
+                    <address className="not-italic text-[#42474d] space-y-0.5 leading-relaxed">
+                      <p className="font-bold" style={{ color: primaryColor }}>{name || 'Pharmacy Name'}</p>
                       <p>{address || 'No address configured yet.'}</p>
                     </address>
                   </div>
 
                 </section>
+
+                {/* Footer */}
+                <footer className="mt-auto border-t border-[#c2c7cd]/30 p-4 bg-white shrink-0 text-center text-[8px] text-[#42474d]">
+                  <p className="font-bold" style={{ color: primaryColor }}>{name}</p>
+                  <p className="text-[7px] text-[#72787e] mt-1">&copy; {new Date().getFullYear()} {name}. Powered by medical.lk</p>
+                </footer>
+
+                {/* Mobile Floating Action Button (WhatsApp green) inside phone screen */}
+                {phone && (
+                  <div className="absolute bottom-4 right-4 w-9 h-9 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center z-50">
+                    <svg className="w-4.5 h-4.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"></path>
+                    </svg>
+                  </div>
+                )}
 
               </div>
 
