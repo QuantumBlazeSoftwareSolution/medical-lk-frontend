@@ -12,6 +12,7 @@ import {
   MessageSquare, Menu, Search, ChevronRight, Clock
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
+import { FONT_OPTIONS, getFontFamily, getFontsByCategory } from '@/utils/fontConfig';
 
 export default function WebsiteBuilder() {
   const [activeTab, setActiveTab] = useState<'appearance' | 'content' | 'navigation' | 'seo'>('appearance');
@@ -594,6 +595,7 @@ export default function WebsiteBuilder() {
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-highlight-teal opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#00273b] mb-4">Typography Fonts</h3>
                 <div className="space-y-4">
+                  {/* Headings Font */}
                   <div>
                     <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Headings Font</label>
                     <div className="relative">
@@ -601,10 +603,25 @@ export default function WebsiteBuilder() {
                         value={headingsFont}
                         onChange={(e) => { setHeadingsFont(e.target.value); registerChange(); }}
                         className="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 pr-10 outline-none text-xs appearance-none cursor-pointer"
+                        style={{ fontFamily: getFontFamily(headingsFont) }}
                       >
-                        <option value="poppins">Poppins</option>
-                        <option value="inter">Inter</option>
-                        <option value="sans">System Sans</option>
+                        {(() => {
+                          const { sansSerif, serif } = getFontsByCategory();
+                          return (
+                            <>
+                              <optgroup label="Sans-Serif">
+                                {sansSerif.map(f => (
+                                  <option key={f.key} value={f.key}>{f.label} — {f.description}</option>
+                                ))}
+                              </optgroup>
+                              <optgroup label="Serif">
+                                {serif.map(f => (
+                                  <option key={f.key} value={f.key}>{f.label} — {f.description}</option>
+                                ))}
+                              </optgroup>
+                            </>
+                          );
+                        })()}
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline">
                         <ChevronDown size={14} />
@@ -612,6 +629,7 @@ export default function WebsiteBuilder() {
                     </div>
                   </div>
 
+                  {/* Body Font */}
                   <div>
                     <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Body Font</label>
                     <div className="relative">
@@ -619,10 +637,25 @@ export default function WebsiteBuilder() {
                         value={bodyFont}
                         onChange={(e) => { setBodyFont(e.target.value); registerChange(); }}
                         className="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 pr-10 outline-none text-xs appearance-none cursor-pointer"
+                        style={{ fontFamily: getFontFamily(bodyFont) }}
                       >
-                        <option value="inter">Inter</option>
-                        <option value="poppins">Poppins</option>
-                        <option value="sans">System Sans</option>
+                        {(() => {
+                          const { sansSerif, serif } = getFontsByCategory();
+                          return (
+                            <>
+                              <optgroup label="Sans-Serif">
+                                {sansSerif.map(f => (
+                                  <option key={f.key} value={f.key}>{f.label} — {f.description}</option>
+                                ))}
+                              </optgroup>
+                              <optgroup label="Serif">
+                                {serif.map(f => (
+                                  <option key={f.key} value={f.key}>{f.label} — {f.description}</option>
+                                ))}
+                              </optgroup>
+                            </>
+                          );
+                        })()}
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline">
                         <ChevronDown size={14} />
@@ -630,13 +663,26 @@ export default function WebsiteBuilder() {
                     </div>
                   </div>
 
-                  <div className="p-3 bg-[#f7f9fc] rounded border border-outline-variant/50">
-                    <p className="text-sm font-bold text-primary mb-1" style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
-                      Interactive Typography
+                  {/* Live Typography Preview */}
+                  <div className="p-4 bg-gradient-to-br from-[#f7f9fc] to-[#edf2f7] rounded-lg border border-outline-variant/50">
+                    <p className="text-[10px] uppercase tracking-widest text-outline mb-2 font-bold">Live Preview</p>
+                    <p className="text-lg font-bold text-[#00273b] mb-1 leading-tight" style={{ fontFamily: getFontFamily(headingsFont) }}>
+                      Premium Healthcare Experience
                     </p>
-                    <p className="text-xs text-on-surface-variant" style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}>
-                      This preview content updates automatically to demonstrate font weight scales.
+                    <p className="text-xs text-on-surface-variant leading-relaxed" style={{ fontFamily: getFontFamily(bodyFont) }}>
+                      Your pharmacy landing page will use this font combination for a polished, professional look that builds trust with customers.
                     </p>
+                    <div className="flex items-center gap-3 mt-3 pt-3 border-t border-outline-variant/30">
+                      <span className="text-[10px] text-outline uppercase tracking-wide font-bold">Heading:</span>
+                      <span className="text-[10px] font-bold" style={{ fontFamily: getFontFamily(headingsFont), color: primaryColor }}>
+                        {FONT_OPTIONS.find(f => f.key === headingsFont)?.label || headingsFont}
+                      </span>
+                      <span className="text-[10px] text-outline">|</span>
+                      <span className="text-[10px] text-outline uppercase tracking-wide font-bold">Body:</span>
+                      <span className="text-[10px] font-bold" style={{ fontFamily: getFontFamily(bodyFont), color: primaryColor }}>
+                        {FONT_OPTIONS.find(f => f.key === bodyFont)?.label || bodyFont}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1415,7 +1461,7 @@ export default function WebsiteBuilder() {
               {/* Simulated Website Body Container */}
               <div 
                 className="flex-1 overflow-y-auto text-[#0b1c30] bg-[#f8f9ff] font-sans text-xs select-text relative flex flex-col"
-                style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+                style={{ fontFamily: getFontFamily(bodyFont) }}
               >
                 
                 {/* Announcement Banner */}
@@ -1441,7 +1487,7 @@ export default function WebsiteBuilder() {
                     <span 
                       className="font-bold text-sm tracking-tight text-primary-navy font-display" 
                       style={{ 
-                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+                        fontFamily: getFontFamily(headingsFont),
                         color: primaryColor
                       }}
                     >
@@ -1503,7 +1549,7 @@ export default function WebsiteBuilder() {
                       </div>
                       <h1 
                         className="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-white"
-                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+                        style={{ fontFamily: getFontFamily(headingsFont) }}
                       >
                         {heroHeadline}
                       </h1>
@@ -1580,7 +1626,7 @@ export default function WebsiteBuilder() {
                         <div className="text-[8px] font-bold uppercase tracking-widest mb-1.5" style={{ color: secondaryColor }}>About Us</div>
                         <h2 
                           className="text-base font-bold leading-tight"
-                          style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                          style={{ fontFamily: getFontFamily(headingsFont), color: primaryColor }}
                         >
                           Committed to Your Health and Wellness
                         </h2>
@@ -1620,7 +1666,7 @@ export default function WebsiteBuilder() {
                       <div className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: secondaryColor }}>Our Services</div>
                       <h2 
                         className="text-base font-bold"
-                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                        style={{ fontFamily: getFontFamily(headingsFont), color: primaryColor }}
                       >
                         Comprehensive Pharmacy Care
                       </h2>
@@ -1649,7 +1695,7 @@ export default function WebsiteBuilder() {
                       <div className="text-[8px] font-bold uppercase tracking-widest mb-1" style={{ color: secondaryColor }}>Visit Us</div>
                       <h2 
                         className="text-base font-bold"
-                        style={{ fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', color: primaryColor }}
+                        style={{ fontFamily: getFontFamily(headingsFont), color: primaryColor }}
                       >
                         Hours &amp; Location
                       </h2>
@@ -1796,7 +1842,7 @@ export default function WebsiteBuilder() {
               {/* simulated phone content container */}
               <div 
                 className="flex-grow overflow-y-auto w-full pt-6 select-text text-left relative flex flex-col bg-[#f8f9ff]"
-                style={{ fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)' }}
+                style={{ fontFamily: getFontFamily(bodyFont) }}
               >
                 
                 {/* Announcement Banner */}
@@ -1820,7 +1866,7 @@ export default function WebsiteBuilder() {
                     <span 
                       className="font-bold text-xs tracking-tight" 
                       style={{ 
-                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+                        fontFamily: getFontFamily(headingsFont),
                         color: primaryColor
                       }}
                     >
@@ -1849,7 +1895,7 @@ export default function WebsiteBuilder() {
                     <h2 
                       className="text-base font-bold mb-1.5 leading-tight" 
                       style={{ 
-                        fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)', 
+                        fontFamily: getFontFamily(headingsFont), 
                         color: primaryColor 
                       }}
                     >

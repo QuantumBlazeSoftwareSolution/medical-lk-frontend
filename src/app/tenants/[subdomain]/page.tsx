@@ -11,6 +11,7 @@ import {
   MessageSquare, Menu, Search, ChevronRight, Check
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
+import { getFontFamily } from '@/utils/fontConfig';
 
 const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
   ssr: false,
@@ -185,11 +186,11 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
 
   // Dynamic Fonts mappings
   const headingStyle = {
-    fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+    fontFamily: getFontFamily(headingsFont),
   };
   
   const bodyStyle = {
-    fontFamily: bodyFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
+    fontFamily: getFontFamily(bodyFont),
   };
 
   // Google Maps directions helper
