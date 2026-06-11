@@ -1,6 +1,9 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
+import nextDynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query';
 import { 
   MapPin, Mail, Phone, Loader2, Activity, Heart, Clock, 
@@ -8,6 +11,16 @@ import {
   MessageSquare, Menu, Search, ChevronRight, Check
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
+
+const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-[#f8f9ff] flex flex-col items-center justify-center text-[#a3aab0] text-xs gap-1.5 min-h-[192px]">
+      <Loader2 className="h-5 w-5 animate-spin text-[#006d37]" />
+      <span>Loading map...</span>
+    </div>
+  )
+});
 
 export default function TenantPublicPage({ params }: { params: Promise<{ subdomain: string }> }) {
   // Resolve params promise for NextJS 15 compatibility
@@ -115,6 +128,61 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
     }
   }
 
+  // Resolve statistics
+  let statExperience = '15+';
+  let statPatients = '5,000+';
+  let statProducts = '2,000+';
+  let statWaitTime = '15 Min';
+  if (tenant.stats_json) {
+    try {
+      const parsedStats = JSON.parse(tenant.stats_json);
+      if (parsedStats.experience) statExperience = parsedStats.experience;
+      if (parsedStats.patients) statPatients = parsedStats.patients;
+      if (parsedStats.products) statProducts = parsedStats.products;
+      if (parsedStats.wait_time) statWaitTime = parsedStats.wait_time;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Resolve services
+  let services = [
+    { title: 'Prescription Fulfillment', description: 'Fast, accurate dispensing of medications with thorough interaction checks by our licensed pharmacists.', icon: 'Check' },
+    { title: 'Home Delivery', description: 'Convenient doorstep delivery across Colombo within 24 hours. Cold chain maintained for sensitive drugs.', icon: 'Clock' },
+    { title: 'Health Consultations', description: 'Private consultations to discuss medication management, side effects, and general wellness plans.', icon: 'Heart' },
+    { title: 'Cosmetics & Derma', description: 'Curated selection of dermatologically tested skincare and personal care products.', icon: 'Sparkles' },
+    { title: 'Health Monitoring', description: 'In-store blood pressure checking, blood sugar testing, and BMI calculation services.', icon: 'Activity' },
+    { title: 'Baby & Mother Care', description: 'Everything you need for maternal health and infant care, from nutrition to hygiene essentials.', icon: 'ShieldCheck' }
+  ];
+  if (tenant.services_json) {
+    try {
+      const parsedServices = JSON.parse(tenant.services_json);
+      if (Array.isArray(parsedServices) && parsedServices.length > 0) {
+        services = parsedServices;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Check': return <Check size={20} />;
+      case 'Clock': return <Clock size={20} />;
+      case 'Heart': return <Heart size={20} />;
+      case 'Sparkles': return <Sparkles size={20} />;
+      case 'Activity': return <Activity size={20} />;
+      case 'ShieldCheck': return <ShieldCheck size={20} />;
+      case 'Mail': return <Mail size={20} />;
+      case 'Phone': return <Phone size={20} />;
+      case 'MapPin': return <MapPin size={20} />;
+      case 'Globe': return <Globe size={20} />;
+      case 'Calendar': return <Calendar size={20} />;
+      case 'CheckCircle': return <CheckCircle size={20} />;
+      default: return <CheckCircle size={20} />;
+    }
+  };
+
   // Dynamic Fonts mappings
   const headingStyle = {
     fontFamily: headingsFont === 'poppins' ? 'var(--font-display)' : 'var(--font-sans)',
@@ -138,6 +206,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
       className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] flex flex-col selection:bg-teal-50 selection:text-teal-900 font-sans"
       style={bodyStyle}
     >
+      <title>{tenant.website_title || tenant.name}</title>
       
       {/* Announcement Banner */}
       <div className="bg-[#ffb961] text-[#533200] py-2 px-4 text-center font-bold text-xs tracking-wide shadow-sm">
@@ -303,7 +372,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
-                  15+
+                  {statExperience}
                 </div>
                 <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Years Experience</div>
               </div>
@@ -312,7 +381,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
-                  5,000+
+                  {statPatients}
                 </div>
                 <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Happy Patients</div>
               </div>
@@ -321,7 +390,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
-                  2,000+
+                  {statProducts}
                 </div>
                 <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Products Catalog</div>
               </div>
@@ -330,7 +399,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
-                  15 Min
+                  {statWaitTime}
                 </div>
                 <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Avg Wait Time</div>
               </div>
@@ -357,7 +426,7 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
                   <span className="font-bold text-xs uppercase tracking-wider">Verified</span>
                 </div>
                 <div className="font-bold text-xs text-[#0b1c30] leading-tight font-display">Licensed Care Pharmacy</div>
-                <div className="text-[10px] text-[#42474d] mt-1 font-mono">Reg: SLMC-PH-8921</div>
+                <div className="text-[10px] text-[#42474d] mt-1 font-mono">Reg: {tenant.display_slmc_number || 'SLMC-PH-8921'}</div>
               </div>
             </div>
 
@@ -447,91 +516,20 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              
-              {/* Card 1 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <Check size={20} />
+              {services.map((svc, idx) => (
+                <div key={idx} className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div 
+                      className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
+                      style={{ backgroundColor: secondaryColor }}
+                    >
+                      {getIconComponent(svc.icon)}
+                    </div>
+                    <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">{svc.title}</h3>
+                    <p className="text-xs text-[#42474d] leading-relaxed">{svc.description}</p>
                   </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Prescription Fulfillment</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">Fast, accurate dispensing of medications with thorough interaction checks by our licensed pharmacists.</p>
                 </div>
-              </div>
-
-              {/* Card 2 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <Clock size={20} />
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Home Delivery</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">Convenient doorstep delivery across Colombo within 24 hours. Cold chain maintained for sensitive drugs.</p>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <Heart size={20} />
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Health Consultations</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">Private consultations to discuss medication management, side effects, and general wellness plans.</p>
-                </div>
-              </div>
-
-              {/* Card 4 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <Sparkles size={20} />
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Cosmetics &amp; Derma</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">Curated selection of dermatologically tested skincare and personal care products.</p>
-                </div>
-              </div>
-
-              {/* Card 5 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <Activity size={20} />
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Health Monitoring</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">In-store blood pressure checking, blood sugar testing, and BMI calculation services.</p>
-                </div>
-              </div>
-
-              {/* Card 6 */}
-              <div className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
-                <div>
-                  <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
-                    style={{ backgroundColor: secondaryColor }}
-                  >
-                    <ShieldCheck size={20} />
-                  </div>
-                  <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">Baby &amp; Mother Care</h3>
-                  <p className="text-xs text-[#42474d] leading-relaxed">Everything you need for maternal health and infant care, from nutrition to hygiene essentials.</p>
-                </div>
-              </div>
-
+              ))}
             </div>
           </div>
         </section>
@@ -599,24 +597,9 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
 
               {/* Maps Location card */}
               <div className="md:col-span-7 bg-white border border-[#c2c7cd]/40 rounded-xl overflow-hidden shadow-sm">
-                {tenant.map_link ? (
-                  <div className="w-full h-48 border-b border-[#c2c7cd]/30">
-                    <iframe
-                      src={tenant.map_link}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen={false}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-48 bg-[#f8f9ff] flex flex-col items-center justify-center text-[#a3aab0] text-xs gap-1.5 border-b border-[#c2c7cd]/30">
-                    <MapPin size={22} className="text-[#a3aab0]" />
-                    <span>Location Map Not Added</span>
-                  </div>
-                )}
+                <div className="w-full h-48 border-b border-[#c2c7cd]/30">
+                  <LeafletMap address={tenant.contact_address || 'Colombo, Sri Lanka'} mapLink={tenant.map_link} />
+                </div>
                 <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="text-left">
                     <p className="font-bold text-xs text-[#0b1c30]">{tenant.contact_address || 'No address configured yet.'}</p>

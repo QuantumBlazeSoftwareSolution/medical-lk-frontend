@@ -29,6 +29,43 @@ export default function WebsiteBuilder() {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
 
+  // Statistics States
+  const [statExperience, setStatExperience] = useState('15+');
+  const [statPatients, setStatPatients] = useState('5,000+');
+  const [statProducts, setStatProducts] = useState('2,000+');
+  const [statWaitTime, setStatWaitTime] = useState('15 Min');
+
+  // Services States
+  const [services, setServices] = useState<Array<{ title: string; description: string; icon: string }>>([
+    { title: 'Prescription Fulfillment', description: 'Fast, accurate dispensing of medications with thorough interaction checks by our licensed pharmacists.', icon: 'Check' },
+    { title: 'Home Delivery', description: 'Convenient doorstep delivery across Colombo within 24 hours. Cold chain maintained for sensitive drugs.', icon: 'Clock' },
+    { title: 'Health Consultations', description: 'Private consultations to discuss medication management, side effects, and general wellness plans.', icon: 'Heart' },
+    { title: 'Cosmetics & Derma', description: 'Curated selection of dermatologically tested skincare and personal care products.', icon: 'Sparkles' },
+    { title: 'Health Monitoring', description: 'In-store blood pressure checking, blood sugar testing, and BMI calculation services.', icon: 'Activity' },
+    { title: 'Baby & Mother Care', description: 'Everything you need for maternal health and infant care, from nutrition to hygiene essentials.', icon: 'ShieldCheck' }
+  ]);
+  const [newServiceTitle, setNewServiceTitle] = useState('');
+  const [newServiceDesc, setNewServiceDesc] = useState('');
+  const [newServiceIcon, setNewServiceIcon] = useState('Check');
+
+  const getIconComponent = (iconName: string, size = 12) => {
+    switch (iconName) {
+      case 'Check': return <Check size={size} />;
+      case 'Clock': return <Clock size={size} />;
+      case 'Heart': return <Heart size={size} />;
+      case 'Sparkles': return <Sparkles size={size} />;
+      case 'Activity': return <Activity size={size} />;
+      case 'ShieldCheck': return <ShieldCheck size={size} />;
+      case 'Mail': return <Mail size={size} />;
+      case 'Phone': return <Phone size={size} />;
+      case 'MapPin': return <MapPin size={size} />;
+      case 'Globe': return <Globe size={size} />;
+      case 'Calendar': return <Calendar size={size} />;
+      case 'CheckCircle': return <CheckCircle size={size} />;
+      default: return <CheckCircle size={size} />;
+    }
+  };
+
   // Builder-only interactive states (stored locally / mocked to sync with preview)
   const [headingsFont, setHeadingsFont] = useState('poppins');
   const [bodyFont, setBodyFont] = useState('inter');
@@ -125,6 +162,27 @@ export default function WebsiteBuilder() {
           if (Array.isArray(parsedCerts)) setCertificates(parsedCerts);
         } catch (e) {
           console.error("Error parsing certificates_json", e);
+        }
+      }
+
+      if (config.stats_json) {
+        try {
+          const parsedStats = JSON.parse(config.stats_json);
+          if (parsedStats.experience) setStatExperience(parsedStats.experience);
+          if (parsedStats.patients) setStatPatients(parsedStats.patients);
+          if (parsedStats.products) setStatProducts(parsedStats.products);
+          if (parsedStats.wait_time) setStatWaitTime(parsedStats.wait_time);
+        } catch (e) {
+          console.error("Error parsing stats_json", e);
+        }
+      }
+
+      if (config.services_json) {
+        try {
+          const parsedServices = JSON.parse(config.services_json);
+          if (Array.isArray(parsedServices) && parsedServices.length > 0) setServices(parsedServices);
+        } catch (e) {
+          console.error("Error parsing services_json", e);
         }
       }
 
@@ -293,7 +351,14 @@ export default function WebsiteBuilder() {
       display_nmra_number: displayNmraNumber.trim() || null,
       display_br_number: displayBrNumber.trim() || null,
       display_slmc_number: displaySlmcNumber.trim() || null,
-      certificates_json: JSON.stringify(certificates)
+      certificates_json: JSON.stringify(certificates),
+      stats_json: JSON.stringify({
+        experience: statExperience,
+        patients: statPatients,
+        products: statProducts,
+        wait_time: statWaitTime
+      }),
+      services_json: JSON.stringify(services)
     });
   };
 
@@ -604,8 +669,8 @@ export default function WebsiteBuilder() {
                     <input
                       type="text"
                       required
-                      value={title}
-                      onChange={(e) => { setTitle(e.target.value); registerChange(); }}
+                      value={heroHeadline}
+                      onChange={(e) => { setHeroHeadline(e.target.value); setTitle(e.target.value); registerChange(); }}
                       className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
                     />
                   </div>
@@ -614,8 +679,8 @@ export default function WebsiteBuilder() {
                     <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Website Intro Summary *</label>
                     <textarea
                       required
-                      value={desc}
-                      onChange={(e) => { setDesc(e.target.value); registerChange(); }}
+                      value={heroSubheadline}
+                      onChange={(e) => { setHeroSubheadline(e.target.value); setDesc(e.target.value); registerChange(); }}
                       className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs h-20 resize-none font-sans"
                     />
                   </div>
@@ -1044,7 +1109,7 @@ export default function WebsiteBuilder() {
                     <input
                       type="text"
                       value={heroHeadline}
-                      onChange={(e) => { setHeroHeadline(e.target.value); registerChange(); }}
+                      onChange={(e) => { setHeroHeadline(e.target.value); setTitle(e.target.value); registerChange(); }}
                       className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs font-semibold"
                     />
                   </div>
@@ -1053,7 +1118,7 @@ export default function WebsiteBuilder() {
                     <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Sub-headline Description</label>
                     <textarea
                       value={heroSubheadline}
-                      onChange={(e) => { setHeroSubheadline(e.target.value); registerChange(); }}
+                      onChange={(e) => { setHeroSubheadline(e.target.value); setDesc(e.target.value); registerChange(); }}
                       className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs h-20 resize-none font-sans"
                     />
                   </div>
