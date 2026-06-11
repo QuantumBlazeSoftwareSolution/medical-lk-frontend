@@ -94,7 +94,49 @@ export default function WebsiteBuilder() {
       setAddress(config.contact_address || '');
       setLogoUrl(config.logo_url || '');
 
-      // Check if there are serialized configurations inside local storage
+      // Load DB values first
+      if (config.headings_font) setHeadingsFont(config.headings_font);
+      if (config.body_font) setBodyFont(config.body_font);
+      if (config.logo_height !== undefined && config.logo_height !== null) setLogoHeight(config.logo_height);
+      if (config.sticky_header !== undefined && config.sticky_header !== null) setStickyHeader(config.sticky_header);
+      if (config.hero_headline) setHeroHeadline(config.hero_headline);
+      if (config.hero_subheadline) setHeroSubheadline(config.hero_subheadline);
+      if (config.hero_button_text) setHeroButtonText(config.hero_button_text);
+      if (config.hero_bg_image) setHeroBgImage(config.hero_bg_image);
+      if (config.auto_close_holidays !== undefined && config.auto_close_holidays !== null) setAutoCloseHolidays(config.auto_close_holidays);
+      if (config.seo_keywords) setSeoKeywords(config.seo_keywords);
+
+      if (config.opening_hours) {
+        try {
+          const parsedHours = JSON.parse(config.opening_hours);
+          if (parsedHours.MondayOpen) setMondayOpen(parsedHours.MondayOpen);
+          if (parsedHours.MondayClose) setMondayClose(parsedHours.MondayClose);
+          if (parsedHours.TuesdayOpen) setTuesdayOpen(parsedHours.TuesdayOpen);
+          if (parsedHours.TuesdayClose) setTuesdayClose(parsedHours.TuesdayClose);
+          if (parsedHours.WednesdayOpen) setWednesdayOpen(parsedHours.WednesdayOpen);
+          if (parsedHours.WednesdayClose) setWednesdayClose(parsedHours.WednesdayClose);
+          if (parsedHours.ThursdayOpen) setThursdayOpen(parsedHours.ThursdayOpen);
+          if (parsedHours.ThursdayClose) setThursdayClose(parsedHours.ThursdayClose);
+          if (parsedHours.FridayOpen) setFridayOpen(parsedHours.FridayOpen);
+          if (parsedHours.FridayClose) setFridayClose(parsedHours.FridayClose);
+          if (parsedHours.SaturdayOpen) setSaturdayOpen(parsedHours.SaturdayOpen);
+          if (parsedHours.SaturdayClose) setSaturdayClose(parsedHours.SaturdayClose);
+          if (parsedHours.SundayOpen) setSundayOpen(parsedHours.SundayOpen);
+        } catch (e) {
+          console.error("Error parsing opening_hours", e);
+        }
+      }
+
+      if (config.holiday_exceptions) {
+        try {
+          const parsedEx = JSON.parse(config.holiday_exceptions);
+          if (Array.isArray(parsedEx)) setExceptions(parsedEx);
+        } catch (e) {
+          console.error("Error parsing holiday_exceptions", e);
+        }
+      }
+
+      // Check if there are serialized configurations inside local storage (active drafts)
       const builderState = localStorage.getItem(`builder-state-${config.subdomain}`);
       if (builderState) {
         try {
@@ -107,6 +149,7 @@ export default function WebsiteBuilder() {
           if (parsed.heroSubheadline) setHeroSubheadline(parsed.heroSubheadline);
           if (parsed.heroButtonText) setHeroButtonText(parsed.heroButtonText);
           if (parsed.heroBgImage) setHeroBgImage(parsed.heroBgImage);
+          if (parsed.seoKeywords) setSeoKeywords(parsed.seoKeywords);
           if (parsed.hours) {
             if (parsed.hours.MondayOpen) setMondayOpen(parsed.hours.MondayOpen);
             if (parsed.hours.MondayClose) setMondayClose(parsed.hours.MondayClose);
@@ -166,29 +209,9 @@ export default function WebsiteBuilder() {
     }),
     onSuccess: () => {
       refetch();
-      // Save builder-only states locally
+      // Clear localStorage builder-state since it has been successfully published to the server
       if (config?.subdomain) {
-        localStorage.setItem(`builder-state-${config.subdomain}`, JSON.stringify({
-          headingsFont,
-          bodyFont,
-          logoHeight,
-          stickyHeader,
-          heroHeadline,
-          heroSubheadline,
-          heroButtonText,
-          heroBgImage,
-          hours: {
-            MondayOpen: mondayOpen, MondayClose: mondayClose,
-            TuesdayOpen: tuesdayOpen, TuesdayClose: tuesdayClose,
-            WednesdayOpen: wednesdayOpen, WednesdayClose: wednesdayClose,
-            ThursdayOpen: thursdayOpen, ThursdayClose: thursdayClose,
-            FridayOpen: fridayOpen, FridayClose: fridayClose,
-            SaturdayOpen: saturdayOpen, SaturdayClose: saturdayClose,
-            SundayOpen: sundayOpen
-          },
-          exceptions,
-          autoCloseHolidays
-        }));
+        localStorage.removeItem(`builder-state-${config.subdomain}`);
       }
       setUnsavedChanges(false);
       setShowPublishModal(false);
@@ -224,7 +247,27 @@ export default function WebsiteBuilder() {
       contact_email: email.trim() || null,
       contact_phone: phone.trim() || null,
       contact_address: address.trim() || null,
-      logo_url: logoUrl.trim() || null
+      logo_url: logoUrl.trim() || null,
+      headings_font: headingsFont,
+      body_font: bodyFont,
+      logo_height: Number(logoHeight) || 40,
+      sticky_header: stickyHeader,
+      hero_headline: heroHeadline,
+      hero_subheadline: heroSubheadline,
+      hero_button_text: heroButtonText,
+      hero_bg_image: heroBgImage,
+      opening_hours: JSON.stringify({
+        MondayOpen: mondayOpen, MondayClose: mondayClose,
+        TuesdayOpen: tuesdayOpen, TuesdayClose: tuesdayClose,
+        WednesdayOpen: wednesdayOpen, WednesdayClose: wednesdayClose,
+        ThursdayOpen: thursdayOpen, ThursdayClose: thursdayClose,
+        FridayOpen: fridayOpen, FridayClose: fridayClose,
+        SaturdayOpen: saturdayOpen, SaturdayClose: saturdayClose,
+        SundayOpen: sundayOpen
+      }),
+      holiday_exceptions: JSON.stringify(exceptions),
+      auto_close_holidays: autoCloseHolidays,
+      seo_keywords: seoKeywords
     });
   };
 
