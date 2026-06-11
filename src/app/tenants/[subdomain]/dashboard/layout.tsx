@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   ];
 
   if (role === 'admin') {
-    mainMenuItems.push({ name: 'Website Builder', path: '/dashboard/settings', icon: Globe, exact: false });
+    mainMenuItems.push({ name: 'Website Builder', path: '/dashboard/website-builder', icon: Globe, exact: false });
   }
 
   const bottomMenuItems = [
