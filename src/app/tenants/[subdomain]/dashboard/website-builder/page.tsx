@@ -730,6 +730,134 @@ export default function WebsiteBuilder() {
                 </div>
               </div>
 
+              {/* Statistics & Highlights */}
+              <div className="bg-white p-5 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-highlight-teal opacity-100"></div>
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#00273b] mb-4">Statistics & Highlights</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Years Experience</label>
+                    <input
+                      type="text"
+                      value={statExperience}
+                      onChange={(e) => { setStatExperience(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Happy Patients</label>
+                    <input
+                      type="text"
+                      value={statPatients}
+                      onChange={(e) => { setStatPatients(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Products Catalog</label>
+                    <input
+                      type="text"
+                      value={statProducts}
+                      onChange={(e) => { setStatProducts(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1">Avg Wait Time</label>
+                    <input
+                      type="text"
+                      value={statWaitTime}
+                      onChange={(e) => { setStatWaitTime(e.target.value); registerChange(); }}
+                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Services Offered */}
+              <div className="bg-white p-5 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-highlight-teal opacity-100"></div>
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#00273b] mb-4">Services Offered</h3>
+                
+                <div className="space-y-3">
+                  {services.map((svc, idx) => (
+                    <div key={idx} className="flex justify-between items-start p-2.5 bg-[#f7f9fc] border border-outline-variant/50 rounded-lg shadow-sm">
+                      <div className="flex items-start gap-2 max-w-[85%] text-left">
+                        <div className="w-6 h-6 rounded bg-[#2ecc71]/20 text-[#006d37] flex items-center justify-center shrink-0 mt-0.5" style={{ backgroundColor: `${secondaryColor}20`, color: secondaryColor }}>
+                          {getIconComponent(svc.icon)}
+                        </div>
+                        <div>
+                          <div className="font-bold text-[#00273b]">{svc.title}</div>
+                          <div className="text-[10px] text-outline mt-0.5 leading-relaxed">{svc.description}</div>
+                        </div>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => { setServices(prev => prev.filter((_, i) => i !== idx)); registerChange(); }} 
+                        className="text-outline hover:text-error transition-colors cursor-pointer shrink-0 mt-1"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {/* Add service form */}
+                  <div className="border-t border-outline-variant/30 pt-4 space-y-3">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-outline">Add Custom Service</div>
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        placeholder="Service Title"
+                        value={newServiceTitle}
+                        onChange={(e) => setNewServiceTitle(e.target.value)}
+                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                      />
+                      <textarea
+                        placeholder="Service Description"
+                        value={newServiceDesc}
+                        onChange={(e) => setNewServiceDesc(e.target.value)}
+                        className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs h-16 resize-none font-sans"
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className="text-[10px] text-outline font-bold uppercase shrink-0">Icon:</div>
+                        <select
+                          value={newServiceIcon}
+                          onChange={(e) => setNewServiceIcon(e.target.value)}
+                          className="flex-grow px-2 py-1.5 border border-outline-variant rounded bg-white text-xs cursor-pointer"
+                        >
+                          <option value="Check">Checkmark</option>
+                          <option value="Clock">Clock</option>
+                          <option value="Heart">Heart</option>
+                          <option value="Sparkles">Sparkles</option>
+                          <option value="Activity">Pulse / Activity</option>
+                          <option value="ShieldCheck">Shield Check</option>
+                          <option value="Mail">Mail</option>
+                          <option value="Phone">Phone</option>
+                          <option value="MapPin">Location / Pin</option>
+                          <option value="Globe">Globe</option>
+                          <option value="Calendar">Calendar</option>
+                          <option value="CheckCircle">Check Circle</option>
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (!newServiceTitle.trim() || !newServiceDesc.trim()) return;
+                            setServices(prev => [...prev, { title: newServiceTitle.trim(), description: newServiceDesc.trim(), icon: newServiceIcon }]);
+                            setNewServiceTitle('');
+                            setNewServiceDesc('');
+                            setNewServiceIcon('Check');
+                            registerChange();
+                          }}
+                          className="px-4 py-2 bg-primary text-white font-semibold rounded-lg text-xs cursor-pointer flex items-center gap-1 hover:bg-primary/95 shadow-sm"
+                        >
+                          <Plus size={14} /> Add Service
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Standard Hours Settings */}
               <div className="bg-white p-5 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-highlight-teal opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -1409,19 +1537,19 @@ export default function WebsiteBuilder() {
                   <div className="max-w-3xl mx-auto">
                     <div className="grid grid-cols-4 gap-2 py-3 bg-white rounded-lg shadow border border-[#c2c7cd]/20 -translate-y-4">
                       <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div className="text-sm font-bold" style={{ color: primaryColor }}>15+</div>
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>{statExperience}</div>
                         <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Experience</div>
                       </div>
                       <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div className="text-sm font-bold" style={{ color: primaryColor }}>5,000+</div>
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>{statPatients}</div>
                         <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Patients</div>
                       </div>
                       <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div className="text-sm font-bold" style={{ color: primaryColor }}>2,000+</div>
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>{statProducts}</div>
                         <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Products</div>
                       </div>
                       <div className="text-center px-2">
-                        <div className="text-sm font-bold" style={{ color: primaryColor }}>15 Min</div>
+                        <div className="text-sm font-bold" style={{ color: primaryColor }}>{statWaitTime}</div>
                         <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">Wait Time</div>
                       </div>
                     </div>
@@ -1499,29 +1627,17 @@ export default function WebsiteBuilder() {
                     </div>
 
                     <div className="grid grid-cols-3 gap-3">
-                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
-                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
-                          <Check size={12} />
+                      {services.map((svc, idx) => (
+                        <div key={idx} className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm flex flex-col justify-between text-left">
+                          <div>
+                            <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
+                              {getIconComponent(svc.icon)}
+                            </div>
+                            <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">{svc.title}</h3>
+                            <p className="text-[8px] text-[#42474d]">{svc.description}</p>
+                          </div>
                         </div>
-                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Prescription Fulfillment</h3>
-                        <p className="text-[8px] text-[#42474d]">Dispensing of medications with thorough interaction checks.</p>
-                      </div>
-
-                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
-                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
-                          <Clock size={12} />
-                        </div>
-                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Home Delivery</h3>
-                        <p className="text-[8px] text-[#42474d]">Doorstep delivery across Colombo within 24 hours.</p>
-                      </div>
-
-                      <div className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm">
-                        <div className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold" style={{ backgroundColor: secondaryColor }}>
-                          <Heart size={12} />
-                        </div>
-                        <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">Health Consultations</h3>
-                        <p className="text-[8px] text-[#42474d]">Private consultations to discuss side effects and wellness.</p>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </section>
@@ -1758,11 +1874,11 @@ export default function WebsiteBuilder() {
                 <section className="px-3 pb-4 shrink-0">
                   <div className="grid grid-cols-2 gap-2 bg-white rounded-lg border border-[#c2c7cd]/20 p-2.5 shadow-sm text-center">
                     <div>
-                      <div className="text-xs font-bold" style={{ color: primaryColor }}>15+ Years</div>
+                      <div className="text-xs font-bold" style={{ color: primaryColor }}>{statExperience}</div>
                       <div className="text-[7px] text-[#42474d] uppercase font-bold">Experience</div>
                     </div>
                     <div>
-                      <div className="text-xs font-bold" style={{ color: primaryColor }}>5,000+</div>
+                      <div className="text-xs font-bold" style={{ color: primaryColor }}>{statPatients}</div>
                       <div className="text-[7px] text-[#42474d] uppercase font-bold">Patients</div>
                     </div>
                   </div>
@@ -1801,14 +1917,14 @@ export default function WebsiteBuilder() {
                   <div className="bg-[#eff4ff] rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2">
                     <h3 className="text-xs font-bold text-center" style={{ color: primaryColor }}>Our Services</h3>
                     <div className="space-y-1.5">
-                      <div className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2">
-                        <Check size={10} className="text-secondary" style={{ color: secondaryColor }} />
-                        <span className="text-[8px] font-bold text-[#0b1c30]">Prescription Fulfillment</span>
-                      </div>
-                      <div className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2">
-                        <Clock size={10} className="text-secondary" style={{ color: secondaryColor }} />
-                        <span className="text-[8px] font-bold text-[#0b1c30]">Home Delivery (Colombo)</span>
-                      </div>
+                      {services.map((svc, idx) => (
+                        <div key={idx} className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2">
+                          <span style={{ color: secondaryColor }} className="shrink-0 flex items-center justify-center">
+                            {getIconComponent(svc.icon, 10)}
+                          </span>
+                          <span className="text-[8px] font-bold text-[#0b1c30] truncate">{svc.title}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </section>
