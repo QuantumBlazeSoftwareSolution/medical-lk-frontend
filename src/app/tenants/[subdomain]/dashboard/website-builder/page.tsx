@@ -21,6 +21,7 @@ export default function WebsiteBuilder() {
   // Official configuration states (bound to backend API)
   const [name, setName] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [faviconUrl, setFaviconUrl] = useState('');
   const [primaryColor, setPrimaryColor] = useState('#0f3d57');
   const [secondaryColor, setSecondaryColor] = useState('#2ecc71');
   const [title, setTitle] = useState('');
@@ -141,6 +142,7 @@ export default function WebsiteBuilder() {
       setPhone(config.contact_phone || '');
       setAddress(config.contact_address || '');
       setLogoUrl(config.logo_url || '');
+      setFaviconUrl(config.favicon_url || '');
 
       // Load DB values first
       if (config.headings_font) setHeadingsFont(config.headings_font);
@@ -329,6 +331,7 @@ export default function WebsiteBuilder() {
       contact_phone: phone.trim() || null,
       contact_address: address.trim() || null,
       logo_url: logoUrl.trim() || null,
+      favicon_url: faviconUrl.trim() || null,
       headings_font: headingsFont,
       body_font: bodyFont,
       logo_height: Number(logoHeight) || 40,
