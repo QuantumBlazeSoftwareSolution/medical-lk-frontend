@@ -26,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      router.push('/login');
+      router.push('/portal/login');
     } else {
       setUsername(localStorage.getItem('username') || 'Employee');
       setRole(localStorage.getItem('role') || 'Staff');
@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     localStorage.removeItem('role');
     localStorage.removeItem('username');
     localStorage.removeItem('subdomain');
-    router.push('/login');
+    router.push('/portal/login');
   };
 
   if (!authorized) {

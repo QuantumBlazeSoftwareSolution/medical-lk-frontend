@@ -226,7 +226,7 @@ export default function RegisterWizard() {
   const isStrong = hasMinLength && hasNumSymbol && hasUpperLower;
 
   const copyToClipboard = () => {
-    const portalUrl = `http://${subdomain}.localhost:3000/login`;
+    const portalUrl = `http://${subdomain}.localhost:3000/portal/login`;
     navigator.clipboard.writeText(portalUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -967,7 +967,7 @@ export default function RegisterWizard() {
                   {/* Actions Grid */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <a
-                      href={`http://${subdomain}.localhost:3000/login`}
+                      href={`http://${subdomain}.localhost:3000/portal/login`}
                       className="py-4 px-6 bg-[#006d37] hover:bg-[#005228] text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-sm flex flex-col items-center justify-center gap-1.5"
                     >
                       <Globe className="h-5 w-5 shrink-0" />
