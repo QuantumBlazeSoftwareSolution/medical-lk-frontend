@@ -171,7 +171,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content Area */}
       <div className="flex-grow flex flex-col h-full overflow-hidden">
         {/* Top Header Bar */}
-        <header className="h-[64px] bg-white border-b border-[#eceef1] flex items-center justify-between px-8 shrink-0 z-10">
+        <header className="h-[64px] bg-white border-b border-[#eceef1] flex items-center justify-between px-8 shrink-0 z-[9999] relative">
           {/* Left Side: Route Title */}
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold tracking-tight text-[#191c1e] capitalize font-display">
@@ -206,7 +206,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </button>
               
               {/* Notification Dropdown Panel */}
-              <div className="absolute right-0 mt-2 w-80 bg-white border border-[#e0e3e6] rounded-xl shadow-[0_16px_32px_rgba(0,0,0,0.08)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right">
+              <div className="absolute right-0 mt-2 w-80 bg-white border border-[#e0e3e6] rounded-xl shadow-[0_16px_32px_rgba(0,0,0,0.08)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999] transform origin-top-right">
                 <div className="p-4 border-b border-[#e0e3e6] flex items-center justify-between">
                   <h3 className="font-semibold text-[#191c1e] font-display text-sm">Notifications</h3>
                   <button className="text-xs text-[#0f3d57] hover:underline cursor-pointer font-sans">Mark all as read</button>
