@@ -262,6 +262,32 @@ export default function WebsiteBuilder() {
     setUnsavedChanges(true);
   };
 
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
+  const heroInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'favicon' | 'hero') => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Image must be smaller than 2MB to keep page performance high.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (type === 'logo') {
+          setLogoUrl(reader.result as string);
+        } else if (type === 'favicon') {
+          setFaviconUrl(reader.result as string);
+        } else if (type === 'hero') {
+          setHeroBgImage(reader.result as string);
+        }
+        registerChange();
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Preset theme selector
   const selectPreset = (primary: string, secondary: string) => {
     setPrimaryColor(primary);
@@ -463,34 +489,116 @@ export default function WebsiteBuilder() {
                   <span>Branding & Logo</span>
                   <Sparkles size={13} className="text-highlight-teal" />
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-5">
+                  {/* Primary Logo Upload */}
                   <div>
-                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1.5">Primary Logo URL</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. https://example.com/logo.png"
-                      value={logoUrl}
-                      onChange={(e) => { setLogoUrl(e.target.value); registerChange(); }}
-                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1.5">Primary Logo</label>
+                    <input 
+                      type="file" 
+                      ref={logoInputRef} 
+                      onChange={(e) => handleImageUpload(e, 'logo')} 
+                      accept="image/*" 
+                      className="hidden" 
                     />
-                  </div>
-                  
-                  {logoUrl && (
-                    <div className="border border-dashed border-outline-variant/60 rounded-lg p-3 flex flex-col items-center justify-center bg-[#f7f9fc]">
-                      <img src={logoUrl} alt="Branding logo preview" className="h-10 object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                      <span className="text-[10px] text-outline mt-1.5">Current Logo Graphic Active</span>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1.5">Favicon Shortcut Mock</label>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 border border-outline-variant/60 rounded bg-white flex items-center justify-center font-extrabold text-highlight-teal font-display text-sm">
-                        {name ? name.substring(0, 1).toUpperCase() : 'P'}
-                      </div>
-                      <button type="button" className="px-3 py-1.5 border border-outline-variant text-[#00273b] hover:bg-surface-container rounded font-semibold text-[11px] transition-colors cursor-pointer">
-                        Upload .ico Icon
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Upload Box */}
+                      <button 
+                        type="button"
+                        onClick={() => logoInputRef.current?.click()}
+                        className="border border-dashed border-outline-variant/80 hover:border-highlight-teal rounded-xl p-4 flex flex-col items-center justify-center bg-[#f8f9fc] hover:bg-teal-50/10 transition-all cursor-pointer group/upload"
+                      >
+                        <ImageIcon className="h-6 w-6 text-outline group-hover/upload:text-highlight-teal transition-colors mb-2" />
+                        <span className="text-[11px] font-bold text-[#00273b]">Upload Logo Image</span>
+                        <span className="text-[9px] text-outline mt-0.5">PNG, JPG, SVG up to 2MB</span>
                       </button>
+
+                      {/* Preview Box */}
+                      <div className="border border-outline-variant/60 rounded-xl p-3 flex flex-col items-center justify-center bg-white relative min-h-[96px]">
+                        {logoUrl ? (
+                          <>
+                            <img src={logoUrl} alt="Branding logo preview" className="max-h-12 max-w-full object-contain" />
+                            <button
+                              type="button"
+                              onClick={() => { setLogoUrl(''); registerChange(); }}
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center border border-red-200 transition-colors cursor-pointer animate-fade-in"
+                              title="Remove logo"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                            <span className="text-[9px] text-emerald-600 font-bold mt-2 flex items-center gap-1">
+                              <CheckCircle size={10} /> Logo Active
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-outline text-center">No logo uploaded. System fallback text will be displayed.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-2.5">
+                      <label className="block text-[9px] font-bold text-outline uppercase tracking-wider mb-1">Or Paste Image URL</label>
+                      <input
+                        type="text"
+                        placeholder="https://example.com/logo.png"
+                        value={logoUrl.startsWith('data:') ? '' : logoUrl}
+                        onChange={(e) => { setLogoUrl(e.target.value); registerChange(); }}
+                        className="w-full px-3 py-1.5 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-[11px]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Favicon Upload */}
+                  <div className="pt-3 border-t border-outline-variant/40">
+                    <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1.5">Favicon Shortcut Icon</label>
+                    <input 
+                      type="file" 
+                      ref={faviconInputRef} 
+                      onChange={(e) => handleImageUpload(e, 'favicon')} 
+                      accept="image/png, image/x-icon, image/jpeg" 
+                      className="hidden" 
+                    />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Upload Box */}
+                      <button 
+                        type="button"
+                        onClick={() => faviconInputRef.current?.click()}
+                        className="border border-dashed border-outline-variant/80 hover:border-highlight-teal rounded-xl p-4 flex flex-col items-center justify-center bg-[#f8f9fc] hover:bg-teal-50/10 transition-all cursor-pointer group/upload"
+                      >
+                        <Globe className="h-6 w-6 text-outline group-hover/upload:text-highlight-teal transition-colors mb-2" />
+                        <span className="text-[11px] font-bold text-[#00273b]">Upload Browser Icon</span>
+                        <span className="text-[9px] text-outline mt-0.5">ICO or PNG up to 500KB</span>
+                      </button>
+
+                      {/* Preview Box */}
+                      <div className="border border-outline-variant/60 rounded-xl p-3 flex flex-col items-center justify-center bg-white relative min-h-[96px]">
+                        {faviconUrl ? (
+                          <>
+                            <div className="p-2 border border-outline-variant/60 rounded bg-[#f7f9fc]">
+                              <img src={faviconUrl} alt="Favicon preview" className="w-8 h-8 object-contain" />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => { setFaviconUrl(''); registerChange(); }}
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center border border-red-200 transition-colors cursor-pointer animate-fade-in"
+                              title="Remove favicon"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                            <span className="text-[9px] text-emerald-600 font-bold mt-2 flex items-center gap-1">
+                              <CheckCircle size={10} /> Icon Active
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-8 h-8 border border-outline-variant/60 rounded bg-white flex items-center justify-center font-extrabold text-highlight-teal font-display text-sm mb-1.5 shadow-sm">
+                              {name ? name.substring(0, 1).toUpperCase() : 'P'}
+                            </div>
+                            <span className="text-[9px] text-outline text-center">Using fallback initial icon</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1310,14 +1418,58 @@ export default function WebsiteBuilder() {
                     />
                   </div>
 
-                  <div className="pt-2 border-t border-outline-variant/30">
+                  <div className="pt-3 border-t border-outline-variant/30">
                     <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide mb-1.5">Hero Background Image</label>
-                    <input
-                      type="text"
-                      value={heroBgImage}
-                      onChange={(e) => { setHeroBgImage(e.target.value); registerChange(); }}
-                      className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-xs"
+                    <input 
+                      type="file" 
+                      ref={heroInputRef} 
+                      onChange={(e) => handleImageUpload(e, 'hero')} 
+                      accept="image/*" 
+                      className="hidden" 
                     />
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {/* Upload Button */}
+                      <button 
+                        type="button"
+                        onClick={() => heroInputRef.current?.click()}
+                        className="border border-dashed border-outline-variant/80 hover:border-highlight-teal rounded-xl p-4 flex flex-col items-center justify-center bg-[#f8f9fc] hover:bg-teal-50/10 transition-all cursor-pointer group/upload"
+                      >
+                        <ImageIcon className="h-6 w-6 text-outline group-hover/upload:text-highlight-teal transition-colors mb-2" />
+                        <span className="text-[11px] font-bold text-[#00273b]">Upload Hero Image</span>
+                        <span className="text-[9px] text-outline mt-0.5">Wide landscape image up to 2MB</span>
+                      </button>
+
+                      {/* Preview Image */}
+                      <div className="border border-outline-variant/60 rounded-xl overflow-hidden relative min-h-[96px] bg-slate-100 flex items-center justify-center">
+                        {heroBgImage ? (
+                          <>
+                            <img src={heroBgImage} alt="Hero Background preview" className="w-full h-full object-cover max-h-[96px]" />
+                            <button
+                              type="button"
+                              onClick={() => { setHeroBgImage(''); registerChange(); }}
+                              className="absolute top-2 right-2 w-6 h-6 rounded-full bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center border border-red-200 transition-colors cursor-pointer"
+                              title="Remove image"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-outline p-4 text-center">No background image selected.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-2.5">
+                      <label className="block text-[9px] font-bold text-outline uppercase tracking-wider mb-1">Or Paste Image URL</label>
+                      <input
+                        type="text"
+                        placeholder="https://images.unsplash.com/photo-..."
+                        value={heroBgImage.startsWith('data:') ? '' : heroBgImage}
+                        onChange={(e) => { setHeroBgImage(e.target.value); registerChange(); }}
+                        className="w-full px-3 py-1.5 bg-background border border-outline-variant rounded-lg focus:border-highlight-teal outline-none text-[11px]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

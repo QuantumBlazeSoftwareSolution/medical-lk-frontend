@@ -9,7 +9,7 @@ import {
   Users, Settings, LogOut, Loader2, Activity, User,
   Truck, BarChart3, Globe, ShieldCheck, ClipboardList,
   Search, Bell, ChevronDown, AlertTriangle, Hourglass,
-  Building2
+  Building2, LifeBuoy
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -41,6 +41,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     enabled: !!subdomain,
   });
 
+  // Apply dynamic favicon if configured
+  useEffect(() => {
+    if (tenant?.favicon_url) {
+      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'shortcut icon';
+        document.head.appendChild(link);
+      }
+      link.href = tenant.favicon_url;
+      if (tenant.favicon_url.startsWith('data:')) {
+        const typeMatch = tenant.favicon_url.match(/data:([^;]+);/);
+        if (typeMatch) link.type = typeMatch[1];
+      }
+    }
+  }, [tenant?.favicon_url]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
@@ -68,6 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Suppliers',      path: '/dashboard/suppliers',     icon: Building2,       exact: false },
     { name: 'Reports',        path: '/dashboard/reports',       icon: BarChart3,       exact: false },
     { name: 'Prescriptions',  path: '/dashboard/prescriptions', icon: ClipboardList,   exact: false },
+    { name: 'Technical Support', path: '/dashboard/support',      icon: LifeBuoy,        exact: false },
   ];
 
   if (role === 'admin') {

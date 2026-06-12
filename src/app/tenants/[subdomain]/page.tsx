@@ -37,6 +37,24 @@ export default function TenantPublicPage({ params }: { params: Promise<{ subdoma
     queryFn: () => apiFetch('/api/tenant/public'),
   });
 
+  // Apply dynamic favicon if configured
+  useEffect(() => {
+    if (tenant?.favicon_url) {
+      let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'shortcut icon';
+        document.head.appendChild(link);
+      }
+      link.href = tenant.favicon_url;
+      // Handle base64 png vs base64 ico type definitions dynamically
+      if (tenant.favicon_url.startsWith('data:')) {
+        const typeMatch = tenant.favicon_url.match(/data:([^;]+);/);
+        if (typeMatch) link.type = typeMatch[1];
+      }
+    }
+  }, [tenant?.favicon_url]);
+
   // Calculate if the pharmacy is open now (between 8:00 AM and 9:00 PM)
   useEffect(() => {
     const checkOpenStatus = () => {
