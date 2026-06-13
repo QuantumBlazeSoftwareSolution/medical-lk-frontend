@@ -43,8 +43,16 @@ export default function POSTerminal() {
   const [now, setNow]                           = useState(new Date());
   const [username, setUsername]                 = useState('Cashier');
 
+  // Keyboard-driven flow state variables
+  const [activePopupProduct, setActivePopupProduct] = useState<any>(null);
+  const [selectedBatchIndex, setSelectedBatchIndex] = useState<number>(0);
+  const [quantityInputOpen, setQuantityInputOpen]   = useState<boolean>(false);
+  const [quantityValue, setQuantityValue]           = useState<string>('1');
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number>(-1);
+
   const searchRef       = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
+  const qtyInputRef     = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setUsername(localStorage.getItem('username') || 'Cashier'); }, []);
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
@@ -57,6 +65,60 @@ export default function POSTerminal() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
   useEffect(() => { searchRef.current?.focus(); }, []);
+
+  // Return focus to search bar when modals/popups close
+  useEffect(() => {
+    if (!activePopupProduct && !showPayModal && !showSuccessModal && !showPatientEdit) {
+      searchRef.current?.focus();
+    }
+  }, [activePopupProduct, showPayModal, showSuccessModal, showPatientEdit]);
+
+  // Focus quantity input when opened
+  useEffect(() => {
+    if (quantityInputOpen) {
+      setTimeout(() => qtyInputRef.current?.focus(), 50);
+    }
+  }, [quantityInputOpen]);
+
+  // Keyboard navigation inside the Batch Selection Popup
+  useEffect(() => {
+    if (!activePopupProduct) return;
+
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // If quantity input is focused, let typical text editing work (escape exits back)
+      if (quantityInputOpen) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          setQuantityInputOpen(false);
+        }
+        return;
+      }
+
+      const batchesCount = activePopupProduct.batches.length;
+      if (batchesCount === 0) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedBatchIndex(prev => (prev + 1) % batchesCount);
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedBatchIndex(prev => (prev - 1 + batchesCount) % batchesCount);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const selectedBatch = activePopupProduct.batches[selectedBatchIndex];
+        if (selectedBatch && selectedBatch.quantity_remaining > 0) {
+          setQuantityInputOpen(true);
+          setQuantityValue('1');
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setActivePopupProduct(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [activePopupProduct, quantityInputOpen, selectedBatchIndex]);
 
   // ── Data ──────────────────────────────────────────────────────────────────
   const { data: batches = [], isLoading: batchesLoading, refetch: refetchBatches } = useQuery<any[]>({
@@ -154,6 +216,85 @@ export default function POSTerminal() {
     searchRef.current?.focus();
   }, [addToCart]);
 
+  const handleSelectProductFromSearch = (selectedBatch: any) => {
+    const productBatches = batches.filter((x: any) => x.medicine_id === selectedBatch.medicine_id);
+    const batchIndex = productBatches.findIndex((x: any) => x.id === selectedBatch.id);
+    
+    setActivePopupProduct({
+      medicine_id: selectedBatch.medicine_id,
+      medicine_name: selectedBatch.medicine_name,
+      generic_name: selectedBatch.generic_name,
+      barcode: selectedBatch.barcode,
+      category: selectedBatch.category,
+      unit: selectedBatch.unit,
+      batches: productBatches
+    });
+    setSelectedBatchIndex(batchIndex >= 0 ? batchIndex : 0);
+    setQuantityInputOpen(false);
+    setQuantityValue('1');
+    setSearchQuery('');
+    setShowAutocomplete(false);
+    setActiveSuggestionIndex(-1);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showAutocomplete || autoSuggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveSuggestionIndex(prev => (prev + 1) % autoSuggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveSuggestionIndex(prev => (prev - 1 + autoSuggestions.length) % autoSuggestions.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeSuggestionIndex >= 0 && activeSuggestionIndex < autoSuggestions.length) {
+        handleSelectProductFromSearch(autoSuggestions[activeSuggestionIndex]);
+      } else if (autoSuggestions.length === 1) {
+        handleSelectProductFromSearch(autoSuggestions[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowAutocomplete(false);
+      setActiveSuggestionIndex(-1);
+    }
+  };
+
+  const handleQuantitySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activePopupProduct) return;
+    const selectedBatch = activePopupProduct.batches[selectedBatchIndex];
+    if (!selectedBatch) return;
+
+    const qty = parseInt(quantityValue) || 1;
+    if (qty <= 0) return;
+    if (qty > selectedBatch.quantity_remaining) {
+      alert(`Only ${selectedBatch.quantity_remaining} units available in stock for this batch.`);
+      return;
+    }
+
+    addToCart({
+      batchId: selectedBatch.id,
+      medicineId: selectedBatch.medicine_id,
+      medicineName: selectedBatch.medicine_name,
+      genericName: selectedBatch.generic_name,
+      batchNumber: selectedBatch.batch_number,
+      price: selectedBatch.selling_price,
+      stockAvailable: selectedBatch.quantity_remaining,
+      expiryDate: selectedBatch.expiry_date,
+    });
+    
+    updateQuantity(selectedBatch.id, qty);
+    setActivePopupProduct(null);
+  };
+
+  const handleProductCardClick = (product: any) => {
+    setActivePopupProduct(product);
+    setSelectedBatchIndex(0);
+    setQuantityInputOpen(false);
+    setQuantityValue('1');
+    setActiveSuggestionIndex(-1);
+  };
+
   const handleCheckout = () => {
     if (cart.length === 0) { alert('Cart is empty.'); return; }
     setShowPayModal(true);
@@ -241,7 +382,8 @@ export default function POSTerminal() {
                   className="w-full pl-10 pr-12 py-3 border-[1.5px] border-[#17a589] rounded-lg bg-white text-[15px] text-[#191c1e] outline-none transition-shadow focus:shadow-[0_0_0_3px_rgba(23,165,137,0.15)] placeholder:text-[#72787e]"
                   placeholder="Scan barcode or type product name..."
                   value={searchQuery}
-                  onChange={e => { setSearchQuery(e.target.value); setShowAutocomplete(true); }}
+                  onChange={e => { setSearchQuery(e.target.value); setShowAutocomplete(true); setActiveSuggestionIndex(-1); }}
+                  onKeyDown={handleSearchKeyDown}
                   onFocus={() => searchQuery && setShowAutocomplete(true)}
                   autoComplete="off"
                 />
@@ -255,11 +397,14 @@ export default function POSTerminal() {
                 {/* Autocomplete dropdown */}
                 {showAutocomplete && autoSuggestions.length > 0 && (
                   <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-white border border-[#c2c7cd] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.10)] z-50 overflow-hidden">
-                    {autoSuggestions.map(b => (
+                    {autoSuggestions.map((b, idx) => (
                       <div
                         key={b.id}
-                        className="flex items-center justify-between px-4 py-2.5 border-b border-[#eceef1] last:border-b-0 cursor-pointer hover:bg-[#f2f4f7] transition-colors"
-                        onMouseDown={() => handleAddBatch(b)}
+                        className={`flex items-center justify-between px-4 py-2.5 border-b border-[#eceef1] last:border-b-0 cursor-pointer transition-colors ${
+                          idx === activeSuggestionIndex ? 'bg-[#e5eeff] border-l-4 border-l-[#00273b]' : 'hover:bg-[#f2f4f7]'
+                        }`}
+                        onMouseDown={() => handleSelectProductFromSearch(b)}
+                        onMouseEnter={() => setActiveSuggestionIndex(idx)}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-md bg-[#eceef1] flex items-center justify-center text-[#00273b] shrink-0">
@@ -320,68 +465,33 @@ export default function POSTerminal() {
                   {groupedProducts.map(p => (
                     <div
                       key={p.medicine_id}
-                      className="bg-white border border-[#e0e3e6] rounded-xl p-3 flex flex-col gap-2.5 transition-all hover:border-[#00273b] hover:shadow-[0_6px_16px_rgba(0,39,59,0.08)] bg-gradient-to-b from-white to-[#fcfdfe]"
+                      onClick={() => handleProductCardClick(p)}
+                      className="bg-white border border-[#e0e3e6] rounded-xl p-4 flex flex-col gap-3 cursor-pointer transition-all hover:border-[#00273b] hover:shadow-[0_6px_16px_rgba(0,39,59,0.08)] bg-gradient-to-b from-white to-[#fcfdfe] group"
                     >
-                      {/* Product Header */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex gap-2 items-center min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-[#eceef1] text-[#00273b] flex items-center justify-center shrink-0">
-                            <Package size={16} />
-                          </div>
-                          <div className="min-w-0">
-                            <h3
-                              className="text-[13px] font-bold text-[#00273b] leading-tight truncate"
-                              title={p.medicine_name}
-                            >
-                              {p.medicine_name}
-                            </h3>
-                            <p className="text-[10px] text-[#72787e] leading-none mt-0.5 truncate">{p.generic_name || 'Generic Name'}</p>
-                          </div>
+                      {/* Top: icon + badge */}
+                      <div className="flex justify-between items-start">
+                        <div className="w-10 h-10 rounded-md bg-[#f2f4f7] flex items-center justify-center text-[#00273b] group-hover:scale-110 transition-transform">
+                          <Package size={20} />
                         </div>
                         <StockBadge qty={p.total_stock} />
                       </div>
 
-                      {/* Batches list */}
-                      <div className="flex flex-col gap-1.5 mt-0.5 border-t border-[#e6e8eb] pt-2">
-                        <div className="text-[9px] font-bold uppercase tracking-wider text-[#72787e] px-0.5">Available Batches</div>
-                        <div className="space-y-1 max-h-36 overflow-y-auto pr-0.5 scrollbar-thin">
-                          {p.batches.map((b: any) => (
-                            <div
-                              key={b.id}
-                              className="flex items-center justify-between p-1.5 rounded bg-[#f8f9fa] border border-[#eef0f2] hover:border-[#00273b]/10 hover:bg-[#f2f6fa] transition-all"
-                            >
-                              <div className="flex flex-col gap-0.5">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-[9px] font-bold font-mono text-[#0f3d57] bg-[#eef0f2] px-1 rounded leading-tight">
-                                    {b.batch_number}
-                                  </span>
-                                  <span className="text-[9px] font-semibold text-[#525960]">
-                                    {b.quantity_remaining} {p.unit || 'Unit'}
-                                  </span>
-                                </div>
-                                <div className="text-[8px] text-[#72787e] flex items-center gap-1">
-                                  {b.created_at && (
-                                    <span>Rec: {new Date(b.created_at).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })}</span>
-                                  )}
-                                  <span>Exp: {new Date(b.expiry_date).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })}</span>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1.5 ml-2">
-                                <span className="font-display text-[12px] font-bold text-[#00273b]">
-                                  Rs. {fmt(b.selling_price)}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); handleAddBatch(b); }}
-                                  className="w-5 h-5 rounded-full bg-white border border-[#c2c7cd] flex items-center justify-center text-[#00273b] hover:bg-[#2ecc71] hover:text-white hover:border-[#2ecc71] transition-all shadow-sm active:scale-95 cursor-pointer"
-                                  title="Add to Sale"
-                                >
-                                  <Plus size={10} />
-                                </button>
-                              </div>
-                            </div>
-                          ))}
+                      {/* Name & Details */}
+                      <div>
+                        <div
+                          className="text-[13px] font-semibold text-[#191c1e] overflow-hidden"
+                          style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}
+                          title={p.medicine_name}
+                        >
+                          {p.medicine_name}
                         </div>
+                        <div className="text-[11px] text-[#42474d] mt-0.5 truncate">{p.generic_name || 'Generic Name'}</div>
+                      </div>
+
+                      {/* Footer: batches availability indicator */}
+                      <div className="mt-auto pt-2 flex items-center justify-between border-t border-[#eef0f2] text-[11px] text-[#72787e]">
+                        <span>{p.batches.length} {p.batches.length === 1 ? 'batch' : 'batches'} available</span>
+                        <ArrowRight size={13} className="text-[#c2c7cd] group-hover:text-[#00273b] group-hover:translate-x-0.5 transition-all" />
                       </div>
                     </div>
                   ))}
@@ -599,6 +709,139 @@ export default function POSTerminal() {
           </section>
         </div>
       </div>
+
+      {/* ── BATCH SELECTION POPUP ─────────────────────────────────────────── */}
+      {activePopupProduct && (
+        <div
+          className="fixed inset-0 z-[250] flex items-center justify-center bg-[#2d3133]/60 backdrop-blur-sm"
+          onClick={() => setActivePopupProduct(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.16)] w-full max-w-lg overflow-hidden flex flex-col border border-[#eceef1]"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal header */}
+            <div className="px-5 py-4 bg-[#00273b] flex items-center justify-between">
+              <div>
+                <h3 className="font-display text-[16px] font-bold text-white leading-tight">
+                  Select Stock Batch
+                </h3>
+                <p className="text-[11px] text-[#80a8c6] font-medium mt-0.5">
+                  {activePopupProduct.medicine_name}
+                  {activePopupProduct.generic_name && (
+                    <span className="font-normal text-[#80a8c6]/70"> ({activePopupProduct.generic_name})</span>
+                  )}
+                </p>
+              </div>
+              <button
+                className="text-[#80a8c6] hover:text-white hover:bg-white/10 rounded p-1 transition-colors cursor-pointer"
+                onClick={() => setActivePopupProduct(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="px-6 py-5 flex flex-col gap-4">
+              <div className="text-[11px] font-semibold text-[#72787e] uppercase tracking-wider">
+                Available Batches (Arrow keys to navigate)
+              </div>
+
+              {/* Grid of Batches */}
+              <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                {activePopupProduct.batches.map((b: any, idx: number) => {
+                  const isSelected = idx === selectedBatchIndex;
+                  const isOutOfStock = b.quantity_remaining <= 0;
+                  return (
+                    <div
+                      key={b.id}
+                      onClick={() => {
+                        if (!isOutOfStock) {
+                          setSelectedBatchIndex(idx);
+                          setQuantityInputOpen(true);
+                          setQuantityValue('1');
+                        }
+                      }}
+                      className={`border p-3.5 rounded-lg flex flex-col gap-2 transition-all cursor-pointer ${
+                        isOutOfStock
+                          ? 'opacity-40 pointer-events-none bg-[#f8f9fa] border-[#e0e3e6]'
+                          : isSelected
+                          ? 'border-[#2ecc71] bg-[#e8f8f5] shadow-[0_4px_12px_rgba(46,204,113,0.12)] scale-[1.01]'
+                          : 'border-[#e0e3e6] bg-white hover:border-[#00273b]'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-[11px] font-bold font-mono text-[#00273b] bg-[#f0f2f5] px-1.5 py-0.5 rounded">
+                          {b.batch_number}
+                        </span>
+                        <span className={`text-[10px] font-bold ${b.quantity_remaining <= 10 ? 'text-[#e67e22]' : 'text-[#2ecc71]'}`}>
+                          {b.quantity_remaining} {activePopupProduct.unit || 'Unit'}
+                        </span>
+                      </div>
+
+                      <div className="text-[10px] text-[#72787e] flex flex-col gap-0.5">
+                        {b.created_at && (
+                          <span>Received: {new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        )}
+                        <span>Expiry: {new Date(b.expiry_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+
+                      <div className="mt-2 border-t border-[#e0e3e6]/60 pt-2 flex justify-between items-center">
+                        <span className="text-[10px] font-medium text-[#72787e]">Unit Price</span>
+                        <span className="font-display text-[14px] font-bold text-[#00273b]">Rs. {fmt(b.selling_price)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Quantity Input Area */}
+              {quantityInputOpen && (
+                <div className="mt-2 border-t border-[#eceef1] pt-4 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                  <form onSubmit={handleQuantitySubmit} className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="modalQty" className="text-[11px] font-semibold text-[#42474d] uppercase tracking-wider">
+                        Enter Quantity ({activePopupProduct.unit || 'Units'}):
+                      </label>
+                      <div className="relative">
+                        <input
+                          id="modalQty"
+                          ref={qtyInputRef}
+                          type="number"
+                          min={1}
+                          max={activePopupProduct.batches[selectedBatchIndex]?.quantity_remaining || 9999}
+                          value={quantityValue}
+                          onChange={e => setQuantityValue(e.target.value)}
+                          className="w-full px-3.5 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white"
+                          required
+                        />
+                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#72787e]">
+                          Max: {activePopupProduct.batches[selectedBatchIndex]?.quantity_remaining}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2.5 mt-1">
+                      <button
+                        type="button"
+                        onClick={() => setQuantityInputOpen(false)}
+                        className="flex-1 py-2.5 border border-[#72787e] text-[#191c1e] bg-white rounded-md text-[13px] font-semibold hover:bg-[#f2f4f7] transition-colors cursor-pointer"
+                      >
+                        Cancel (ESC)
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-[2] py-2.5 bg-[#2ecc71] hover:bg-[#27ae60] text-white rounded-md text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        Add to Bill (Enter)
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── PAYMENT MODAL ──────────────────────────────────────────────────── */}
       {showPayModal && (
