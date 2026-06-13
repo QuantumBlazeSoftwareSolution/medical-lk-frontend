@@ -111,13 +111,16 @@ export default function POSTerminal() {
     window.addEventListener('keydown', handleSearchQtyGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleSearchQtyGlobalKeyDown);
   }, [activeQuantityPopupBatch]);
-  // Listen to global POS Mode toggle shortcuts (F2: Billing, F8: Payment)
+  // Listen to global POS Mode toggle shortcuts (F2, Tab, Ctrl+Left/Right Arrow)
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
-      if (e.key === 'F2') {
+      // 1. F2 or Ctrl + Left Arrow -> Billing mode
+      if (e.key === 'F2' || ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft')) {
         e.preventDefault();
         setPosMode('billing');
-      } else if (e.key === 'F8') {
+      }
+      // 2. F8 or Ctrl + Right Arrow -> Payment mode
+      else if (e.key === 'F8' || ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight')) {
         e.preventDefault();
         if (cart.length > 0) {
           setPosMode('payment');
@@ -125,10 +128,30 @@ export default function POSTerminal() {
           alert('Cart is empty. Please add items to the bill first.');
         }
       }
+      // 3. Tab key -> Toggle mode
+      else if (e.key === 'Tab') {
+        // Only toggle mode if no popups or editing is active
+        if (activePopupProduct || activeQuantityPopupBatch || showPayModal || showSuccessModal || showPatientEdit) {
+          return;
+        }
+        e.preventDefault();
+        setPosMode(prev => {
+          if (prev === 'billing') {
+            if (cart.length > 0) {
+              return 'payment';
+            } else {
+              alert('Cart is empty. Please add items to the bill first.');
+              return 'billing';
+            }
+          } else {
+            return 'billing';
+          }
+        });
+      }
     };
     window.addEventListener('keydown', handleShortcuts);
     return () => window.removeEventListener('keydown', handleShortcuts);
-  }, [cart.length]);
+  }, [cart.length, activePopupProduct, activeQuantityPopupBatch, showPayModal, showSuccessModal, showPatientEdit]);
   // Keyboard navigation inside the Batch Selection Popup
   useEffect(() => {
     if (!activePopupProduct) return;
@@ -602,7 +625,7 @@ export default function POSTerminal() {
                 }`}
               >
                 <Package size={14} />
-                <span>1. Billing Mode (F2)</span>
+                <span>1. Billing (F2 / Ctrl+←)</span>
               </button>
               <button
                 type="button"
@@ -621,7 +644,7 @@ export default function POSTerminal() {
                 disabled={cart.length === 0}
               >
                 <CreditCard size={14} />
-                <span>2. Settle Payment (F8)</span>
+                <span>2. Payment (F8 / Ctrl+→)</span>
               </button>
             </div>
 
