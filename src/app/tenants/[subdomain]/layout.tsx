@@ -36,14 +36,16 @@ export async function generateMetadata({
       };
     }
 
-    const companyName = tenant.company_name || 'Medical.lk';
-    const description = tenant.about_text || `${companyName} pharmacy portal`;
+    const companyName = tenant.website_title || tenant.name || 'Medical.lk';
+    const description = tenant.website_description || `${companyName} pharmacy portal`;
     const faviconUrl = tenant.favicon_url;
+    const keywords = tenant.seo_keywords ? tenant.seo_keywords.split(',').map((k: string) => k.trim()) : undefined;
 
     if (faviconUrl) {
       return {
         title: `${companyName} | Pharmacy`,
         description,
+        keywords,
         icons: {
           icon: [
             {
@@ -60,6 +62,7 @@ export async function generateMetadata({
     return {
       title: `${companyName} | Pharmacy`,
       description,
+      keywords,
     };
   } catch (e) {
     console.error('Error generating metadata server-side:', e);
