@@ -33,6 +33,44 @@ function batchExpiry(dateStr: string) {
   return          { color: 'text-[#42474d]',                  badge: 'bg-[#eceef1] text-[#42474d]',  label: 'OK' };
 }
 
+const compressImage = (base64Str: string, maxWidth = 400, maxHeight = 400, quality = 0.7): Promise<string> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      } else {
+        resolve(base64Str);
+      }
+    };
+    img.onerror = () => {
+      resolve(base64Str);
+    };
+  });
+};
+
 const ITEMS_PER_PAGE = 20;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -338,6 +376,13 @@ export default function InventoryPage() {
                           >
                             {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </button>
+                          {med.image_url ? (
+                            <img src={med.image_url} alt={med.name} className="w-8 h-8 rounded-lg object-cover border border-[#e0e3e6]/60 shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-lg bg-[#0f3d57]/10 text-[#0f3d57] flex items-center justify-center shrink-0">
+                              <Package size={14} />
+                            </div>
+                          )}
                           <div>
                             <div className="font-semibold text-[#191c1e]">{med.name}</div>
                             <div className="text-[11px] text-[#42474d]">{med.generic_name || '—'}</div>
@@ -491,8 +536,12 @@ export default function InventoryPage() {
             {/* Drawer header */}
             <div className="p-4 border-b border-[#e0e3e6] flex items-center justify-between bg-[#f7f9fc]">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#0f3d57] text-[#80a8c6] flex items-center justify-center shrink-0">
-                  <Package size={20} />
+                <div className="w-10 h-10 rounded-lg bg-[#0f3d57] text-[#80a8c6] flex items-center justify-center shrink-0 overflow-hidden border border-[#e0e3e6]/60">
+                  {drawerMed.image_url ? (
+                    <img src={drawerMed.image_url} alt={drawerMed.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <Package size={20} />
+                  )}
                 </div>
                 <div>
                   <h3 className="font-display text-[16px] font-bold text-[#191c1e] leading-tight">{drawerMed.name}</h3>
@@ -506,6 +555,11 @@ export default function InventoryPage() {
 
             {/* Drawer body */}
             <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
+              {drawerMed.image_url && (
+                <div className="w-full h-44 rounded-xl overflow-hidden border border-[#e0e3e6] bg-[#f7f9fc] shrink-0">
+                  <img src={drawerMed.image_url} alt={drawerMed.name} className="w-full h-full object-contain" />
+                </div>
+              )}
               {/* Quick actions */}
               <div className="flex gap-2">
                 <button className="flex-1 py-2 bg-[#00273b] text-white rounded-lg text-[12px] font-semibold hover:bg-[#00273b]/90 transition-colors cursor-pointer">Edit Product</button>
@@ -735,8 +789,14 @@ export default function InventoryPage() {
                               return;
                             }
                             const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setMedImage(reader.result as string);
+                            reader.onloadend = async () => {
+                              const base64Src = reader.result as string;
+                              try {
+                                const compressed = await compressImage(base64Src);
+                                setMedImage(compressed);
+                              } catch (err) {
+                                setMedImage(base64Src);
+                              }
                             };
                             reader.readAsDataURL(file);
                           }
