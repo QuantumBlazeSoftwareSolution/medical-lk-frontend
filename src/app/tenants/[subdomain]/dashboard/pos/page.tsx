@@ -22,7 +22,7 @@ function StockBadge({ qty }: { qty: number }) {
   return <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[#e8f8f5] text-[#2ecc71]">{qty} in stock</span>;
 }
 
-const CATEGORIES = ['All', 'Medicines', 'First Aid', 'Vitamins', 'Personal Care'];
+
 
 export default function POSTerminal() {
   const {
@@ -93,13 +93,50 @@ export default function POSTerminal() {
   const netTotal  = Math.max(0, subtotal - discount);
   const changeDue = Math.max(0, parseFloat(cashReceived || '0') - netTotal);
 
-  const filteredBatches = batches.filter(b => {
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    batches.forEach((b: any) => {
+      if (b.category) cats.add(b.category);
+    });
+    const formattedCats = Array.from(cats).map(c => {
+      return c.charAt(0).toUpperCase() + c.slice(1).toLowerCase();
+    });
+    return ['All', ...formattedCats];
+  }, [batches]);
+
+  const filteredBatches = batches.filter((b: any) => {
     const term = searchQuery.toLowerCase();
-    return !searchQuery ||
+    const matchesSearch = !searchQuery ||
       b.medicine_name.toLowerCase().includes(term) ||
       (b.generic_name && b.generic_name.toLowerCase().includes(term)) ||
       b.batch_number.toLowerCase().includes(term);
+
+    const matchesCategory = activeCategory === 'All' ||
+      (b.category && b.category.toLowerCase() === activeCategory.toLowerCase());
+
+    return matchesSearch && matchesCategory;
   });
+
+  const groupedProducts = useMemo(() => {
+    const groups: { [key: string]: any } = {};
+    filteredBatches.forEach((b: any) => {
+      if (!groups[b.medicine_id]) {
+        groups[b.medicine_id] = {
+          medicine_id: b.medicine_id,
+          medicine_name: b.medicine_name,
+          generic_name: b.generic_name,
+          barcode: b.barcode,
+          category: b.category,
+          unit: b.unit,
+          batches: [],
+          total_stock: 0,
+        };
+      }
+      groups[b.medicine_id].batches.push(b);
+      groups[b.medicine_id].total_stock += b.quantity_remaining;
+    });
+    return Object.values(groups);
+  }, [filteredBatches]);
 
   const autoSuggestions = searchQuery.length > 0 ? filteredBatches.slice(0, 5) : [];
 
@@ -235,7 +272,7 @@ export default function POSTerminal() {
                                 <span className="font-normal text-[#72787e]"> ({b.generic_name})</span>}
                             </div>
                             <div className="text-[11px] text-[#42474d] mt-0.5">
-                              In Stock: {b.quantity_remaining} &bull; {b.unit || 'Unit'}
+                              Batch: {b.batch_number} &bull; Exp: {b.expiry_date} &bull; In Stock: {b.quantity_remaining} {b.unit || 'Unit'}
                             </div>
                           </div>
                         </div>
@@ -250,7 +287,7 @@ export default function POSTerminal() {
 
               {/* Category pills */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                {CATEGORIES.map(cat => (
+                {categories.map(cat => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -273,50 +310,78 @@ export default function POSTerminal() {
                   <Loader2 size={28} className="animate-spin text-[#17a589]" />
                   <span>Loading catalog...</span>
                 </div>
-              ) : filteredBatches.length === 0 ? (
+              ) : groupedProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full gap-2 text-[#72787e] text-sm">
                   <AlertCircle size={28} className="text-[#c2c7cd]" />
                   <span>No items found matching your search.</span>
                 </div>
               ) : (
-                <div className="grid grid-cols-3 xl:grid-cols-4 gap-3">
-                  {filteredBatches.map(b => (
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {groupedProducts.map(p => (
                     <div
-                      key={b.id}
-                      onClick={() => handleAddBatch(b)}
-                      className={`bg-white border border-[#e0e3e6] rounded-lg p-3 flex flex-col gap-2 cursor-pointer transition-all group hover:border-[#00273b] hover:shadow-[0_4px_12px_rgba(0,39,59,0.08)] ${
-                        b.quantity_remaining <= 0 ? 'opacity-50 pointer-events-none' : ''
-                      }`}
+                      key={p.medicine_id}
+                      className="bg-white border border-[#e0e3e6] rounded-xl p-3 flex flex-col gap-2.5 transition-all hover:border-[#00273b] hover:shadow-[0_6px_16px_rgba(0,39,59,0.08)] bg-gradient-to-b from-white to-[#fcfdfe]"
                     >
-                      {/* Top: icon + badge */}
-                      <div className="flex justify-between items-start">
-                        <div className="w-10 h-10 rounded-md bg-[#f2f4f7] flex items-center justify-center text-[#00273b] group-hover:scale-110 transition-transform">
-                          <Package size={20} />
+                      {/* Product Header */}
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex gap-2 items-center min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-[#eceef1] text-[#00273b] flex items-center justify-center shrink-0">
+                            <Package size={16} />
+                          </div>
+                          <div className="min-w-0">
+                            <h3
+                              className="text-[13px] font-bold text-[#00273b] leading-tight truncate"
+                              title={p.medicine_name}
+                            >
+                              {p.medicine_name}
+                            </h3>
+                            <p className="text-[10px] text-[#72787e] leading-none mt-0.5 truncate">{p.generic_name || 'Generic Name'}</p>
+                          </div>
                         </div>
-                        <StockBadge qty={b.quantity_remaining} />
+                        <StockBadge qty={p.total_stock} />
                       </div>
 
-                      {/* Name */}
-                      <div>
-                        <div
-                          className="text-[13px] font-semibold text-[#191c1e] overflow-hidden"
-                          style={{ display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical' }}
-                          title={b.medicine_name}
-                        >
-                          {b.medicine_name}
+                      {/* Batches list */}
+                      <div className="flex flex-col gap-1.5 mt-0.5 border-t border-[#e6e8eb] pt-2">
+                        <div className="text-[9px] font-bold uppercase tracking-wider text-[#72787e] px-0.5">Available Batches</div>
+                        <div className="space-y-1 max-h-36 overflow-y-auto pr-0.5 scrollbar-thin">
+                          {p.batches.map((b: any) => (
+                            <div
+                              key={b.id}
+                              className="flex items-center justify-between p-1.5 rounded bg-[#f8f9fa] border border-[#eef0f2] hover:border-[#00273b]/10 hover:bg-[#f2f6fa] transition-all"
+                            >
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[9px] font-bold font-mono text-[#0f3d57] bg-[#eef0f2] px-1 rounded leading-tight">
+                                    {b.batch_number}
+                                  </span>
+                                  <span className="text-[9px] font-semibold text-[#525960]">
+                                    {b.quantity_remaining} {p.unit || 'Unit'}
+                                  </span>
+                                </div>
+                                <div className="text-[8px] text-[#72787e] flex items-center gap-1">
+                                  {b.created_at && (
+                                    <span>Rec: {new Date(b.created_at).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })}</span>
+                                  )}
+                                  <span>Exp: {new Date(b.expiry_date).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 ml-2">
+                                <span className="font-display text-[12px] font-bold text-[#00273b]">
+                                  Rs. {fmt(b.selling_price)}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); handleAddBatch(b); }}
+                                  className="w-5 h-5 rounded-full bg-white border border-[#c2c7cd] flex items-center justify-center text-[#00273b] hover:bg-[#2ecc71] hover:text-white hover:border-[#2ecc71] transition-all shadow-sm active:scale-95 cursor-pointer"
+                                  title="Add to Sale"
+                                >
+                                  <Plus size={10} />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div className="text-[11px] text-[#42474d] mt-0.5">{b.unit || b.generic_name || 'Unit'}</div>
-                      </div>
-
-                      {/* Footer: price + add */}
-                      <div className="mt-auto pt-2 flex items-center justify-between border-t border-[#e0e3e6]">
-                        <span className="font-display text-[15px] font-bold text-[#00273b]">Rs. {fmt(b.selling_price)}</span>
-                        <button
-                          className="w-7 h-7 rounded-full bg-[#eceef1] flex items-center justify-center text-[#00273b] hover:bg-[#2ecc71] hover:text-white transition-colors"
-                          onClick={e => { e.stopPropagation(); handleAddBatch(b); }}
-                        >
-                          <Plus size={15} />
-                        </button>
                       </div>
                     </div>
                   ))}
