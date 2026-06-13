@@ -111,16 +111,16 @@ export default function POSTerminal() {
     window.addEventListener('keydown', handleSearchQtyGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleSearchQtyGlobalKeyDown);
   }, [activeQuantityPopupBatch]);
-  // Listen to global POS Mode toggle shortcuts (F2, Tab, Ctrl+Left/Right Arrow)
+  // Listen to global POS Mode toggle shortcuts (F2, Tab, PageUp/PageDown)
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
-      // 1. F2 or Ctrl + Left Arrow -> Billing mode
-      if (e.key === 'F2' || ((e.ctrlKey || e.metaKey) && e.key === 'ArrowLeft')) {
+      // 1. F2 or PageUp -> Billing mode
+      if (e.key === 'F2' || e.key === 'PageUp') {
         e.preventDefault();
         setPosMode('billing');
       }
-      // 2. F8 or Ctrl + Right Arrow -> Payment mode
-      else if (e.key === 'F8' || ((e.ctrlKey || e.metaKey) && e.key === 'ArrowRight')) {
+      // 2. F8 or PageDown -> Payment mode
+      else if (e.key === 'F8' || e.key === 'PageDown') {
         e.preventDefault();
         if (cart.length > 0) {
           setPosMode('payment');
@@ -625,7 +625,7 @@ export default function POSTerminal() {
                 }`}
               >
                 <Package size={14} />
-                <span>1. Billing (F2 / Ctrl+←)</span>
+                <span>1. Billing (F2 / PgUp)</span>
               </button>
               <button
                 type="button"
@@ -644,7 +644,7 @@ export default function POSTerminal() {
                 disabled={cart.length === 0}
               >
                 <CreditCard size={14} />
-                <span>2. Payment (F8 / Ctrl+→)</span>
+                <span>2. Payment (F8 / PgDn)</span>
               </button>
             </div>
 
