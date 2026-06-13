@@ -67,17 +67,17 @@ export default function PatientsDirectory() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 overflow-y-auto p-8 bg-[#f7f9fc] space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-extrabold text-white flex items-center gap-3">
+          <h1 className="font-display text-xl font-bold tracking-tight text-[#00273b] flex items-center gap-3">
             Patients Directory 
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 shadow-sm">
               <ShieldCheck className="h-3.5 w-3.5" /> AES-256 Encrypted
             </span>
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-xs text-[#42474d] mt-1">
             Store patient records securely. Medical histories and details are encrypted at rest.
           </p>
         </div>
@@ -86,9 +86,9 @@ export default function PatientsDirectory() {
             setFormError('');
             setShowAddPatient(true);
           }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-sm font-semibold text-slate-950 transition-all cursor-pointer shadow-lg shadow-teal-500/10"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0f3d57] hover:bg-[#00273b] text-xs font-bold text-white transition-all active:scale-[0.98] cursor-pointer shadow-sm uppercase tracking-wide"
         >
-          <Plus className="h-4.5 w-4.5" /> Register Patient
+          <Plus className="h-4 w-4" /> Register Patient
         </button>
       </div>
 
@@ -99,24 +99,26 @@ export default function PatientsDirectory() {
           placeholder="Search encrypted patient names or phone numbers..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-800 rounded-xl focus:border-teal-500/50 outline-none text-sm text-slate-100 placeholder:text-slate-500"
+          className="w-full pl-10 pr-4 py-3 bg-white border border-[#d2d5d8] rounded-xl focus:border-[#0f3d57] outline-none text-xs text-[#00273b] placeholder:text-[#72787e] shadow-sm transition-all"
         />
-        <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
+        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-[#72787e]" />
       </div>
 
       {/* Patients List Grid */}
-      <div className="rounded-2xl border border-slate-900 bg-slate-900/10 p-6 min-h-[350px] flex flex-col">
+      <div className="bg-white p-6 rounded-2xl border border-[#eceef1] shadow-sm min-h-[400px] flex flex-col">
         {isLoading ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-500 gap-2">
-            <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
-            <span>Decrypting patient directory records...</span>
+          <div className="flex-1 flex flex-col items-center justify-center text-[#72787e] gap-2">
+            <Loader2 className="h-6 w-6 animate-spin text-[#0f3d57]" />
+            <span className="text-xs">Decrypting patient directory records...</span>
           </div>
         ) : patients.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-500 gap-2 text-sm text-center max-w-sm mx-auto">
-            <Users className="h-8 w-8 text-slate-700" />
-            <span className="font-semibold text-slate-400">No patients registered</span>
-            <span className="text-xs text-slate-500">
-              {searchQuery ? "No matches found. Try searching by correct full name or phone code." : "Add recurring patients to keep track of their medication cycles and histories."}
+          <div className="flex-1 flex flex-col items-center justify-center text-[#72787e] gap-3 text-center max-w-sm mx-auto py-12">
+            <div className="p-4 bg-[#0f3d57]/5 rounded-2xl text-[#0f3d57]">
+              <Users className="h-8 w-8" />
+            </div>
+            <span className="font-display font-bold text-sm text-[#00273b]">No patients registered</span>
+            <span className="text-xs text-[#72787e] leading-relaxed">
+              {searchQuery ? "No matches found. Try searching by correct full name or phone number." : "Add recurring patients to keep track of their medication cycles and histories."}
             </span>
           </div>
         ) : (
@@ -124,29 +126,34 @@ export default function PatientsDirectory() {
             {patients.map((pat) => (
               <div 
                 key={pat.id}
-                className="p-6 rounded-2xl bg-slate-900/30 border border-slate-800/80 flex flex-col justify-between hover:border-teal-500/20 transition-all relative overflow-hidden"
+                className="p-6 rounded-2xl bg-white border border-[#eceef1] hover:border-[#0f3d57]/30 hover:shadow-md transition-all relative flex flex-col justify-between"
               >
                 <div>
-                  <h3 className="font-display font-bold text-base text-white">{pat.name}</h3>
-                  <div className="flex flex-col gap-2 text-xs text-slate-400 mt-4">
+                  <div className="flex items-center justify-between gap-4 border-b border-[#eceef1] pb-3 mb-4">
+                    <h3 className="font-display font-bold text-sm text-[#00273b]">{pat.name}</h3>
+                    <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-0.5">
+                      <ShieldCheck size={10} /> Secure
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2 text-xs text-[#42474d]">
                     <div className="flex items-center gap-2">
-                      <Phone className="h-3.5 w-3.5 text-slate-500" />
-                      <span>{pat.phone}</span>
+                      <Phone className="h-3.5 w-3.5 text-[#72787e]" />
+                      <span className="font-mono">{pat.phone}</span>
                     </div>
                     {pat.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-3.5 w-3.5 text-slate-500" />
+                        <Mail className="h-3.5 w-3.5 text-[#72787e]" />
                         <span>{pat.email}</span>
                       </div>
                     )}
                   </div>
 
                   {pat.medical_history && (
-                    <div className="mt-4 pt-4 border-t border-slate-900">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase block tracking-wider mb-1">
-                        Medical / Prescription History
+                    <div className="mt-4 pt-4 border-t border-[#eceef1]">
+                      <span className="text-[10px] font-bold text-[#72787e] uppercase block tracking-wider mb-1.5">
+                        Medical & Prescription History
                       </span>
-                      <p className="text-xs text-slate-300 bg-slate-950/40 p-3 rounded-lg border border-slate-900 leading-relaxed max-h-24 overflow-y-auto font-mono">
+                      <p className="text-xs text-[#42474d] bg-[#f8f9fa] p-3.5 rounded-xl border border-[#eceef1] leading-relaxed max-h-24 overflow-y-auto font-mono">
                         {pat.medical_history}
                       </p>
                     </div>
@@ -160,22 +167,27 @@ export default function PatientsDirectory() {
 
       {/* Add Patient Modal */}
       {showAddPatient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl">
-            <div className="flex items-center gap-3 border-b border-slate-900 pb-4 mb-6">
-              <Users className="h-5 w-5 text-teal-400" />
-              <h3 className="text-xl font-bold text-white">Register Patient Profile</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00273b]/40 backdrop-blur-sm p-4">
+          <div className="bg-white border border-[#eceef1] rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl relative">
+            <div className="flex items-center gap-3 border-b border-[#eceef1] pb-4 mb-6">
+              <div className="p-2 bg-[#0f3d57]/10 text-[#0f3d57] rounded-xl">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#00273b] font-display">Register Patient Profile</h3>
+                <p className="text-[10px] text-[#72787e]">Create a new secure, encrypted record</p>
+              </div>
             </div>
 
             {formError && (
-              <div className="p-4 mb-6 text-sm text-red-400 bg-red-950/20 border border-red-500/20 rounded-xl">
+              <div className="p-4 mb-6 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl">
                 {formError}
               </div>
             )}
 
             <form onSubmit={handlePatientSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
                   Patient Full Name *
                 </label>
                 <input
@@ -184,12 +196,12 @@ export default function PatientsDirectory() {
                   placeholder="e.g. Ruwan Silva"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-teal-500/30 outline-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#d2d5d8] rounded-xl focus:border-[#0f3d57] outline-none text-xs text-[#00273b]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
                   Contact Phone Number *
                 </label>
                 <input
@@ -198,12 +210,12 @@ export default function PatientsDirectory() {
                   placeholder="e.g. 0771234567"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-teal-500/30 outline-none text-sm font-mono"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#d2d5d8] rounded-xl focus:border-[#0f3d57] outline-none text-xs text-[#00273b] font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
                   Email Address
                 </label>
                 <input
@@ -211,42 +223,42 @@ export default function PatientsDirectory() {
                   placeholder="e.g. ruwan@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-teal-500/30 outline-none text-sm"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#d2d5d8] rounded-xl focus:border-[#0f3d57] outline-none text-xs text-[#00273b]"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
                   Medical Notes / Diagnosis / History
                 </label>
                 <textarea
                   placeholder="e.g. Diabetic type 2, allergic to Penicillin."
                   value={history}
                   onChange={(e) => setHistory(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:border-teal-500/30 outline-none text-sm h-24 resize-none"
+                  className="w-full px-3.5 py-2.5 bg-white border border-[#d2d5d8] rounded-xl focus:border-[#0f3d57] outline-none text-xs text-[#00273b] h-24 resize-none leading-relaxed"
                 />
               </div>
 
-              <div className="flex gap-4 pt-4 border-t border-slate-900 mt-6">
+              <div className="flex gap-4 pt-4 border-t border-[#eceef1] mt-6">
                 <button
                   type="button"
                   onClick={() => setShowAddPatient(false)}
-                  className="flex-1 py-3 border border-slate-800 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="flex-1 py-2.5 border border-[#d2d5d8] rounded-xl text-xs font-bold text-[#42474d] hover:bg-[#f8f9fa] transition-colors cursor-pointer uppercase tracking-wider"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createPatientMutation.isPending}
-                  className="flex-1 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold rounded-xl text-sm active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-1.5"
+                  className="flex-1 py-2.5 bg-[#0f3d57] hover:bg-[#00273b] text-white font-bold rounded-xl text-xs active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-1.5 uppercase tracking-wider disabled:bg-[#72787e]/60"
                 >
                   {createPatientMutation.isPending ? (
                     <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving...
                     </>
                   ) : (
                     <>
-                      Register Profile <Check className="h-4 w-4" />
+                      Register Profile <Check className="h-3.5 w-3.5" />
                     </>
                   )}
                 </button>
