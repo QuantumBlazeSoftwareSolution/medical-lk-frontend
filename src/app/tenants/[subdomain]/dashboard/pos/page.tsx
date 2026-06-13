@@ -49,6 +49,7 @@ export default function POSTerminal() {
   const [quantityInputOpen, setQuantityInputOpen]   = useState<boolean>(false);
   const [quantityValue, setQuantityValue]           = useState<string>('1');
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number>(-1);
+  const [activeQuantityPopupBatch, setActiveQuantityPopupBatch] = useState<any>(null);
 
   const searchRef       = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
@@ -78,18 +79,33 @@ export default function POSTerminal() {
   // Return focus to search bar when modals/popups close and billing mode is active
   useEffect(() => {
     if (posMode === 'billing') {
-      if (!activePopupProduct && !showPayModal && !showSuccessModal && !showPatientEdit) {
+      if (!activePopupProduct && !activeQuantityPopupBatch && !showPayModal && !showSuccessModal && !showPatientEdit) {
         searchRef.current?.focus();
       }
     }
-  }, [posMode, activePopupProduct, showPayModal, showSuccessModal, showPatientEdit]);
+  }, [posMode, activePopupProduct, activeQuantityPopupBatch, showPayModal, showSuccessModal, showPatientEdit]);
 
-  // Focus quantity input when opened
+  // Focus quantity input when opened (either inline or in direct search quantity popup)
   useEffect(() => {
-    if (quantityInputOpen) {
+    if (quantityInputOpen || activeQuantityPopupBatch) {
       setTimeout(() => qtyInputRef.current?.focus(), 50);
     }
-  }, [quantityInputOpen]);
+  }, [quantityInputOpen, activeQuantityPopupBatch]);
+
+  // Keyboard navigation/handling inside the Direct Quantity Input Popup
+  useEffect(() => {
+    if (!activeQuantityPopupBatch) return;
+
+    const handleSearchQtyGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setActiveQuantityPopupBatch(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleSearchQtyGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleSearchQtyGlobalKeyDown);
+  }, [activeQuantityPopupBatch]);
   // Listen to global POS Mode toggle shortcuts (F2: Billing, F8: Payment)
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
@@ -256,24 +272,37 @@ export default function POSTerminal() {
   }, [addToCart]);
 
   const handleSelectProductFromSearch = (selectedBatch: any) => {
-    const productBatches = batches.filter((x: any) => x.medicine_id === selectedBatch.medicine_id);
-    const batchIndex = productBatches.findIndex((x: any) => x.id === selectedBatch.id);
-    
-    setActivePopupProduct({
-      medicine_id: selectedBatch.medicine_id,
-      medicine_name: selectedBatch.medicine_name,
-      generic_name: selectedBatch.generic_name,
-      barcode: selectedBatch.barcode,
-      category: selectedBatch.category,
-      unit: selectedBatch.unit,
-      batches: productBatches
-    });
-    setSelectedBatchIndex(batchIndex >= 0 ? batchIndex : 0);
-    setQuantityInputOpen(false);
+    setActiveQuantityPopupBatch(selectedBatch);
     setQuantityValue('1');
     setSearchQuery('');
     setShowAutocomplete(false);
     setActiveSuggestionIndex(-1);
+  };
+
+  const handleSearchQuantitySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeQuantityPopupBatch) return;
+
+    const qty = parseInt(quantityValue) || 1;
+    if (qty <= 0) return;
+    if (qty > activeQuantityPopupBatch.quantity_remaining) {
+      alert(`Only ${activeQuantityPopupBatch.quantity_remaining} units available in stock for this batch.`);
+      return;
+    }
+
+    addToCart({
+      batchId: activeQuantityPopupBatch.id,
+      medicineId: activeQuantityPopupBatch.medicine_id,
+      medicineName: activeQuantityPopupBatch.medicine_name,
+      genericName: activeQuantityPopupBatch.generic_name,
+      batchNumber: activeQuantityPopupBatch.batch_number,
+      price: activeQuantityPopupBatch.selling_price,
+      stockAvailable: activeQuantityPopupBatch.quantity_remaining,
+      expiryDate: activeQuantityPopupBatch.expiry_date,
+    });
+    
+    updateQuantity(activeQuantityPopupBatch.id, qty);
+    setActiveQuantityPopupBatch(null);
   };
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -920,6 +949,109 @@ export default function POSTerminal() {
                   </form>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── DIRECT SEARCH QUANTITY POPUP ──────────────────────────────────── */}
+      {activeQuantityPopupBatch && (
+        <div
+          className="fixed inset-0 z-[250] flex items-center justify-center bg-[#2d3133]/60 backdrop-blur-sm"
+          onClick={() => setActiveQuantityPopupBatch(null)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.16)] w-full max-w-md overflow-hidden flex flex-col border border-[#eceef1]"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal header */}
+            <div className="px-5 py-4 bg-[#00273b] flex items-center justify-between">
+              <div>
+                <h3 className="font-display text-[16px] font-bold text-white leading-tight">
+                  Enter Quantity
+                </h3>
+                <p className="text-[11px] text-[#80a8c6] font-medium mt-0.5">
+                  {activeQuantityPopupBatch.medicine_name}
+                  {activeQuantityPopupBatch.generic_name && (
+                    <span className="font-normal text-[#80a8c6]/70"> ({activeQuantityPopupBatch.generic_name})</span>
+                  )}
+                </p>
+              </div>
+              <button
+                className="text-[#80a8c6] hover:text-white hover:bg-white/10 rounded p-1 transition-colors cursor-pointer"
+                onClick={() => setActiveQuantityPopupBatch(null)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal body */}
+            <div className="px-6 py-5 flex flex-col gap-4">
+              {/* Batch info card */}
+              <div className="bg-[#f2f4f7] border border-[#e0e3e6] rounded-lg p-3.5 flex flex-col gap-2">
+                <div className="flex justify-between items-center text-[12px]">
+                  <span className="text-[#42474d] font-semibold">Batch Number</span>
+                  <span className="font-bold font-mono text-[#00273b] bg-white px-2 py-0.5 border border-[#e0e3e6] rounded">
+                    {activeQuantityPopupBatch.batch_number}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[12px]">
+                  <span className="text-[#42474d] font-semibold">Expiry Date</span>
+                  <span className="font-semibold text-[#191c1e]">
+                    {new Date(activeQuantityPopupBatch.expiry_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-[12px]">
+                  <span className="text-[#42474d] font-semibold">Unit Price</span>
+                  <span className="font-bold text-[#00273b]">Rs. {fmt(activeQuantityPopupBatch.selling_price)}</span>
+                </div>
+                <div className="flex justify-between items-center text-[12px]">
+                  <span className="text-[#42474d] font-semibold">Stock Available</span>
+                  <span className={`font-bold ${activeQuantityPopupBatch.quantity_remaining <= 10 ? 'text-[#e67e22]' : 'text-[#2ecc71]'}`}>
+                    {activeQuantityPopupBatch.quantity_remaining} {activeQuantityPopupBatch.unit || 'Units'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSearchQuantitySubmit} className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <label htmlFor="searchModalQty" className="text-[11px] font-semibold text-[#42474d] uppercase tracking-wider">
+                    Enter Quantity ({activeQuantityPopupBatch.unit || 'Units'}):
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="searchModalQty"
+                      ref={qtyInputRef}
+                      type="number"
+                      min={1}
+                      max={activeQuantityPopupBatch.quantity_remaining}
+                      value={quantityValue}
+                      onChange={e => setQuantityValue(e.target.value)}
+                      className="w-full px-3.5 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white"
+                      required
+                    />
+                    <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#72787e]">
+                      Max: {activeQuantityPopupBatch.quantity_remaining}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex gap-2.5 mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setActiveQuantityPopupBatch(null)}
+                    className="flex-1 py-2.5 border border-[#72787e] text-[#191c1e] bg-white rounded-md text-[13px] font-semibold hover:bg-[#f2f4f7] transition-colors cursor-pointer"
+                  >
+                    Cancel (ESC)
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-[2] py-2.5 bg-[#2ecc71] hover:bg-[#27ae60] text-white rounded-md text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    Add to Bill (Enter)
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
