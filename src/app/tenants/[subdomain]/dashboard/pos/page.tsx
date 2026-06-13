@@ -207,6 +207,8 @@ export default function POSTerminal() {
   const { data: batches = [], isLoading: batchesLoading, refetch: refetchBatches } = useQuery<any[]>({
     queryKey: ['active-batches'],
     queryFn: () => apiFetch('/api/inventory/batches?only_in_stock=true'),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 
   const { data: patients = [] } = useQuery<any[]>({
@@ -489,7 +491,10 @@ export default function POSTerminal() {
                   value={searchQuery}
                   onChange={e => { setSearchQuery(e.target.value); setShowAutocomplete(true); setActiveSuggestionIndex(-1); }}
                   onKeyDown={handleSearchKeyDown}
-                  onFocus={() => searchQuery && setShowAutocomplete(true)}
+                  onFocus={() => {
+                    if (searchQuery) setShowAutocomplete(true);
+                    refetchBatches();
+                  }}
                   autoComplete="off"
                 />
                 <button

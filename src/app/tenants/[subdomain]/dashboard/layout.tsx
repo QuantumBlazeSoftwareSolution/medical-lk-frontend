@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   LayoutDashboard, ShoppingCart, Package, FileInput, 
   Users, Settings, LogOut, Loader2, Activity, User,
@@ -19,10 +19,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const params = useParams();
   const subdomain = params.subdomain as string;
 
+  const queryClient = useQueryClient();
+
   const [authorized, setAuthorized] = useState(false);
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
   const [customerFacingOpen, setCustomerFacingOpen] = useState(true);
+
+  // Prefetch active stock batches for POS terminal to enable instant page load
+  useEffect(() => {
+    if (subdomain) {
+      queryClient.prefetchQuery({
+        queryKey: ['active-batches'],
+        queryFn: () => apiFetch('/api/inventory/batches?only_in_stock=true'),
+      });
+    }
+  }, [subdomain, queryClient]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
