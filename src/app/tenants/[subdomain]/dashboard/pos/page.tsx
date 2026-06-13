@@ -88,7 +88,12 @@ export default function POSTerminal() {
   // Focus quantity input when opened (either inline or in direct search quantity popup)
   useEffect(() => {
     if (quantityInputOpen || activeQuantityPopupBatch) {
-      setTimeout(() => qtyInputRef.current?.focus(), 50);
+      setTimeout(() => {
+        if (qtyInputRef.current) {
+          qtyInputRef.current.focus();
+          qtyInputRef.current.select();
+        }
+      }, 50);
     }
   }, [quantityInputOpen, activeQuantityPopupBatch]);
 
