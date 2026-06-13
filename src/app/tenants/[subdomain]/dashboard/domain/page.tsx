@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Link2, Globe, ShieldCheck, CheckCircle2, 
-  HelpCircle, Server, Copy, Check, Loader2, Info
+  HelpCircle, Copy, Check, Loader2, Info
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -18,6 +18,19 @@ export default function DomainPage() {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [formError, setFormError] = useState('');
+
+  // Fetch tenant public metadata to render customized brand visuals
+  const { data: tenant } = useQuery({
+    queryKey: ['tenant-public', subdomain],
+    queryFn: () => apiFetch('/api/tenant/public'),
+    enabled: !!subdomain,
+  });
+
+  const handleCopy = (text: string, field: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
 
   const requestDomainMutation = useMutation({
     mutationFn: (payload: { subject: string; category: string; message: string }) =>
@@ -107,87 +120,65 @@ export default function DomainPage() {
           <div className="bg-white p-6 rounded-2xl border border-[#eceef1] shadow-sm">
             <h2 className="font-display font-bold text-sm text-[#00273b] mb-1 flex items-center gap-2">
               <Link2 size={16} className="text-[#0f3d57]" />
-              <span>Connect a Custom Domain</span>
+              <span>Request Custom Domain Mapping</span>
             </h2>
-            <p className="text-[11px] text-[#72787e] mb-4">Point your own custom branding domain (e.g. mypharmacy.lk) to our servers.</p>
+            <p className="text-[11px] text-[#72787e] mb-4">Point your own custom branding domain (e.g. mypharmacy.lk) to our servers by submitting a setup request.</p>
 
             {success && (
               <div className="p-4 mb-5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5">
-                <CheckCircle2 size={16} className="shrink-0 mt-0.5" />
+                <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-600" />
                 <div>
-                  <p className="font-bold">Domain connected successfully!</p>
-                  <p className="mt-0.5">Please allow up to 24-48 hours for DNS propagation and SSL certificate provisioning.</p>
+                  <p className="font-bold">Domain request submitted successfully!</p>
+                  <p className="mt-0.5">Our engineering team has been notified. We will verify your DNS settings and map your custom domain within 24 hours. You can track the status of this request under Technical Support.</p>
+                </div>
+              </div>
+            )}
+
+            {formError && (
+              <div className="p-4 mb-5 text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2.5">
+                <Info size={16} className="shrink-0 mt-0.5 text-rose-600" />
+                <div>
+                  <p className="font-bold">Submission Error</p>
+                  <p className="mt-0.5">{formError}</p>
                 </div>
               </div>
             )}
 
             <form onSubmit={handleSaveDomain} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Custom Domain Name</label>
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Desired Custom Domain Name</label>
                 <div className="flex gap-3">
                   <input
                     type="text"
                     placeholder="e.g. royalpharmacy.lk"
                     value={customDomain}
+                    disabled={requestDomainMutation.isPending}
                     onChange={(e) => setCustomDomain(e.target.value)}
-                    className="flex-1 bg-white border border-[#d2d5d8] rounded-xl px-3.5 py-2.5 outline-none text-xs focus:border-[#0f3d57] transition-all"
+                    className="flex-1 bg-white border border-[#d2d5d8] disabled:bg-[#f1f3f5] rounded-xl px-3.5 py-2.5 outline-none text-xs focus:border-[#0f3d57] transition-all"
                   />
                   <button
                     type="submit"
-                    className="px-6 py-2.5 font-bold text-white bg-[#0f3d57] hover:bg-[#00273b] rounded-xl transition-all active:scale-[0.98] text-xs uppercase tracking-wider cursor-pointer"
+                    disabled={requestDomainMutation.isPending}
+                    className="px-6 py-2.5 font-bold text-white bg-[#0f3d57] hover:bg-[#00273b] disabled:bg-[#72787e]/60 rounded-xl transition-all active:scale-[0.98] text-xs uppercase tracking-wider cursor-pointer flex items-center gap-2"
                   >
-                    Connect
+                    {requestDomainMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      'Submit Request'
+                    )}
                   </button>
                 </div>
               </div>
             </form>
 
-            {/* DNS settings table */}
-            <div className="mt-6 pt-5 border-t border-[#eceef1]">
-              <h3 className="text-xs font-bold text-[#00273b] mb-3 flex items-center gap-1.5">
-                <Server size={14} className="text-[#72787e]" />
-                <span>Required DNS Configuration</span>
-              </h3>
-              <p className="text-[11px] text-[#72787e] mb-4 leading-normal">
-                To connect your custom domain, log in to your domain registrar (e.g. GoDaddy, Namecheap) and add the following records to your DNS settings:
+            <div className="p-3 bg-[#f0f4f8] rounded-xl border border-blue-100 flex items-start gap-2.5 text-[11px] text-[#0f3d57] mt-5">
+              <Info size={15} className="shrink-0 text-[#0f3d57] mt-0.5" />
+              <p className="leading-relaxed">
+                <strong>Manual Setup Process:</strong> Our engineering team will manually configure routing and map your custom domain. Once you submit a request, we will review the domain and guide you through any necessary secure verification steps on your domain registrar. This process typically takes up to 24 hours. You can monitor the progress of your request under the <strong>Technical Support</strong> tab.
               </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-[11px] border-collapse">
-                  <thead>
-                    <tr className="bg-[#f8f9fa] text-slate-500 text-left border-b border-[#eceef1]">
-                      <th className="p-2.5 font-bold uppercase tracking-wider">Type</th>
-                      <th className="p-2.5 font-bold uppercase tracking-wider">Host / Name</th>
-                      <th className="p-2.5 font-bold uppercase tracking-wider">Value / Destination</th>
-                      <th className="p-2.5 font-bold uppercase tracking-wider text-right">TTL</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#eceef1]">
-                    <tr>
-                      <td className="p-2.5 font-bold text-[#00273b]">A Record</td>
-                      <td className="p-2.5 font-mono text-slate-600">@</td>
-                      <td className="p-2.5 font-mono text-slate-600 flex items-center gap-1.5 justify-between">
-                        <span>76.76.21.21</span>
-                        <button onClick={() => handleCopy('76.76.21.21', 'dnsA')} className="text-outline hover:text-slate-600 cursor-pointer">
-                          {copiedField === 'dnsA' ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                        </button>
-                      </td>
-                      <td className="p-2.5 text-right text-slate-400">Automatic</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2.5 font-bold text-[#00273b]">CNAME</td>
-                      <td className="p-2.5 font-mono text-slate-600">www</td>
-                      <td className="p-2.5 font-mono text-slate-600 flex items-center gap-1.5 justify-between">
-                        <span>cname.medical.lk</span>
-                        <button onClick={() => handleCopy('cname.medical.lk', 'dnsCNAME')} className="text-outline hover:text-slate-600 cursor-pointer">
-                          {copiedField === 'dnsCNAME' ? <Check size={12} className="text-emerald-600" /> : <Copy size={12} />}
-                        </button>
-                      </td>
-                      <td className="p-2.5 text-right text-slate-400">Automatic</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
           </div>
         </div>
@@ -202,16 +193,16 @@ export default function DomainPage() {
 
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-[#00273b] mb-1">What is DNS propagation?</h4>
+                <h4 className="text-xs font-bold text-[#00273b] mb-1">How does the custom domain request work?</h4>
                 <p className="text-[11px] text-[#72787e] leading-relaxed">
-                  DNS updates can take up to 24-48 hours to update worldwide, though in most cases it happens in less than an hour.
+                  Once you submit a request, our team will review the domain and contact you with details to complete the setup securely. We handle all backend server routing on our end.
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-[#00273b] mb-1">How is the SSL certificate generated?</h4>
+                <h4 className="text-xs font-bold text-[#00273b] mb-1">How long does the setup take?</h4>
                 <p className="text-[11px] text-[#72787e] leading-relaxed">
-                  Once your DNS records point correctly to our server IP, the platform automatically provisions a free Let's Encrypt SSL certificate for you.
+                  Typically, custom domain mappings are fully activated and provisioned with SSL certificates within 24 hours of receiving the request.
                 </p>
               </div>
 
@@ -219,7 +210,7 @@ export default function DomainPage() {
                 <Info size={16} className="shrink-0 text-blue-600 mt-0.5" />
                 <div>
                   <p className="font-bold">Need help?</p>
-                  <p className="mt-0.5">If you're having trouble configuring custom domains, feel free to open a ticket in the Technical Support section.</p>
+                  <p className="mt-0.5">If you're having trouble or have questions about custom domains, feel free to open a ticket in the Technical Support section.</p>
                 </div>
               </div>
             </div>
