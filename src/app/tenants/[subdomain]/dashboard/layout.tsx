@@ -9,7 +9,7 @@ import {
   Users, Settings, LogOut, Loader2, Activity, User,
   Truck, BarChart3, Globe, ShieldCheck, ClipboardList,
   Search, Bell, ChevronDown, AlertTriangle, Hourglass,
-  Building2, LifeBuoy
+  Building2, LifeBuoy, Link2, Monitor, ChevronRight
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -22,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [authorized, setAuthorized] = useState(false);
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
+  const [customerFacingOpen, setCustomerFacingOpen] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,10 +89,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: 'Technical Support', path: '/dashboard/support',      icon: LifeBuoy,        exact: false },
   ];
 
-  if (role === 'admin') {
-    mainMenuItems.push({ name: 'Website Builder', path: '/dashboard/website-builder', icon: Globe, exact: false });
-  }
-
   const bottomMenuItems = [
     { name: 'Settings', path: '/dashboard/settings',  icon: Settings,   exact: false },
     { name: 'Security', path: '/dashboard/security',  icon: ShieldCheck, exact: false },
@@ -141,6 +138,51 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             );
           })}
+
+          {/* Customer Facing collapsible section (Admin Only) */}
+          {role === 'admin' && (
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setCustomerFacingOpen(!customerFacingOpen)}
+                className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#80a8c6] hover:text-white transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-2">
+                  <Monitor size={12} className="text-[#80a8c6] group-hover:text-white transition-colors" />
+                  <span>Customer Facing</span>
+                </div>
+                {customerFacingOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              </button>
+
+              {customerFacingOpen && (
+                <div className="pl-4 mt-1 space-y-1 border-l border-[#00273b]/30 ml-4 animate-fade-in">
+                  <Link
+                    href="/dashboard/website-builder"
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                      pathname === '/dashboard/website-builder' || pathname.startsWith('/dashboard/website-builder/')
+                        ? 'bg-white/10 text-white'
+                        : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <Globe size={13} />
+                    <span>Website Builder</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/domain"
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                      pathname === '/dashboard/domain' || pathname.startsWith('/dashboard/domain/')
+                        ? 'bg-white/10 text-white'
+                        : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <Link2 size={13} />
+                    <span>Domain Settings</span>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Divider and bottom menu */}
           <div className="pt-4 mt-4 border-t border-[#00273b]/20 space-y-1">
