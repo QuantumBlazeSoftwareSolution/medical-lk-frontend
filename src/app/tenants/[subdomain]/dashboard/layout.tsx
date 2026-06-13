@@ -25,6 +25,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
   const [customerFacingOpen, setCustomerFacingOpen] = useState(true);
+  const [reportsOpen, setReportsOpen] = useState(true);
 
   // Prefetch active stock batches for POS terminal to enable instant page load
   useEffect(() => {
@@ -89,14 +90,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const tenantName = tenant?.name || 'Pharmacy Portal';
 
-  const mainMenuItems = [
+  const topMenuItems = [
     { name: 'Dashboard',      path: '/dashboard',               icon: LayoutDashboard, exact: true },
     { name: 'POS Terminal',   path: '/dashboard/pos',           icon: ShoppingCart,    exact: false },
     { name: 'Inventory',      path: '/dashboard/inventory',     icon: Package,         exact: false },
     { name: 'GRN/Receiving',  path: '/dashboard/grn',           icon: Truck,           exact: false },
     { name: 'Customers',      path: '/dashboard/patients',      icon: Users,           exact: false },
     { name: 'Suppliers',      path: '/dashboard/suppliers',     icon: Building2,       exact: false },
-    { name: 'Reports',        path: '/dashboard/reports',       icon: BarChart3,       exact: false },
+  ];
+
+  const bottomMainItems = [
     { name: 'Prescriptions',  path: '/dashboard/prescriptions', icon: ClipboardList,   exact: false },
     { name: 'Technical Support', path: '/dashboard/support',      icon: LifeBuoy,        exact: false },
   ];
@@ -129,8 +132,91 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Navigation links */}
         <nav className="flex-grow overflow-y-auto py-4 px-3 space-y-1">
-          {mainMenuItems.map((item) => {
-            // Exact match for /dashboard root so sub-pages don't highlight it
+          {topMenuItems.map((item) => {
+            const isActive = item.exact
+              ? pathname === item.path
+              : pathname === item.path || pathname.startsWith(item.path + '/');
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                href={item.path}
+                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors border-l-4 text-sm font-medium group ${
+                  isActive
+                    ? 'bg-white/10 text-white border-[#6bfe9c]'
+                    : 'text-[#80a8c6] hover:bg-white/5 hover:text-white border-transparent'
+                }`}
+              >
+                <Icon className="h-4.5 w-4.5 shrink-0" />
+                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">{item.name}</span>
+              </Link>
+            );
+          })}
+
+          {/* Reports collapsible section */}
+          <div className="pt-1">
+            <button
+              type="button"
+              onClick={() => setReportsOpen(!reportsOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#80a8c6] hover:text-white transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2">
+                <BarChart3 size={13} className="text-[#80a8c6] group-hover:text-white transition-colors" />
+                <span>Reports</span>
+              </div>
+              {reportsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </button>
+
+            {reportsOpen && (
+              <div className="pl-4 mt-1 space-y-1 border-l border-[#00273b]/30 ml-4 animate-fade-in">
+                <Link
+                  href="/dashboard/reports/overview"
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                    pathname === '/dashboard/reports/overview'
+                      ? 'bg-white/10 text-white'
+                      : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span>Overview</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/reports/sales"
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                    pathname === '/dashboard/reports/sales'
+                      ? 'bg-white/10 text-white'
+                      : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span>Sales Report</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/reports/shift"
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                    pathname === '/dashboard/reports/shift'
+                      ? 'bg-white/10 text-white'
+                      : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span>Shift Report</span>
+                </Link>
+
+                <Link
+                  href="/dashboard/reports/stock"
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                    pathname === '/dashboard/reports/stock'
+                      ? 'bg-white/10 text-white'
+                      : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <span>Stock Report</span>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {bottomMainItems.map((item) => {
             const isActive = item.exact
               ? pathname === item.path
               : pathname === item.path || pathname.startsWith(item.path + '/');
