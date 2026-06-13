@@ -104,7 +104,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full scroll-smooth">
+    <html lang="en" className="h-full scroll-smooth" suppressHydrationWarning>
       <body className={`${allFontVars} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}>
         <Providers>
           {children}
