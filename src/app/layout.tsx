@@ -96,6 +96,11 @@ const allFontVars = [
 export const metadata: Metadata = {
   title: 'Medical.lk | Premium Pharmacy SaaS & POS',
   description: 'The ultimate multi-tenant pharmacy management and cloud Point of Sale (POS) system.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Medical.lk',
+  },
 };
 
 export default function RootLayout({
