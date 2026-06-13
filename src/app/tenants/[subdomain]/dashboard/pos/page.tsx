@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   Search, Plus, Minus, X, Trash2, Printer, Loader2,
