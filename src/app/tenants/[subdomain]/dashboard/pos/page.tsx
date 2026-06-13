@@ -55,6 +55,7 @@ export default function POSTerminal() {
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const qtyInputRef     = useRef<HTMLInputElement>(null);
   const cashReceivedRef = useRef<HTMLInputElement>(null);
+  const batchGridRef    = useRef<HTMLDivElement>(null);
 
   const [posMode, setPosMode] = useState<'billing' | 'payment'>('billing');
 
@@ -191,6 +192,16 @@ export default function POSTerminal() {
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [activePopupProduct, quantityInputOpen, selectedBatchIndex]);
+
+  // Automatically scroll selected batch card into view
+  useEffect(() => {
+    if (activePopupProduct && batchGridRef.current) {
+      const activeEl = batchGridRef.current.querySelector(`[data-batch-index="${selectedBatchIndex}"]`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+      }
+    }
+  }, [selectedBatchIndex, activePopupProduct]);
 
   // ── Data ──────────────────────────────────────────────────────────────────
   const { data: batches = [], isLoading: batchesLoading, refetch: refetchBatches } = useQuery<any[]>({
@@ -854,7 +865,7 @@ export default function POSTerminal() {
           onClick={() => setActivePopupProduct(null)}
         >
           <div
-            className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.16)] w-full max-w-lg overflow-hidden flex flex-col border border-[#eceef1]"
+            className="bg-white rounded-xl shadow-[0_24px_64px_rgba(0,0,0,0.16)] w-full max-w-2xl overflow-hidden flex flex-col border border-[#eceef1]"
             onClick={e => e.stopPropagation()}
           >
             {/* Modal header */}
@@ -885,13 +896,14 @@ export default function POSTerminal() {
               </div>
 
               {/* Grid of Batches */}
-              <div className="grid grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+              <div ref={batchGridRef} className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto px-1.5 py-1">
                 {activePopupProduct.batches.map((b: any, idx: number) => {
                   const isSelected = idx === selectedBatchIndex;
                   const isOutOfStock = b.quantity_remaining <= 0;
                   return (
                     <div
                       key={b.id}
+                      data-batch-index={idx}
                       onClick={() => {
                         if (!isOutOfStock) {
                           setSelectedBatchIndex(idx);
