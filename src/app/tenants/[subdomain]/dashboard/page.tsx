@@ -28,7 +28,7 @@ export default function DashboardHome() {
     }
   }, []);
 
-  // 1. Fetch sales KPI metrics
+  // 1. Fetch sales KPI metrics & inventory summary stats
   const { data: summary, isLoading: kpiLoading, refetch: refetchKpis } = useQuery({
     queryKey: ['sales-summary'],
     queryFn: () => apiFetch('/api/pos/reports/summary'),
@@ -46,36 +46,11 @@ export default function DashboardHome() {
     queryFn: () => apiFetch('/api/pos/invoices'),
   });
 
-  // 4. Fetch all medicines for inventory health calculations
-  const { data: medicines, isLoading: medicinesLoading, refetch: refetchMedicines } = useQuery({
-    queryKey: ['medicines-list'],
-    queryFn: () => apiFetch('/api/inventory/medicines'),
-  });
-
-  // 5. Fetch all active stock batches
-  const { data: batches, isLoading: batchesLoading, refetch: refetchBatches } = useQuery({
-    queryKey: ['batches-list'],
-    queryFn: () => apiFetch('/api/inventory/batches'),
-  });
-
-  const isLoading = kpiLoading || alertsLoading || invoicesLoading || medicinesLoading || batchesLoading;
-
   const handleRefresh = () => {
     refetchKpis();
     refetchAlerts();
     refetchInvoices();
-    refetchMedicines();
-    refetchBatches();
   };
-
-  if (isLoading) {
-    return (
-      <div className="h-96 flex flex-col items-center justify-center text-[#42474d] gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-[#0f3d57]" />
-        <span className="text-sm font-medium">Loading pharmacy telemetry...</span>
-      </div>
-    );
-  }
 
   // Format currency
   const formatLKR = (val: number) => {
@@ -87,48 +62,14 @@ export default function DashboardHome() {
     }).format(val).replace('LKR', 'LKR ');
   };
 
-  // --- Dynamic Inventory Calculations ---
-  const totalMedicines = medicines?.length || 0;
-  let realInStock = 0;
-  let realNearExpiry = 0;
-  let realLowStock = 0;
-  let realOutOfStock = 0;
-
-  if (totalMedicines > 0) {
-    medicines.forEach((m: any) => {
-      // Sum stock across all batches
-      const medBatches = batches?.filter((b: any) => b.medicine_id === m.id) || [];
-      const totalStock = medBatches.reduce((acc: number, curr: any) => acc + (curr.quantity_remaining || 0), 0);
-      
-      if (totalStock === 0) {
-        realOutOfStock++;
-      } else if (totalStock <= (m.min_stock_level || 10)) {
-        realLowStock++;
-      } else {
-        realInStock++;
-      }
-    });
-
-    // Check near expiry batches
-    batches?.forEach((b: any) => {
-      if (b.quantity_remaining > 0 && b.expiry_date) {
-        const expDate = new Date(b.expiry_date);
-        const today = new Date();
-        const diffDays = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        if (diffDays > 0 && diffDays <= 60) {
-          realNearExpiry++;
-        }
-      }
-    });
-  }
-
-  // If there's no inventory data in DB yet, fall back to mockup numbers so the page is visually complete
+  // --- Dynamic Inventory Calculations from backend summary ---
+  const totalMedicines = summary?.total_skus || 0;
   const isInventoryEmpty = totalMedicines === 0;
-  const displayTotalSKUs = isInventoryEmpty ? 4200 : totalMedicines;
-  const displayInStock = isInventoryEmpty ? 3570 : realInStock;
-  const displayNearExpiry = isInventoryEmpty ? 336 : realNearExpiry;
-  const displayLowStock = isInventoryEmpty ? 210 : realLowStock;
-  const displayOutOfStock = isInventoryEmpty ? 84 : realOutOfStock;
+  const displayTotalSKUs = isInventoryEmpty ? 4200 : (summary?.total_skus || 0);
+  const displayInStock = isInventoryEmpty ? 3570 : (summary?.in_stock || 0);
+  const displayNearExpiry = isInventoryEmpty ? 336 : (summary?.near_expiry || 0);
+  const displayLowStock = isInventoryEmpty ? 210 : (summary?.low_stock || 0);
+  const displayOutOfStock = isInventoryEmpty ? 84 : (summary?.out_of_stock || 0);
 
   const inStockPercent = Math.round((displayInStock / displayTotalSKUs) * 100) || 0;
   const nearExpiryPercent = Math.round((displayNearExpiry / displayTotalSKUs) * 100) || 0;
@@ -136,7 +77,6 @@ export default function DashboardHome() {
   const outOfStockPercent = Math.round((displayOutOfStock / displayTotalSKUs) * 100) || 0;
 
   // Adjust SVG Donut slices
-  // Total circumference of circle with radius 15.915 is 100.
   const strokeInStock = inStockPercent;
   const strokeNearExpiry = nearExpiryPercent;
   const strokeLowStock = lowStockPercent;
@@ -160,30 +100,24 @@ export default function DashboardHome() {
     patient_name: inv.patient_name || 'Walk-in Customer',
     net_amount: inv.net_amount,
     payment_method: inv.payment_method,
-    status: 'Completed', // Standard DB transactions are active/completed
+    status: 'Completed',
     initials: inv.patient_name && inv.patient_name !== 'Walk-in Customer' && inv.patient_name !== 'Guest Customer'
       ? inv.patient_name.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase()
       : null
   })) : mockInvoices;
 
   // --- Weekly Sales Chart Calculations ---
-  // Generate last 7 days keys
   const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const todayIndex = new Date().getDay(); // 0 is Sun, 1 is Mon, etc.
-  const adjustedTodayIdx = todayIndex === 0 ? 6 : todayIndex - 1; // map 1-7 to 0-6
+  const todayIndex = new Date().getDay();
+  const adjustedTodayIdx = todayIndex === 0 ? 6 : todayIndex - 1;
 
-  // Default mock weekly sales representation:
-  // Mon: 40k, Tue: 60k, Wed: 84k, Thu: 0, Fri: 0, Sat: 0, Sun: 0
   const mockSales = [40000, 60000, 84000, 0, 0, 0, 0];
   const weeklySalesData = [...mockSales];
 
-  // If there are real invoices, distribute them
   if (hasInvoices && invoices) {
-    // Zero out mock chart if there is real POS activity
     for (let i = 0; i < 7; i++) {
       weeklySalesData[i] = 0;
     }
-    
     invoices.forEach((inv: any) => {
       if (inv.created_at) {
         const invDate = new Date(inv.created_at);
@@ -200,19 +134,15 @@ export default function DashboardHome() {
   const todayRevenueVal = summary?.today_revenue || 0;
   const monthlyRevenueVal = summary?.monthly_revenue || 0;
   const todayTransactionsVal = summary?.today_transactions || 0;
-  const totalTransactionsVal = summary?.total_transactions || 0;
 
-  // Fallbacks if backend DB is empty
   const displayTodayRevenue = todayRevenueVal === 0 && !hasInvoices ? 84250 : todayRevenueVal;
   const displayTodayTransactions = todayTransactionsVal === 0 && !hasInvoices ? 47 : todayTransactionsVal;
   const displayMonthlyRevenue = monthlyRevenueVal === 0 && !hasInvoices ? 1842500 : monthlyRevenueVal;
-  const displayGRNPending = alerts?.low_stock_alerts ? 3 : 3; // Static pending approvals or count
+  const displayGRNPending = alerts?.low_stock_alerts ? 3 : 3;
 
-  // Progress Bar for Today's Sales target (e.g. target is 125,000 LKR)
   const salesTarget = 125000;
   const targetPercent = Math.min(100, Math.round((displayTodayRevenue / salesTarget) * 100));
 
-  // Critical alerts count
   const criticalLowStockCount = alerts?.low_stock_alerts?.length || 0;
   const criticalNearExpiryCount = alerts?.expiry_alerts?.length || 0;
   
@@ -267,9 +197,13 @@ export default function DashboardHome() {
             <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider font-sans">Today's Sales</p>
             <Coins className="text-[#006d37] h-5 w-5" />
           </div>
-          <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
-            {formatLKR(displayTodayRevenue)}
-          </h3>
+          {kpiLoading ? (
+            <div className="h-8 w-32 bg-slate-100 animate-pulse rounded mt-1 mb-2"></div>
+          ) : (
+            <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
+              {formatLKR(displayTodayRevenue)}
+            </h3>
+          )}
           <div className="flex items-center gap-2 mb-3">
             <span className="flex items-center text-xs font-semibold text-[#00743a] bg-[#6bfe9c]/30 px-1.5 py-0.5 rounded">
               <TrendingUp className="h-3 w-3 mr-0.5" />
@@ -290,9 +224,13 @@ export default function DashboardHome() {
             <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider font-sans">Transactions</p>
             <Receipt className="text-[#0f3d57] h-5 w-5" />
           </div>
-          <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
-            {displayTodayTransactions}
-          </h3>
+          {kpiLoading ? (
+            <div className="h-8 w-16 bg-slate-100 animate-pulse rounded mt-1 mb-2"></div>
+          ) : (
+            <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
+              {displayTodayTransactions}
+            </h3>
+          )}
           <div className="flex items-center gap-2">
             <span className="flex items-center text-xs font-semibold text-[#00743a] bg-[#6bfe9c]/30 px-1.5 py-0.5 rounded">
               <TrendingUp className="h-3 w-3 mr-0.5" />
@@ -310,9 +248,13 @@ export default function DashboardHome() {
               <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider font-sans">GRN Pending</p>
               <Truck className="text-orange-500 h-5 w-5" />
             </div>
-            <h3 className="text-2xl font-bold text-orange-600 mb-2 font-display">
-              {displayGRNPending}
-            </h3>
+            {alertsLoading ? (
+              <div className="h-8 w-16 bg-slate-100 animate-pulse rounded mt-1 mb-2"></div>
+            ) : (
+              <h3 className="text-2xl font-bold text-orange-600 mb-2 font-display">
+                {displayGRNPending}
+              </h3>
+            )}
             <div className="flex items-center gap-2">
               <span className="text-xs text-[#42474d] font-sans">Requires approval today</span>
             </div>
@@ -325,9 +267,13 @@ export default function DashboardHome() {
             <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider font-sans">Monthly Revenue</p>
             <Wallet className="text-[#0f3d57] h-5 w-5" />
           </div>
-          <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
-            {formatLKR(displayMonthlyRevenue)}
-          </h3>
+          {kpiLoading ? (
+            <div className="h-8 w-32 bg-slate-100 animate-pulse rounded mt-1 mb-2"></div>
+          ) : (
+            <h3 className="text-2xl font-bold text-[#191c1e] mb-2 font-display">
+              {formatLKR(displayMonthlyRevenue)}
+            </h3>
+          )}
           <div className="flex items-center gap-2">
             <span className="flex items-center text-xs font-semibold text-[#00743a] bg-[#6bfe9c]/30 px-1.5 py-0.5 rounded">
               <TrendingUp className="h-3 w-3 mr-0.5" />
@@ -355,60 +301,67 @@ export default function DashboardHome() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-            {/* Low Stock Box */}
-            <div className="bg-white border border-[#ba1a1a]/30 rounded-lg p-4 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[#191c1e] text-sm font-sans">Low Stock</h4>
-                <p className="text-[#ba1a1a] font-bold text-lg mt-0.5">{displayAlertLowStock} Items</p>
-                <Link 
-                  href={`/tenants/${subdomain}/dashboard/inventory`}
-                  className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
-                >
-                  Review List →
-                </Link>
-              </div>
+          {alertsLoading ? (
+            <div className="h-28 w-full bg-white/50 border border-slate-100 animate-pulse rounded-lg flex items-center justify-center text-xs text-slate-400">
+              <Loader2 className="h-5 w-5 animate-spin text-[#0f3d57] mr-2" />
+              Loading active alerts...
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* Low Stock Box */}
+              <div className="bg-white border border-[#ba1a1a]/30 rounded-lg p-4 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[#ffdad6] text-[#ba1a1a] flex items-center justify-center shrink-0">
+                  <Package className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-[#191c1e] text-sm font-sans">Low Stock</h4>
+                  <p className="text-[#ba1a1a] font-bold text-lg mt-0.5">{displayAlertLowStock} Items</p>
+                  <Link 
+                    href={`/tenants/${subdomain}/dashboard/inventory`}
+                    className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
+                  >
+                    Review List →
+                  </Link>
+                </div>
+              </div>
 
-            {/* Near Expiry Box */}
-            <div className="bg-white border border-orange-200 rounded-lg p-4 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
-                <Hourglass className="h-5 w-5" />
+              {/* Near Expiry Box */}
+              <div className="bg-white border border-orange-200 rounded-lg p-4 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                  <Hourglass className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-[#191c1e] text-sm font-sans">Near Expiry</h4>
+                  <p className="text-orange-600 font-bold text-lg mt-0.5">{displayAlertNearExpiry} Batches</p>
+                  <Link 
+                    href={`/tenants/${subdomain}/dashboard/inventory`}
+                    className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
+                  >
+                    Review Batches →
+                  </Link>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-[#191c1e] text-sm font-sans">Near Expiry</h4>
-                <p className="text-orange-600 font-bold text-lg mt-0.5">{displayAlertNearExpiry} Batches</p>
-                <Link 
-                  href={`/tenants/${subdomain}/dashboard/inventory`}
-                  className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
-                >
-                  Review Batches →
-                </Link>
+
+              {/* GRN Pending Box */}
+              <div className="bg-white border border-blue-200 rounded-lg p-4 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                  <ClipboardList className="h-5 w-5" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-[#191c1e] text-sm font-sans">GRN Pending</h4>
+                  <p className="text-blue-600 font-bold text-lg mt-0.5">{displayAlertGRNPending} Entries</p>
+                  <Link 
+                    href={`/tenants/${subdomain}/dashboard/grn`}
+                    className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
+                  >
+                    Approve GRNs →
+                  </Link>
+                </div>
               </div>
+
             </div>
-
-            {/* GRN Pending Box */}
-            <div className="bg-white border border-blue-200 rounded-lg p-4 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                <ClipboardList className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="font-semibold text-[#191c1e] text-sm font-sans">GRN Pending</h4>
-                <p className="text-blue-600 font-bold text-lg mt-0.5">{displayAlertGRNPending} Entries</p>
-                <Link 
-                  href={`/tenants/${subdomain}/dashboard/grn`}
-                  className="text-xs text-[#42474d] hover:text-[#0f3d57] underline mt-1 inline-block font-sans"
-                >
-                  Approve GRNs →
-                </Link>
-              </div>
-            </div>
-
-          </div>
+          )}
         </div>
       </div>
 
@@ -427,61 +380,68 @@ export default function DashboardHome() {
               <ArrowRight className="h-3 w-3" />
             </Link>
           </div>
-          <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[#f2f4f7] text-[#42474d] text-[11px] font-semibold uppercase tracking-wider border-b border-[#eceef1]">
-                  <th className="p-4 font-medium">Invoice</th>
-                  <th className="p-4 font-medium">Customer</th>
-                  <th className="p-4 font-medium">Amount</th>
-                  <th className="p-4 font-medium">Method</th>
-                  <th className="p-4 font-medium text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm divide-y divide-[#eceef1] font-sans">
-                {invoicesToRender.map((inv: any, idx: number) => (
-                  <tr 
-                    key={inv.invoice_number + '-' + idx} 
-                    className={`hover:bg-[#f2f4f7]/50 transition-colors ${inv.status === 'Refunded' ? 'bg-[#ffdad6]/10' : ''}`}
-                  >
-                    <td className="p-4 font-medium text-[#0f3d57]">{inv.invoice_number}</td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {inv.initials ? (
-                          <div className="w-6 h-6 rounded-full bg-[#0f3d57] text-white text-[10px] flex items-center justify-center font-bold">
-                            {inv.initials}
-                          </div>
-                        ) : null}
-                        <span className="text-[#191c1e]">{inv.patient_name}</span>
-                      </div>
-                    </td>
-                    <td className={`p-4 font-semibold text-[#191c1e] ${inv.status === 'Refunded' ? 'line-through text-[#42474d]' : ''}`}>
-                      {formatLKR(inv.net_amount)}
-                    </td>
-                    <td className="p-4 text-[#42474d]">
-                      <span className="flex items-center gap-1">
-                        {inv.payment_method?.toLowerCase() === 'card' ? (
-                          <CreditCard className="h-4 w-4" />
-                        ) : (
-                          <Coins className="h-4 w-4" />
-                        )}
-                        {inv.payment_method || 'Cash'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                        inv.status === 'Completed' 
-                          ? 'bg-[#6bfe9c]/30 text-[#00743a]' 
-                          : 'bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]'
-                      }`}>
-                        {inv.status}
-                      </span>
-                    </td>
+          {invoicesLoading ? (
+            <div className="h-60 flex flex-col items-center justify-center text-xs text-slate-400 gap-2">
+              <Loader2 className="h-6 w-6 animate-spin text-[#0f3d57]" />
+              Loading transactions...
+            </div>
+          ) : (
+            <div className="overflow-x-auto flex-1">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#f2f4f7] text-[#42474d] text-[11px] font-semibold uppercase tracking-wider border-b border-[#eceef1]">
+                    <th className="p-4 font-medium">Invoice</th>
+                    <th className="p-4 font-medium">Customer</th>
+                    <th className="p-4 font-medium">Amount</th>
+                    <th className="p-4 font-medium">Method</th>
+                    <th className="p-4 font-medium text-right">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="text-sm divide-y divide-[#eceef1] font-sans">
+                  {invoicesToRender.map((inv: any, idx: number) => (
+                    <tr 
+                      key={inv.invoice_number + '-' + idx} 
+                      className={`hover:bg-[#f2f4f7]/50 transition-colors ${inv.status === 'Refunded' ? 'bg-[#ffdad6]/10' : ''}`}
+                    >
+                      <td className="p-4 font-medium text-[#0f3d57]">{inv.invoice_number}</td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          {inv.initials ? (
+                            <div className="w-6 h-6 rounded-full bg-[#0f3d57] text-white text-[10px] flex items-center justify-center font-bold">
+                              {inv.initials}
+                            </div>
+                          ) : null}
+                          <span className="text-[#191c1e]">{inv.patient_name}</span>
+                        </div>
+                      </td>
+                      <td className={`p-4 font-semibold text-[#191c1e] ${inv.status === 'Refunded' ? 'line-through text-[#42474d]' : ''}`}>
+                        {formatLKR(inv.net_amount)}
+                      </td>
+                      <td className="p-4 text-[#42474d]">
+                        <span className="flex items-center gap-1">
+                          {inv.payment_method?.toLowerCase() === 'card' ? (
+                            <CreditCard className="h-4 w-4" />
+                          ) : (
+                            <Coins className="h-4 w-4" />
+                          )}
+                          {inv.payment_method || 'Cash'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                          inv.status === 'Completed' 
+                            ? 'bg-[#6bfe9c]/30 text-[#00743a]' 
+                            : 'bg-[#ffdad6] text-[#93000a] border border-[#ffdad6]'
+                        }`}>
+                          {inv.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Right: Sales Weekly Bar Chart (35%) */}
@@ -492,48 +452,52 @@ export default function DashboardHome() {
               <span className="text-[#42474d] text-xs font-sans">LKR</span>
             </div>
 
-            {/* CSS Bar Chart */}
-            <div className="h-40 flex items-end justify-between gap-2 mt-4 pt-4 border-t border-[#eceef1] relative font-sans">
-              
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-[#42474d]">
-                <span>100k</span>
-                <span>50k</span>
-                <span>0</span>
+            {invoicesLoading ? (
+              <div className="h-40 flex items-center justify-center text-xs text-slate-400">
+                <Loader2 className="h-5 w-5 animate-spin text-[#0f3d57] mr-2" />
+                Loading weekly chart...
               </div>
+            ) : (
+              <div className="h-40 flex items-end justify-between gap-2 mt-4 pt-4 border-t border-[#eceef1] relative font-sans">
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-[#42474d]">
+                  <span>100k</span>
+                  <span>50k</span>
+                  <span>0</span>
+                </div>
 
-              {/* Bars wrapper */}
-              <div className="w-full h-full flex items-end justify-between pl-8">
-                {weeklySalesData.map((val: number, idx: number) => {
-                  const percentHeight = Math.min(100, Math.round((val / maxWeeklyAmount) * 100));
-                  const isToday = idx === adjustedTodayIdx;
-                  
-                  return (
-                    <div key={dayNames[idx]} className="w-1/7 flex flex-col items-center gap-2 group">
-                      <div className="w-full bg-[#f2f4f7] rounded-t-sm h-28 flex items-end">
-                        <div 
-                          className={`w-full rounded-t-sm transition-all duration-300 relative group-hover:opacity-90 ${
-                            isToday 
-                              ? 'bg-[#0f3d57]' 
-                              : 'bg-[#a3cbeb]'
-                          }`}
-                          style={{ height: `${percentHeight}%` }}
-                        >
-                          {/* Tooltip on hover */}
-                          <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#2d3133] text-[#eff1f4] text-[9px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
-                            {val >= 1000 ? `${(val/1000).toFixed(0)}k` : val}
+                {/* Bars wrapper */}
+                <div className="w-full h-full flex items-end justify-between pl-8">
+                  {weeklySalesData.map((val: number, idx: number) => {
+                    const percentHeight = Math.min(100, Math.round((val / maxWeeklyAmount) * 100));
+                    const isToday = idx === adjustedTodayIdx;
+                    
+                    return (
+                      <div key={dayNames[idx]} className="w-1/7 flex flex-col items-center gap-2 group">
+                        <div className="w-full bg-[#f2f4f7] rounded-t-sm h-28 flex items-end">
+                          <div 
+                            className={`w-full rounded-t-sm transition-all duration-300 relative group-hover:opacity-90 ${
+                              isToday 
+                                ? 'bg-[#0f3d57]' 
+                                : 'bg-[#a3cbeb]'
+                            }`}
+                            style={{ height: `${percentHeight}%` }}
+                          >
+                            {/* Tooltip on hover */}
+                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-[#2d3133] text-[#eff1f4] text-[9px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-20">
+                              {val >= 1000 ? `${(val/1000).toFixed(0)}k` : val}
+                            </div>
                           </div>
                         </div>
+                        <span className={`text-[10px] ${isToday ? 'font-bold text-[#0f3d57]' : 'text-[#42474d]'}`}>
+                          {dayNames[idx]}
+                        </span>
                       </div>
-                      <span className={`text-[10px] ${isToday ? 'font-bold text-[#0f3d57]' : 'text-[#42474d]'}`}>
-                        {dayNames[idx]}
-                      </span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-
-            </div>
+            )}
           </div>
 
           {/* Quick stats grid */}
@@ -554,132 +518,137 @@ export default function DashboardHome() {
       {/* Row 4: Inventory Health Snapshot */}
       <div className="bg-white border border-[#eceef1] rounded-xl p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
         <h3 className="text-base font-bold text-[#191c1e] mb-6 font-display">Inventory Health Snapshot</h3>
-        <div className="flex flex-col md:flex-row items-center gap-8 font-sans">
-          
-          {/* Donut Chart SVG */}
-          <div className="relative w-32 h-32 flex-shrink-0">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-              {/* Base grey background circle */}
-              <circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#f2f4f7" strokeWidth="4"></circle>
-              
-              {/* Slices calculated from percentages. OutOfStock (Red) -> LowStock (Orange) -> NearExpiry (Yellow) -> InStock (Green) */}
-              {/* Out of Stock (Red) */}
-              <circle 
-                cx="18" 
-                cy="18" 
-                fill="transparent" 
-                r="15.915" 
-                stroke="#ba1a1a" 
-                strokeWidth="4"
-                strokeDasharray={`${strokeOutOfStock} ${100 - strokeOutOfStock}`}
-                strokeDashoffset="0"
-              ></circle>
-              
-              {/* Low Stock (Orange) */}
-              <circle 
-                cx="18" 
-                cy="18" 
-                fill="transparent" 
-                r="15.915" 
-                stroke="#f97316" 
-                strokeWidth="4"
-                strokeDasharray={`${strokeLowStock} ${100 - strokeLowStock}`}
-                strokeDashoffset={`-${strokeOutOfStock}`}
-              ></circle>
-
-              {/* Near Expiry (Yellow) */}
-              <circle 
-                cx="18" 
-                cy="18" 
-                fill="transparent" 
-                r="15.915" 
-                stroke="#eab308" 
-                strokeWidth="4"
-                strokeDasharray={`${strokeNearExpiry} ${100 - strokeNearExpiry}`}
-                strokeDashoffset={`-${strokeOutOfStock + strokeLowStock}`}
-              ></circle>
-
-              {/* In Stock (Green) */}
-              <circle 
-                cx="18" 
-                cy="18" 
-                fill="transparent" 
-                r="15.915" 
-                stroke="#006d37" 
-                strokeWidth="4"
-                strokeDasharray={`${strokeInStock} ${100 - strokeInStock}`}
-                strokeDashoffset={`-${strokeOutOfStock + strokeLowStock + strokeNearExpiry}`}
-              ></circle>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xl font-bold text-[#191c1e] font-display">
-                {displayTotalSKUs >= 1000 ? `${(displayTotalSKUs/1000).toFixed(1)}k` : displayTotalSKUs}
-              </span>
-              <span className="text-[9px] text-[#42474d] font-semibold uppercase tracking-wider">Total SKUs</span>
-            </div>
+        {kpiLoading ? (
+          <div className="h-40 flex items-center justify-center text-xs text-slate-400">
+            <Loader2 className="h-6 w-6 animate-spin text-[#006d37] mr-2" />
+            Loading inventory status...
           </div>
-
-          {/* Legend Grid */}
-          <div className="flex-grow w-full space-y-4">
+        ) : (
+          <div className="flex flex-col md:flex-row items-center gap-8 font-sans">
             
-            {/* Health Color Strip */}
-            <div className="w-full h-3 rounded-full overflow-hidden flex border border-[#eceef1] bg-[#f2f4f7] shadow-inner">
-              <div className="h-full bg-[#006d37] transition-all duration-300" style={{ width: `${inStockPercent}%` }} title={`In Stock: ${inStockPercent}%`}></div>
-              <div className="h-full bg-[#eab308] transition-all duration-300" style={{ width: `${nearExpiryPercent}%` }} title={`Near Expiry: ${nearExpiryPercent}%`}></div>
-              <div className="h-full bg-orange-500 transition-all duration-300" style={{ width: `${lowStockPercent}%` }} title={`Low Stock: ${lowStockPercent}%`}></div>
-              <div className="h-full bg-[#ba1a1a] transition-all duration-300" style={{ width: `${outOfStockPercent}%` }} title={`Out of Stock: ${outOfStockPercent}%`}></div>
+            {/* Donut Chart SVG */}
+            <div className="relative w-32 h-32 flex-shrink-0">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#f2f4f7" strokeWidth="4"></circle>
+                
+                {/* Out of Stock (Red) */}
+                <circle 
+                  cx="18" 
+                  cy="18" 
+                  fill="transparent" 
+                  r="15.915" 
+                  stroke="#ba1a1a" 
+                  strokeWidth="4"
+                  strokeDasharray={`${strokeOutOfStock} ${100 - strokeOutOfStock}`}
+                  strokeDashoffset="0"
+                ></circle>
+                
+                {/* Low Stock (Orange) */}
+                <circle 
+                  cx="18" 
+                  cy="18" 
+                  fill="transparent" 
+                  r="15.915" 
+                  stroke="#f97316" 
+                  strokeWidth="4"
+                  strokeDasharray={`${strokeLowStock} ${100 - strokeLowStock}`}
+                  strokeDashoffset={`-${strokeOutOfStock}`}
+                ></circle>
+
+                {/* Near Expiry (Yellow) */}
+                <circle 
+                  cx="18" 
+                  cy="18" 
+                  fill="transparent" 
+                  r="15.915" 
+                  stroke="#eab308" 
+                  strokeWidth="4"
+                  strokeDasharray={`${strokeNearExpiry} ${100 - strokeNearExpiry}`}
+                  strokeDashoffset={`-${strokeOutOfStock + strokeLowStock}`}
+                ></circle>
+
+                {/* In Stock (Green) */}
+                <circle 
+                  cx="18" 
+                  cy="18" 
+                  fill="transparent" 
+                  r="15.915" 
+                  stroke="#006d37" 
+                  strokeWidth="4"
+                  strokeDasharray={`${strokeInStock} ${100 - strokeInStock}`}
+                  strokeDashoffset={`-${strokeOutOfStock + strokeLowStock + strokeNearExpiry}`}
+                ></circle>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-xl font-bold text-[#191c1e] font-display">
+                  {displayTotalSKUs >= 1000 ? `${(displayTotalSKUs/1000).toFixed(1)}k` : displayTotalSKUs}
+                </span>
+                <span className="text-[9px] text-[#42474d] font-semibold uppercase tracking-wider">Total SKUs</span>
+              </div>
             </div>
 
-            {/* Labels Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#006d37]"></div>
-                  <span className="text-xs font-semibold text-[#191c1e]">In Stock</span>
-                </div>
-                <p className="text-base font-bold text-[#191c1e]">
-                  {displayInStock.toLocaleString()}
-                  <span className="text-xs font-normal text-[#42474d] ml-1">({inStockPercent}%)</span>
-                </p>
+            {/* Legend Grid */}
+            <div className="flex-grow w-full space-y-4">
+              
+              {/* Health Color Strip */}
+              <div className="w-full h-3 rounded-full overflow-hidden flex border border-[#eceef1] bg-[#f2f4f7] shadow-inner">
+                <div className="h-full bg-[#006d37] transition-all duration-300" style={{ width: `${inStockPercent}%` }} title={`In Stock: ${inStockPercent}%`}></div>
+                <div className="h-full bg-[#eab308] transition-all duration-300" style={{ width: `${nearExpiryPercent}%` }} title={`Near Expiry: ${nearExpiryPercent}%`}></div>
+                <div className="h-full bg-orange-500 transition-all duration-300" style={{ width: `${lowStockPercent}%` }} title={`Low Stock: ${lowStockPercent}%`}></div>
+                <div className="h-full bg-[#ba1a1a] transition-all duration-300" style={{ width: `${outOfStockPercent}%` }} title={`Out of Stock: ${outOfStockPercent}%`}></div>
               </div>
 
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#eab308]"></div>
-                  <span className="text-xs font-semibold text-[#191c1e]">Near Expiry</span>
+              {/* Labels Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#006d37]"></div>
+                    <span className="text-xs font-semibold text-[#191c1e]">In Stock</span>
+                  </div>
+                  <p className="text-base font-bold text-[#191c1e]">
+                    {displayInStock.toLocaleString()}
+                    <span className="text-xs font-normal text-[#42474d] ml-1">({inStockPercent}%)</span>
+                  </p>
                 </div>
-                <p className="text-base font-bold text-[#191c1e]">
-                  {displayNearExpiry.toLocaleString()}
-                  <span className="text-xs font-normal text-[#42474d] ml-1">({nearExpiryPercent}%)</span>
-                </p>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#eab308]"></div>
+                    <span className="text-xs font-semibold text-[#191c1e]">Near Expiry</span>
+                  </div>
+                  <p className="text-base font-bold text-[#191c1e]">
+                    {displayNearExpiry.toLocaleString()}
+                    <span className="text-xs font-normal text-[#42474d] ml-1">({nearExpiryPercent}%)</span>
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+                    <span className="text-xs font-semibold text-[#191c1e]">Low Stock</span>
+                  </div>
+                  <p className="text-base font-bold text-[#191c1e]">
+                    {displayLowStock.toLocaleString()}
+                    <span className="text-xs font-normal text-[#42474d] ml-1">({lowStockPercent}%)</span>
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#ba1a1a]"></div>
+                    <span className="text-xs font-semibold text-[#ba1a1a]">Out of Stock</span>
+                  </div>
+                  <p className="text-base font-bold text-[#ba1a1a]">
+                    {displayOutOfStock.toLocaleString()}
+                    <span className="text-xs font-normal text-[#42474d] ml-1">({outOfStockPercent}%)</span>
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
-                  <span className="text-xs font-semibold text-[#191c1e]">Low Stock</span>
-                </div>
-                <p className="text-base font-bold text-[#191c1e]">
-                  {displayLowStock.toLocaleString()}
-                  <span className="text-xs font-normal text-[#42474d] ml-1">({lowStockPercent}%)</span>
-                </p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#ba1a1a]"></div>
-                  <span className="text-xs font-semibold text-[#ba1a1a]">Out of Stock</span>
-                </div>
-                <p className="text-base font-bold text-[#ba1a1a]">
-                  {displayOutOfStock.toLocaleString()}
-                  <span className="text-xs font-normal text-[#42474d] ml-1">({outOfStockPercent}%)</span>
-                </p>
-              </div>
             </div>
 
           </div>
-
-        </div>
+        )}
       </div>
 
     </div>
