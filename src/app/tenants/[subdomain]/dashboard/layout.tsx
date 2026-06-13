@@ -9,8 +9,7 @@ import {
   Users, Settings, LogOut, Loader2, Activity, User,
   Truck, BarChart3, Globe, ShieldCheck, ClipboardList,
   Search, Bell, ChevronDown, AlertTriangle, Hourglass,
-  Building2, LifeBuoy, Link2, Monitor, ChevronRight,
-  Download, X
+  Building2, LifeBuoy, Link2, Monitor, ChevronRight
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -26,12 +25,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
   const [customerFacingOpen, setCustomerFacingOpen] = useState(true);
-
-  // PWA install prompt state
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
-  const [showInstallGuide, setShowInstallGuide] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
 
   // Prefetch active stock batches for POS terminal to enable instant page load
   useEffect(() => {
@@ -53,49 +46,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       setAuthorized(true);
     }
   }, [router]);
-
-  // Manage PWA install states and catch browser beforeinstallprompt events
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isStandaloneMode = 
-        window.matchMedia('(display-mode: standalone)').matches || 
-        (window.navigator as any).standalone === true;
-      setIsStandalone(isStandaloneMode);
-
-      const handleBeforeInstallPrompt = (e: Event) => {
-        e.preventDefault();
-        setDeferredPrompt(e);
-        setIsInstallable(true);
-      };
-
-      const handleAppInstalled = () => {
-        setDeferredPrompt(null);
-        setIsInstallable(false);
-        console.log('PWA installed successfully');
-      };
-
-      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.addEventListener('appinstalled', handleAppInstalled);
-
-      return () => {
-        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-        window.removeEventListener('appinstalled', handleAppInstalled);
-      };
-    }
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-        setIsInstallable(false);
-      }
-    } else {
-      setShowInstallGuide(true);
-    }
-  };
 
   // Fetch tenant public metadata to render customized brand visuals
   const { data: tenant } = useQuery({
@@ -169,20 +119,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         
         {/* Branding */}
         <div className="p-6 border-b border-[#00273b]/20">
-          <div className="flex items-center justify-between gap-2">
-            <h1 className="text-white font-bold text-[14px] truncate" title={tenantName}>
-              {tenantName}
-            </h1>
-            {!isStandalone && (
-              <button
-                onClick={handleInstallClick}
-                className="flex items-center justify-center p-1.5 rounded-lg bg-white/10 hover:bg-[#6bfe9c] hover:text-[#0f3d57] text-white hover:scale-105 border border-white/5 hover:border-[#6bfe9c] transition-all cursor-pointer group/dl shrink-0"
-                title={isInstallable ? "Install Desktop App" : "How to install / download app"}
-              >
-                <Download size={12} className="text-white group-hover/dl:text-[#0f3d57] transition-colors" />
-              </button>
-            )}
-          </div>
+          <h1 className="text-white font-bold text-[14px] truncate" title={tenantName}>
+            {tenantName}
+          </h1>
           <p className="text-[#6bfe9c] text-[11px] truncate mt-1">
             {subdomain}.medical.lk
           </p>
@@ -400,67 +339,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
-      {showInstallGuide && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-[0_24px_48px_rgba(0,0,0,0.16)] relative border border-[#eceef1]">
-            <button 
-              onClick={() => setShowInstallGuide(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-full hover:bg-slate-100 cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-            
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[#6bfe9c]/10 text-[#00743a] flex items-center justify-center">
-                <Download size={20} className="text-[#0f3d57]" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-900 text-lg">Install Desktop App</h3>
-                <p className="text-xs text-slate-500">Run Medical.lk in a standalone window</p>
-              </div>
-            </div>
-
-            <div className="space-y-4 text-sm text-slate-600">
-              <p>
-                By installing this app, you can launch <strong>{tenantName}</strong> directly from your Dock or Desktop as a fast, clean standalone app.
-              </p>
-
-              <div className="border-t border-[#eceef1] pt-3">
-                <p className="font-semibold text-slate-900 mb-2 text-xs uppercase tracking-wider">How to Install Manually:</p>
-                <div className="space-y-3 text-xs">
-                  <div className="flex gap-2">
-                    <span className="font-bold text-[#0f3d57] bg-[#0f3d57]/10 w-5 h-5 rounded-full flex items-center justify-center shrink-0">1</span>
-                    <p>
-                      <strong>Chrome / Edge:</strong> Look at the right edge of your browser's address bar for the <span className="underline decoration-[#6bfe9c] decoration-2 font-semibold">Install Icon</span> (a monitor with a down arrow) and click it. Or open the browser menu and select <strong>"Save and share"</strong> → <strong>"Install page as app"</strong>.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="font-bold text-[#0f3d57] bg-[#0f3d57]/10 w-5 h-5 rounded-full flex items-center justify-center shrink-0">2</span>
-                    <p>
-                      <strong>Safari (macOS Sonoma+):</strong> Click the <strong>Share</strong> button in the browser toolbar, then select <strong>"Add to Dock"</strong>.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <span className="font-bold text-[#0f3d57] bg-[#0f3d57]/10 w-5 h-5 rounded-full flex items-center justify-center shrink-0">3</span>
-                    <p>
-                      <strong>Safari (iPhone / iPad):</strong> Tap the <strong>Share</strong> button at the bottom of the screen, scroll down, and select <strong>"Add to Home Screen"</strong>.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button 
-                onClick={() => setShowInstallGuide(false)}
-                className="bg-[#0f3d57] hover:bg-[#145275] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors cursor-pointer shadow-sm"
-              >
-                Got it, thanks!
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

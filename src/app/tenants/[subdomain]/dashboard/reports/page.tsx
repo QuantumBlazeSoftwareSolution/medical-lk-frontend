@@ -112,6 +112,7 @@ export default function ReportsTelemetry() {
                   <th className="p-4 font-medium">Payment Method</th>
                   <th className="p-4 font-medium">Total Amount</th>
                   <th className="p-4 font-medium text-right">Net Amount</th>
+                  <th className="p-4 font-medium text-right">Total Cost</th>
                   <th className="p-4 font-medium text-right">Profit</th>
                 </tr>
               </thead>
@@ -123,6 +124,7 @@ export default function ReportsTelemetry() {
                     <td className="p-4 capitalize">{inv.payment_method}</td>
                     <td className="p-4 text-[#42474d]">{formatLKR(inv.total_amount)}</td>
                     <td className="p-4 font-semibold text-right">{formatLKR(inv.net_amount)}</td>
+                    <td className="p-4 font-semibold text-right text-[#42474d]">{formatLKR(inv.total_cost ?? (inv.net_amount - inv.net_profit))}</td>
                     <td className="p-4 font-semibold text-right text-emerald-600">{formatLKR(inv.net_profit)}</td>
                   </tr>
                 ))}
