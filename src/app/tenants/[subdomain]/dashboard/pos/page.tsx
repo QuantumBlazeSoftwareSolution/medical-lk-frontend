@@ -204,16 +204,13 @@ export default function POSTerminal() {
     enabled: patientSearch.length > 1,
   });
 
-  const { data: printedInvoice } = useQuery<any>({
-    queryKey: ['invoice-details', lastInvoiceId],
-    queryFn: () => apiFetch(`/api/pos/invoices/${lastInvoiceId}`),
-    enabled: !!lastInvoiceId,
-  });
+  const [printedInvoice, setPrintedInvoice] = useState<any>(null);
 
   const invoiceMutation = useMutation({
     mutationFn: (payload: any) =>
       apiFetch('/api/pos/invoices', { method: 'POST', body: JSON.stringify(payload) }),
     onSuccess: (data) => {
+      setPrintedInvoice(data.invoice_details);
       setLastInvoiceId(data.invoice_id);
       refetchBatches();
       setShowPayModal(false);
@@ -412,6 +409,7 @@ export default function POSTerminal() {
   const reset = () => {
     setShowSuccessModal(false);
     setLastInvoiceId(null);
+    setPrintedInvoice(null);
     clearCart();
     setCashReceived('');
   };
