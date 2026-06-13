@@ -53,6 +53,9 @@ export default function POSTerminal() {
   const searchRef       = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<HTMLDivElement>(null);
   const qtyInputRef     = useRef<HTMLInputElement>(null);
+  const cashReceivedRef = useRef<HTMLInputElement>(null);
+
+  const [posMode, setPosMode] = useState<'billing' | 'payment'>('billing');
 
   useEffect(() => { setUsername(localStorage.getItem('username') || 'Cashier'); }, []);
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
@@ -64,14 +67,22 @@ export default function POSTerminal() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
-  useEffect(() => { searchRef.current?.focus(); }, []);
-
-  // Return focus to search bar when modals/popups close
   useEffect(() => {
-    if (!activePopupProduct && !showPayModal && !showSuccessModal && !showPatientEdit) {
+    if (posMode === 'billing') {
       searchRef.current?.focus();
+    } else if (posMode === 'payment') {
+      setTimeout(() => cashReceivedRef.current?.focus(), 50);
     }
-  }, [activePopupProduct, showPayModal, showSuccessModal, showPatientEdit]);
+  }, [posMode]);
+
+  // Return focus to search bar when modals/popups close and billing mode is active
+  useEffect(() => {
+    if (posMode === 'billing') {
+      if (!activePopupProduct && !showPayModal && !showSuccessModal && !showPatientEdit) {
+        searchRef.current?.focus();
+      }
+    }
+  }, [posMode, activePopupProduct, showPayModal, showSuccessModal, showPatientEdit]);
 
   // Focus quantity input when opened
   useEffect(() => {
@@ -79,7 +90,24 @@ export default function POSTerminal() {
       setTimeout(() => qtyInputRef.current?.focus(), 50);
     }
   }, [quantityInputOpen]);
-
+  // Listen to global POS Mode toggle shortcuts (F2: Billing, F8: Payment)
+  useEffect(() => {
+    const handleShortcuts = (e: KeyboardEvent) => {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        setPosMode('billing');
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        if (cart.length > 0) {
+          setPosMode('payment');
+        } else {
+          alert('Cart is empty. Please add items to the bill first.');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleShortcuts);
+    return () => window.removeEventListener('keydown', handleShortcuts);
+  }, [cart.length]);
   // Keyboard navigation inside the Batch Selection Popup
   useEffect(() => {
     if (!activePopupProduct) return;
@@ -149,6 +177,17 @@ export default function POSTerminal() {
     },
     onError: (err: any) => alert(err.message || 'Transaction failed.'),
   });
+
+  // Auto-print receipt when invoice is successfully fetched
+  useEffect(() => {
+    if (printedInvoice && lastInvoiceId) {
+      setTimeout(() => {
+        window.print();
+        reset();
+        setPosMode('billing');
+      }, 250);
+    }
+  }, [printedInvoice, lastInvoiceId]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
   const subtotal  = cart.reduce((s, i) => s + i.price * i.quantity, 0);
@@ -517,6 +556,41 @@ export default function POSTerminal() {
               </button>
             </div>
 
+            {/* Mode Toggle Switch */}
+            <div className="px-5 py-2.5 border-b border-[#0f3d57] bg-[#0c3147]/40 flex gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPosMode('billing')}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  posMode === 'billing'
+                    ? 'bg-[#17a589] text-white shadow-sm'
+                    : 'bg-[#00273b] text-[#80a8c6] border border-[#264b65] hover:text-white'
+                }`}
+              >
+                <Package size={14} />
+                <span>1. Billing Mode (F2)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (cart.length > 0) {
+                    setPosMode('payment');
+                  } else {
+                    alert('Cart is empty.');
+                  }
+                }}
+                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                  posMode === 'payment'
+                    ? 'bg-[#2ecc71] text-white shadow-sm'
+                    : 'bg-[#00273b] text-[#80a8c6] border border-[#264b65] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                }`}
+                disabled={cart.length === 0}
+              >
+                <CreditCard size={14} />
+                <span>2. Settle Payment (F8)</span>
+              </button>
+            </div>
+
             {/* Customer row */}
             <div className="px-5 py-2.5 border-b border-[#0f3d57] bg-[#0f3d57]/30 flex items-center justify-between shrink-0 relative">
               {showPatientEdit ? (
@@ -678,11 +752,19 @@ export default function POSTerminal() {
                   <div className="flex flex-col">
                     <span className="text-[10px] font-semibold text-[#80a8c6] tracking-wider uppercase">Cash Received</span>
                     <input
+                      ref={cashReceivedRef}
                       type="number"
                       className="bg-transparent text-white text-[15px] font-bold outline-none w-28 mt-1 placeholder:text-[#80a8c6] placeholder:font-normal"
                       placeholder="Enter amount..."
                       value={cashReceived}
                       onChange={e => setCashReceived(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          if (netTotal <= 0) return;
+                          handleConfirmPayment();
+                        }
+                      }}
                     />
                   </div>
                   <div className="w-px h-9 bg-[#264b65]" />
