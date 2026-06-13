@@ -949,7 +949,7 @@ export default function POSTerminal() {
                           max={activePopupProduct.batches[selectedBatchIndex]?.quantity_remaining || 9999}
                           value={quantityValue}
                           onChange={e => setQuantityValue(e.target.value)}
-                          className="w-full px-3.5 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white"
+                          className="w-full pl-3.5 pr-20 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
                           required
                         />
                         <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#72787e]">
@@ -1054,7 +1054,7 @@ export default function POSTerminal() {
                       max={activeQuantityPopupBatch.quantity_remaining}
                       value={quantityValue}
                       onChange={e => setQuantityValue(e.target.value)}
-                      className="w-full px-3.5 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white"
+                      className="w-full pl-3.5 pr-20 py-3 border-[1.5px] border-[#2ecc71] rounded-lg text-[16px] font-bold text-[#00273b] outline-none shadow-sm focus:shadow-[0_0_0_3px_rgba(46,204,113,0.15)] bg-white [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [appearance:textfield]"
                       required
                     />
                     <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] font-bold text-[#72787e]">
