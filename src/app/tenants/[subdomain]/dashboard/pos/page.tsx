@@ -232,13 +232,28 @@ export default function POSTerminal() {
     onError: (err: any) => alert(err.message || 'Transaction failed.'),
   });
 
+  const printDirectOrFallback = async (invoiceId: string) => {
+    try {
+      const res = await apiFetch(`/api/pos/invoices/${invoiceId}/print`, { method: 'POST' });
+      if (res && res.status === 'success') {
+        console.log('Printed successfully via direct USB.');
+      } else {
+        throw new Error(res?.message || 'Direct printing failed');
+      }
+    } catch (err: any) {
+      console.warn('Direct printing failed, falling back to browser print:', err);
+      window.print();
+    }
+  };
+
   // Auto-print receipt when invoice is successfully fetched
   useEffect(() => {
     if (printedInvoice && lastInvoiceId) {
       setTimeout(() => {
-        window.print();
-        reset();
-        setPosMode('billing');
+        printDirectOrFallback(lastInvoiceId).then(() => {
+          reset();
+          setPosMode('billing');
+        });
       }, 250);
     }
   }, [printedInvoice, lastInvoiceId]);
@@ -416,7 +431,13 @@ export default function POSTerminal() {
   };
 
   const handlePrintAndClose = () => {
-    setTimeout(() => { window.print(); reset(); }, 100);
+    if (lastInvoiceId) {
+      printDirectOrFallback(lastInvoiceId).then(() => {
+        reset();
+      });
+    } else {
+      reset();
+    }
   };
 
   const reset = () => {
