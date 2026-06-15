@@ -24,8 +24,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [authorized, setAuthorized] = useState(false);
   const [username, setUsername] = useState('');
   const [role, setRole] = useState('');
-  const [customerFacingOpen, setCustomerFacingOpen] = useState(true);
-  const [reportsOpen, setReportsOpen] = useState(true);
+  const [customerFacingOpen, setCustomerFacingOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
+
+  // Auto-expand active sub-menus on mount/navigation
+  useEffect(() => {
+    if (pathname) {
+      if (pathname.startsWith('/dashboard/reports')) {
+        setReportsOpen(true);
+      }
+      if (pathname.startsWith('/dashboard/website-builder') || pathname.startsWith('/dashboard/domain')) {
+        setCustomerFacingOpen(true);
+      }
+    }
+  }, [pathname]);
 
   // Prefetch active stock batches for POS terminal to enable instant page load
   useEffect(() => {
@@ -158,13 +170,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <button
               type="button"
               onClick={() => setReportsOpen(!reportsOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#80a8c6] hover:text-white transition-colors cursor-pointer group"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors border-l-4 border-transparent text-[#80a8c6] hover:bg-white/5 hover:text-white cursor-pointer group text-sm font-medium"
             >
-              <div className="flex items-center gap-2">
-                <BarChart3 size={13} className="text-[#80a8c6] group-hover:text-white transition-colors" />
-                <span>Reports</span>
+              <div className="flex items-center gap-3">
+                <BarChart3 className="h-4.5 w-4.5 shrink-0 text-[#80a8c6] group-hover:text-white transition-colors" />
+                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">Reports</span>
               </div>
-              {reportsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              {reportsOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
             </button>
 
             {reportsOpen && (
@@ -243,13 +255,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <button
                 type="button"
                 onClick={() => setCustomerFacingOpen(!customerFacingOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#80a8c6] hover:text-white transition-colors cursor-pointer group"
+                className="w-full flex items-center justify-between px-3 py-2 rounded-md transition-colors border-l-4 border-transparent text-[#80a8c6] hover:bg-white/5 hover:text-white cursor-pointer group text-sm font-medium"
               >
-                <div className="flex items-center gap-2">
-                  <Monitor size={12} className="text-[#80a8c6] group-hover:text-white transition-colors" />
-                  <span>Customer Facing</span>
+                <div className="flex items-center gap-3">
+                  <Monitor className="h-4.5 w-4.5 shrink-0 text-[#80a8c6] group-hover:text-white transition-colors" />
+                  <span className="truncate group-hover:translate-x-1 transition-transform duration-200">Customer Facing</span>
                 </div>
-                {customerFacingOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                {customerFacingOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
               </button>
 
               {customerFacingOpen && (
