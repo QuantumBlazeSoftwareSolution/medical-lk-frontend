@@ -9,6 +9,7 @@ import {
   RefreshCw, ArrowLeft, ArrowRight, ShieldAlert,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
+import NMRAImportModal from '@/components/NMRAImportModal';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(n: number) {
@@ -104,6 +105,49 @@ export default function InventoryPage() {
   const [drawerMed, setDrawerMed]     = useState<Medicine | null>(null);
   const [page, setPage]               = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showNMRAModal, setShowNMRAModal] = useState(false);
+  const [medMasterId, setMedMasterId]     = useState<string | null>(null);
+
+  const handleSelectNMRAProduct = (prod: any) => {
+    resetForm();
+    setMedMasterId(prod.id);
+    setMedName(prod.brand_name);
+    setMedBrand(prod.brand_name);
+    setMedGeneric(prod.generic_name);
+    
+    // Map dosage format to common categories
+    const dosage = (prod.dosage || '').toLowerCase();
+    if (dosage.includes('tablet')) {
+      setMedCategory('tablet');
+      setMedUom('tablet');
+    } else if (dosage.includes('capsule')) {
+      setMedCategory('capsule');
+      setMedUom('capsule');
+    } else if (dosage.includes('syrup') || dosage.includes('liquid') || dosage.includes('suspension')) {
+      setMedCategory('syrup');
+      setMedUom('bottle');
+    } else if (dosage.includes('injection') || dosage.includes('vial') || dosage.includes('ampoule')) {
+      setMedCategory('injection');
+      setMedUom('vial');
+    } else if (dosage.includes('ointment') || dosage.includes('cream') || dosage.includes('gel')) {
+      setMedCategory('ointment');
+      setMedUom('tube');
+    } else {
+      setMedCategory(prod.dosage || 'Other');
+      setMedUom('unit');
+    }
+
+    setMedDescription(
+      `NMRA Registered Formulation.\n` +
+      `Registration No: ${prod.reg_no}\n` +
+      `Manufacturer: ${prod.manufacturer} (${prod.country})\n` +
+      `Pack details: ${prod.pack_size} (${prod.pack_type})\n` +
+      `Agent: ${prod.agent}`
+    );
+
+    setShowNMRAModal(false);
+    setShowAddModal(true);
+  };
 
   // Add medicine form
   const [medName, setMedName]         = useState('');
@@ -159,6 +203,7 @@ export default function InventoryPage() {
     setMedDescription('');
     setMedImage(null);
     setFormError('');
+    setMedMasterId(null);
   };
 
   // ── Derived data ─────────────────────────────────────────────────────────────
@@ -230,6 +275,12 @@ export default function InventoryPage() {
           <h1 className="font-display text-[28px] font-bold text-[#191c1e] leading-tight">Inventory Management</h1>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <button 
+            onClick={() => setShowNMRAModal(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#0f3d57] text-[#0f3d57] text-[12px] font-semibold hover:bg-[#0f3d57]/5 transition-colors cursor-pointer"
+          >
+            <Search size={15} /> Search NMRA Catalog
+          </button>
           <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#00273b] text-[#00273b] text-[12px] font-semibold hover:bg-[#00273b]/5 transition-colors cursor-pointer">
             <Upload size={15} /> Import CSV
           </button>
@@ -668,7 +719,8 @@ export default function InventoryPage() {
                   purchase_price: parseFloat(medPurchasePrice) || 0.0,
                   selling_price: parseFloat(medSellingPrice) || 0.0,
                   description: medDescription.trim() || null,
-                  image_url: medImage || null
+                  image_url: medImage || null,
+                  master_medicine_id: medMasterId || null
                 });
               }}>
                 {/* Row 1: Product Name (Full Width) */}
@@ -837,6 +889,13 @@ export default function InventoryPage() {
           </div>
         </div>
       )}
+
+      {/* NMRA Global Catalog Search Modal */}
+      <NMRAImportModal 
+        isOpen={showNMRAModal} 
+        onClose={() => setShowNMRAModal(false)} 
+        onSelectProduct={handleSelectNMRAProduct} 
+      />
     </div>
   );
 }
