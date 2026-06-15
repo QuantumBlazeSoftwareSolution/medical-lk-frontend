@@ -248,20 +248,16 @@ export default function POSTerminal() {
 
   const isPrintingRef = useRef(false);
 
-  // Auto-print receipt when invoice is successfully fetched
+  // Auto-print receipt is handled by the backend directly upon invoice creation.
+  // The frontend just resets the UI state immediately.
   useEffect(() => {
     if (printedInvoice && lastInvoiceId && !isPrintingRef.current) {
       isPrintingRef.current = true;
       setTimeout(() => {
-        printDirectOrFallback(lastInvoiceId).then(() => {
-          reset();
-          setPosMode('billing');
-          isPrintingRef.current = false;
-        }).catch((err) => {
-          console.error('Print direct fallback caught error:', err);
-          isPrintingRef.current = false;
-        });
-      }, 250);
+        reset();
+        setPosMode('billing');
+        isPrintingRef.current = false;
+      }, 100);
     }
   }, [printedInvoice, lastInvoiceId]);
 
