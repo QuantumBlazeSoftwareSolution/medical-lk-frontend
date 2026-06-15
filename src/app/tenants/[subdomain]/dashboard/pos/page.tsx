@@ -220,16 +220,36 @@ export default function POSTerminal() {
   const [printedInvoice, setPrintedInvoice] = useState<any>(null);
 
   const invoiceMutation = useMutation({
-    mutationFn: (payload: any) =>
-      apiFetch('/api/pos/invoices', { method: 'POST', body: JSON.stringify(payload) }),
+    mutationFn: (payload: any) => {
+      (window as any).__checkoutStartTime = performance.now();
+      console.log(`%c[FRONTEND DEBUG] Checkout request sent to backend at: ${new Date().toISOString()}`, 'color: #0f3d57; font-weight: bold;');
+      return apiFetch('/api/pos/invoices', { method: 'POST', body: JSON.stringify(payload) });
+    },
     onSuccess: (data) => {
+      const endTime = performance.now();
+      const startTime = (window as any).__checkoutStartTime || endTime;
+      const totalDuration = (endTime - startTime).toFixed(2);
+      console.log(`%c[FRONTEND DEBUG] Checkout transaction succeeded!`, 'color: #006d37; font-weight: bold;');
+      console.log(`%c[FRONTEND DEBUG] Total Frontend-to-Backend-to-Frontend duration: ${totalDuration}ms`, 'color: #006d37; font-weight: bold;');
+      
+      if (data.debug_durations) {
+        console.log("%c=== BACKEND LATENCY BREAKDOWN (ms) ===", 'color: #b15c00; font-weight: bold;');
+        console.table(data.debug_durations);
+      }
+      
       setPrintedInvoice(data.invoice_details);
       setLastInvoiceId(data.invoice_id);
       refetchBatches();
       setShowPayModal(false);
       setShowSuccessModal(true);
     },
-    onError: (err: any) => alert(err.message || 'Transaction failed.'),
+    onError: (err: any) => {
+      const endTime = performance.now();
+      const startTime = (window as any).__checkoutStartTime || endTime;
+      const totalDuration = (endTime - startTime).toFixed(2);
+      console.error(`%c[FRONTEND DEBUG] Checkout transaction failed after: ${totalDuration}ms`, 'color: #ba1a1a; font-weight: bold;', err);
+      alert(err.message || 'Transaction failed.');
+    },
   });
 
   const printDirectOrFallback = async (invoiceId: string) => {
