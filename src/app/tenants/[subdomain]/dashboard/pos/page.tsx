@@ -246,13 +246,20 @@ export default function POSTerminal() {
     }
   };
 
+  const isPrintingRef = useRef(false);
+
   // Auto-print receipt when invoice is successfully fetched
   useEffect(() => {
-    if (printedInvoice && lastInvoiceId) {
+    if (printedInvoice && lastInvoiceId && !isPrintingRef.current) {
+      isPrintingRef.current = true;
       setTimeout(() => {
         printDirectOrFallback(lastInvoiceId).then(() => {
           reset();
           setPosMode('billing');
+          isPrintingRef.current = false;
+        }).catch((err) => {
+          console.error('Print direct fallback caught error:', err);
+          isPrintingRef.current = false;
         });
       }, 250);
     }
