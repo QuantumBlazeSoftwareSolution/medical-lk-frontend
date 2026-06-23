@@ -239,6 +239,14 @@ export default function POSTerminal() {
       
       setPrintedInvoice(data.invoice_details);
       setLastInvoiceId(data.invoice_id);
+      
+      // Dispatch print event to Chrome Extension for silent printing
+      window.postMessage({
+        type: 'MEDICAL_LK_PRINT',
+        details: data.invoice_details,
+        tenantName: data.tenant_name || "Pharmacy Hub"
+      }, '*');
+
       refetchBatches();
       setShowPayModal(false);
       setShowSuccessModal(true);

@@ -114,14 +114,14 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(148, 163, 184, 0.5);
 }
 
 /* Print configuration for thermal bills (80mm/58mm rolls) */
@@ -160,3 +160,83 @@ body {
     min-height: auto !important;
   }
 }
+
+/* --- Premium Light Theme Landing Page Utilities --- */
+
+.light-theme-root {
+  background-color: #f8fafc; /* slate-50 */
+  color: #0f172a; /* slate-900 */
+}
+
+/* Premium Light Glassmorphism */
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+.glass-card-light:hover {
+  border-color: rgba(203, 213, 225, 0.9);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+/* Dot grid matrix background */
+.dot-pattern-light {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glowing ambient highlights */
+.glow-spot-emerald {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.glow-spot-teal {
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+.glow-spot-indigo {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+}
+
+/* Floating animation for subtle icons/objects */
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.animate-float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float 2.5s ease-in-out infinite;
+}
+
+/* Grid lines background pattern */
+.grid-pattern-light {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+}
+
+/* Text selection styles for light theme */
+.selection-light::selection {
+  background-color: rgba(20, 184, 166, 0.2);
+  color: #0f172a;
+}
+
