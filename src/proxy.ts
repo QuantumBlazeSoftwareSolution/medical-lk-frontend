@@ -2,16 +2,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  const url = request.nextUrl.clone();
   const hostname = request.headers.get('host') || '';
+  const pathname = request.nextUrl.pathname;
 
   // Exclude assets, static files, and API routes from rewrites
   if (
-    url.pathname.startsWith('/_next') ||
-    url.pathname.startsWith('/api') ||
-    url.pathname.includes('.') ||
-    url.pathname.startsWith('/favicon.ico') ||
-    url.pathname.startsWith('/tenants')
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.startsWith('/tenants')
   ) {
     return NextResponse.next();
   }
@@ -32,8 +32,9 @@ export function proxy(request: NextRequest) {
   }
 
   if (subdomain) {
-    // Rewrite path internally to tenants sub-directory
-    url.pathname = `/tenants/${subdomain}${url.pathname}`;
+    // Only clone URL when internally rewriting path
+    const url = request.nextUrl.clone();
+    url.pathname = `/tenants/${subdomain}${pathname}`;
     return NextResponse.rewrite(url);
   }
 
@@ -41,5 +42,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\..*).*)'],
 };

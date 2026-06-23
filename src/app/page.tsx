@@ -904,6 +904,30 @@ export default function LandingPage() {
               <span className="text-slate-500 text-sm font-semibold">/ 3 months</span>
             </div>
 
+            {/* Trial Note & Post-Trial Pricing Container */}
+            <div className="mb-8 p-5 rounded-2xl bg-slate-50 border border-slate-100/80 text-center">
+              <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full mb-3">
+                Post-Trial Subscription
+              </span>
+              <p className="text-[11px] text-slate-500 font-bold mb-3.5">
+                No contracts or setup fees. Cancel anytime.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold text-slate-900">LKR 1,200</span>
+                  <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+                </div>
+                <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
+                <div className="flex flex-col items-center relative">
+                  <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-indigo-500 px-1.5 py-0.5 rounded-full shadow-sm">
+                    Save LKR 2,400
+                  </span>
+                  <span className="text-sm font-bold text-slate-900">LKR 12,000</span>
+                  <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 1,000/mo)</span>
+                </div>
+              </div>
+            </div>
+
             <ul className="text-left space-y-4 mb-10 text-sm font-medium text-slate-700">
               <li className="flex items-center gap-3">
                 <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
