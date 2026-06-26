@@ -682,76 +682,162 @@ export default function LandingPage() {
 
       {/* Pricing / Trial Section */}
       <section id="pricing" className="py-24 relative z-10 gsap-fade-in">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <h2 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">
-            Simple, Transparent Pricing
-          </h2>
-          <p className="text-slate-600 text-base mb-14 max-w-xl mx-auto">
-            No upfront setup fees, no complex licensing constraints. Start immediately with a full feature-set, absolute free for the first 3 months.
-          </p>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 mb-6">
+              Simple, Transparent Pricing
+            </h2>
+            <p className="text-slate-600 text-base max-w-xl mx-auto">
+              No upfront setup fees, no complex licensing constraints. Choose the plan that fits your pharmacy's scale.
+            </p>
+          </div>
           
-          <div className="p-10 rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-md max-w-lg mx-auto relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="absolute top-0 right-0 px-4 py-1.5 bg-teal-500 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase">
-              Launch Trial
-            </div>
-            
-            <h3 className="text-2xl font-extrabold text-slate-900 mb-2">3-Month Free Plan</h3>
-            <p className="text-xs text-slate-500 font-semibold mb-6">No credit card registration required</p>
-            
-            <div className="flex items-baseline justify-center gap-1 my-8">
-              <span className="text-5xl font-extrabold tracking-tight text-slate-900">LKR 0</span>
-              <span className="text-slate-500 text-sm font-semibold">/ 3 months</span>
-            </div>
-
-            {/* Trial Note & Post-Trial Pricing Container */}
-            <div className="mb-8 p-5 rounded-2xl bg-slate-50 border border-slate-100/80 text-center">
-              <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full mb-3">
-                Post-Trial Subscription
-              </span>
-              <p className="text-[11px] text-slate-500 font-bold mb-3.5">
-                No contracts or setup fees. Cancel anytime.
-              </p>
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-slate-900">LKR 1,200</span>
-                  <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
+            {/* Basic Plan Card */}
+            <div className="p-10 rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-md relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="absolute top-0 right-0 px-4 py-1.5 bg-teal-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase">
+                  Launch Trial
                 </div>
-                <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
-                <div className="flex flex-col items-center relative">
-                  <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-indigo-500 px-1.5 py-0.5 rounded-full shadow-sm">
-                    Save LKR 2,400
+                
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Basic Plan</h3>
+                <p className="text-xs text-slate-500 font-semibold mb-6">3-Month Free Trial • No credit card required</p>
+                
+                <div className="flex items-baseline justify-center gap-1 my-8">
+                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">LKR 0</span>
+                  <span className="text-slate-500 text-sm font-semibold">/ 3 months</span>
+                </div>
+
+                {/* Trial Note & Post-Trial Pricing Container */}
+                <div className="mb-8 p-5 rounded-2xl bg-slate-50 border border-slate-100/80 text-center">
+                  <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full mb-3">
+                    Post-Trial Subscription
                   </span>
-                  <span className="text-sm font-bold text-slate-900">LKR 12,000</span>
-                  <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 1,000/mo)</span>
+                  <p className="text-[11px] text-slate-500 font-bold mb-3.5">
+                    No contracts or setup fees. Cancel anytime.
+                  </p>
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
+                    <div className="flex flex-col items-center">
+                      <span className="text-sm font-bold text-slate-900">LKR 1,200</span>
+                      <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+                    </div>
+                    <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
+                    <div className="flex flex-col items-center relative">
+                      <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-teal-600 px-1.5 py-0.5 rounded-full shadow-sm">
+                        Save LKR 2,400
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">LKR 12,000</span>
+                      <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 1,000/mo)</span>
+                    </div>
+                  </div>
                 </div>
+
+                <ul className="text-left space-y-4 mb-10 text-sm font-medium text-slate-700">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>Unlimited subdomains (tenant.medical.lk)</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>Lightning-fast POS with barcode checkout</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>Secure AES-256 patient records encryption</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>Stock warnings and batch expiry alerts</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>3 public website design templates</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
+                    <span>Weekly automated secure backups</span>
+                  </li>
+                </ul>
               </div>
+
+              <Link
+                href="/register?plan=basic"
+                className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
+              >
+                Sign Up In 60 Seconds
+              </Link>
             </div>
 
-            <ul className="text-left space-y-4 mb-10 text-sm font-medium text-slate-700">
-              <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
-                <span>Unlimited subdomains (tenant.medical.lk)</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
-                <span>Lightning-fast POS with barcode checkout</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
-                <span>Secure AES-256 patient records encryption</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-teal-500 shrink-0" />
-                <span>Stock warnings and batch expiry alerts</span>
-              </li>
-            </ul>
+            {/* Premium Plan Card */}
+            <div className="p-10 rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-md relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
+              <div>
+                <div className="absolute top-0 right-0 px-4 py-1.5 bg-teal-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase">
+                  Custom Domain
+                </div>
+                
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Premium Plan</h3>
+                <p className="text-xs text-slate-500 font-semibold mb-6">Own custom domain & brand identity</p>
+                
+                <div className="flex items-baseline justify-center gap-1 my-8">
+                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">LKR 2,500</span>
+                  <span className="text-slate-500 text-sm font-semibold">/ month</span>
+                </div>
 
-            <Link
-              href="/register"
-              className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
-            >
-              Sign Up In 60 Seconds
-            </Link>
+                {/* Subscription Options Container */}
+                <div className="mb-8 p-5 rounded-2xl bg-slate-50 border border-slate-100/80 text-center">
+                  <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider text-teal-700 bg-teal-50 px-2.5 py-0.5 rounded-full mb-3">
+                    Subscription Options
+                  </span>
+                  <p className="text-[11px] text-slate-500 font-bold mb-3.5">
+                    No contracts or setup fees. Cancel anytime.
+                  </p>
+                  <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
+                    <div className="flex flex-col items-center">
+                      <span className="text-sm font-bold text-slate-900">LKR 2,500</span>
+                      <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+                    </div>
+                    <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
+                    <div className="flex flex-col items-center relative">
+                      <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-teal-600 px-1.5 py-0.5 rounded-full shadow-sm">
+                        Save LKR 5,000
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">LKR 25,000</span>
+                      <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 2,083/mo)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <ul className="text-left space-y-4 mb-10 text-sm font-medium text-slate-700">
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
+                    <span className="font-semibold text-slate-950">Own custom domain (e.g. yourname.lk)</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
+                    <span className="font-semibold text-slate-950">Daily automated secure database backups</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
+                    <span className="font-semibold text-slate-950">3 premium corporate email accounts</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
+                    <span className="font-semibold text-slate-950">Unlimited public website design templates</span>
+                  </li>
+                  <li className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-slate-400 shrink-0" />
+                    <span className="text-slate-500">Includes all Basic Plan features</span>
+                  </li>
+                </ul>
+              </div>
+
+              <Link
+                href="/register?plan=premium"
+                className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
+              >
+                Get Started with Premium
+              </Link>
+            </div>
           </div>
         </div>
       </section>
