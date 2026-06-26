@@ -267,19 +267,14 @@ export default function LandingPage() {
         className="absolute inset-0 pointer-events-none z-0" 
       />
       
-      {/* Soft color glowing backdrops */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] glow-spot-teal pointer-events-none z-0" />
-      <div className="absolute top-[20%] right-[-10%] w-[50%] h-[50%] glow-spot-emerald pointer-events-none z-0" />
-      <div className="absolute bottom-[10%] left-[20%] w-[50%] h-[50%] glow-spot-indigo pointer-events-none z-0" />
-
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md border-b border-slate-200/60 bg-white/75 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center shadow-md shadow-teal-500/10">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center shadow-sm">
               <Activity className="h-5.5 w-5.5 text-white" />
             </div>
-            <span className="font-display text-2xl font-bold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
+            <span className="font-display text-2xl font-bold tracking-tight text-teal-600">
               medical.lk
             </span>
           </div>
@@ -294,7 +289,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-4">
             <Link
               href="/register"
-              className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl hover:from-teal-600 hover:to-emerald-600 shadow-md shadow-teal-500/15 hover:shadow-teal-500/25 hover:translate-y-[-1px] active:translate-y-[1px] transition-all"
+              className="px-5 py-2.5 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm hover:translate-y-[-1px] active:translate-y-[1px] transition-all"
             >
               Get Started Free
             </Link>
@@ -330,7 +325,7 @@ export default function LandingPage() {
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full mt-2 py-3 text-center text-sm font-semibold text-white bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl transition-all"
+                  className="w-full mt-2 py-3 text-center text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all"
                 >
                   Start 3-Month Trial
                 </Link>
@@ -341,31 +336,28 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 max-w-7xl mx-auto px-6 z-10">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
+      <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 max-w-5xl mx-auto px-6 z-10">
+        <div className="flex flex-col items-center text-center">
           
-          {/* Hero Left Content */}
-          <div className="lg:col-span-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-teal-500/20 bg-teal-50/70 text-xs text-teal-600 mb-6 font-semibold backdrop-blur-sm shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-teal-500" /> Sri Lanka's Modern Pharmacy SaaS
-            </div>
+          {/* Hero Content */}
+          <div className="max-w-3xl w-full flex flex-col items-center">
             
             <h1 className="gsap-hero-title font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 leading-[1.15]">
               Supercharge Your <br />
-              <span className="bg-gradient-to-r from-teal-600 via-emerald-500 to-indigo-600 bg-clip-text text-transparent">
+              <span className="text-teal-600">
                 Pharmacy POS
               </span> <br />
               & Stock Management
             </h1>
             
-            <p className="gsap-hero-subtitle max-w-xl text-slate-600 text-lg md:text-xl mb-10 leading-relaxed">
+            <p className="gsap-hero-subtitle max-w-xl text-slate-600 text-lg md:text-xl mb-10 leading-relaxed mx-auto">
               Scan barcodes, track batch expirations, run bulk inventory operations, and issue instant silent thermal receipts via WebUSB extension in under 12ms.
             </p>
             
-            <div className="gsap-hero-cta flex flex-col sm:flex-row items-center gap-4">
+            <div className="gsap-hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
               <Link
                 href="/register"
-                className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl hover:from-teal-600 hover:to-emerald-600 shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 transition-all hover:translate-y-[-2px] active:translate-y-[0px] text-center"
+                className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-all hover:translate-y-[-2px] active:translate-y-[0px] text-center"
               >
                 Start 3-Month Free Trial
               </Link>
@@ -378,7 +370,7 @@ export default function LandingPage() {
             </div>
 
             {/* Micro stats banner */}
-            <div className="mt-12 pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 max-w-lg">
+            <div className="mt-12 pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 max-w-lg w-full justify-center">
               <div>
                 <h4 className="text-2xl font-bold text-slate-900">12ms</h4>
                 <p className="text-xs text-slate-500">Receipt Print Speed</p>
@@ -391,199 +383,6 @@ export default function LandingPage() {
                 <h4 className="text-2xl font-bold text-slate-900">AES-256</h4>
                 <p className="text-xs text-slate-500">Patient Data Security</p>
               </div>
-            </div>
-          </div>
-
-          {/* Hero Right Decorative Floating UI Elements */}
-          <div className="lg:col-span-6 relative flex justify-center items-center">
-            {/* Visual background rings */}
-            <div className="absolute w-[450px] h-[450px] rounded-full border border-slate-200/50 pointer-events-none animate-pulse duration-[6000ms]" />
-            <div className="absolute w-[300px] h-[300px] rounded-full border border-slate-200/80 pointer-events-none" />
-
-            {/* Floating glass card: active prescription status */}
-            <div className="absolute top-[10%] left-[-5%] w-[180px] glass-card-light p-4 rounded-2xl z-20 animate-float-slow hidden sm:block">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-600">
-                  <CheckCircle className="h-4.5 w-4.5" />
-                </div>
-                <div>
-                  <h5 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Stock Status</h5>
-                  <p className="text-xs font-semibold text-slate-800">Paracetamol: 820</p>
-                </div>
-              </div>
-              <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                <div className="bg-teal-500 h-1.5 rounded-full" style={{ width: '80%' }} />
-              </div>
-            </div>
-
-            {/* Floating glass card: network latency */}
-            <div className="absolute bottom-[10%] right-[-5%] w-[200px] glass-card-light p-4 rounded-2xl z-20 animate-float-medium hidden sm:block">
-              <div className="flex items-center justify-between mb-2">
-                <h5 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sync Telemetry</h5>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              </div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold text-slate-800">1.4s</span>
-                <span className="text-xs text-slate-500">DB commit speed</span>
-              </div>
-              <div className="flex gap-0.5 mt-2 h-6 items-end">
-                {[4, 8, 5, 9, 3, 7, 2, 8, 4, 9, 6].map((h, i) => (
-                  <div key={i} className="flex-1 bg-teal-400/50 rounded-t-sm" style={{ height: `${h * 10}%` }} />
-                ))}
-              </div>
-            </div>
-
-            {/* Main Interactive Demo Container Anchor */}
-            <div className="w-full max-w-[460px] glass-card-light p-6 rounded-3xl relative z-10 shadow-2xl">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <Monitor className="h-4.5 w-4.5 text-slate-500" />
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">POS Cashier Screen Mock</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
-                </div>
-              </div>
-
-              {/* Minimal Interactive List */}
-              <div className="space-y-3.5 mb-6 min-h-[170px]">
-                {items.length === 0 ? (
-                  <div className="h-[170px] flex flex-col items-center justify-center text-slate-400 text-sm">
-                    <p>No items in cart</p>
-                    <button 
-                      onClick={addPresetItem} 
-                      className="mt-3 text-xs text-teal-600 font-bold hover:underline"
-                    >
-                      + Add Random Medicine
-                    </button>
-                  </div>
-                ) : (
-                  items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                      <div>
-                        <h4 className="text-sm font-bold text-slate-800">{item.name}</h4>
-                        <div className="flex gap-2 text-xs text-slate-500 font-medium">
-                          <span>{item.code}</span>
-                          <span>•</span>
-                          <span>LKR {item.price.toFixed(2)}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button 
-                          onClick={() => updateQty(item.id, -1)}
-                          className="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xs font-bold"
-                        >
-                          -
-                        </button>
-                        <span className="text-xs font-bold text-slate-700 min-w-[12px] text-center">{item.qty}</span>
-                        <button 
-                          onClick={() => updateQty(item.id, 1)}
-                          className="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50 active:scale-95 transition-all text-xs font-bold"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* POS control panel */}
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
-                <button
-                  onClick={addPresetItem}
-                  className="px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-1.5"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Medicine
-                </button>
-                <div className="text-right">
-                  <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Subtotal</div>
-                  <div className="text-lg font-extrabold text-slate-900">LKR {calculateTotal().toFixed(2)}</div>
-                </div>
-              </div>
-
-              {/* Checkout CTA */}
-              <button
-                onClick={triggerMockPrint}
-                disabled={isPrinting || items.length === 0}
-                className="w-full mt-4 py-3.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {isPrinting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Processing Payment & Printing...
-                  </>
-                ) : (
-                  <>
-                    <Printer className="h-4.5 w-4.5" />
-                    Simulate One-Click Print
-                  </>
-                )}
-              </button>
-
-              {/* Animated rolling thermal receipt */}
-              <AnimatePresence>
-                {printDuration && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="mt-6 border-t border-dashed border-slate-300 pt-4 overflow-hidden"
-                  >
-                    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-inner relative">
-                      {/* Close button */}
-                      <button 
-                        onClick={clearPrint}
-                        className="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-xs font-bold"
-                      >
-                        [Clear]
-                      </button>
-
-                      {/* WebUSB status notification */}
-                      <div className="mb-3 px-2 py-1 rounded bg-emerald-50 text-[10px] text-emerald-700 font-bold flex items-center justify-between border border-emerald-100">
-                        <span className="flex items-center gap-1">
-                          <Check className="w-3.5 h-3.5" /> WebUSB Extension Direct Connect
-                        </span>
-                        <span>{printDuration}ms</span>
-                      </div>
-
-                      {/* Receipt design */}
-                      <div className="text-center font-mono text-[11px] text-slate-700 uppercase tracking-tight">
-                        <div className="font-bold text-xs text-slate-900">{pharmacyName} Pharmacy</div>
-                        <div>No. 45, Galle Road, Colombo</div>
-                        <div className="border-t border-dashed border-slate-200 my-2" />
-                        
-                        {/* Receipt Items */}
-                        <div className="space-y-1 text-left">
-                          {items.map((item) => (
-                            <div key={item.id} className="flex justify-between">
-                              <span>{item.qty}x {item.name.substring(0, 16)}..</span>
-                              <span>{(item.price * item.qty).toFixed(2)}</span>
-                            </div>
-                          ))}
-                        </div>
-                        
-                        <div className="border-t border-dashed border-slate-200 my-2" />
-                        <div className="flex justify-between font-bold text-slate-900">
-                          <span>Total</span>
-                          <span>LKR {calculateTotal().toFixed(2)}</span>
-                        </div>
-                        <div className="border-t border-dashed border-slate-200 my-2" />
-                        
-                        {/* Fake barcode */}
-                        <div className="flex justify-center gap-[1px] h-8 bg-slate-900/10 px-4 py-1.5 rounded-sm">
-                          {[3,1,4,1,5,9,2,6,5,3,5,8,9,7,9,3,2,3,8,4,6].map((w, i) => (
-                            <div key={i} className="bg-slate-600 h-full" style={{ width: `${w}px` }} />
-                          ))}
-                        </div>
-                        <div className="text-[9px] text-slate-400 mt-1">Thank you! Powered by medical.lk</div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
 
@@ -787,7 +586,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Cashiers can process checkout events under 100ms. Scan barcode, deduct inventory, and issue bills dynamically.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-teal-500 to-teal-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
 
             {/* Feature 2 */}
@@ -799,7 +598,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Add stock batches, manage supplier credits, and track medicine expiry warnings smoothly from a central portal.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-emerald-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
 
             {/* Feature 3 */}
@@ -811,7 +610,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Get an instant web profile under your own address. Showcase locations, store hours, and pharmacy logos automatically.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-indigo-500 to-indigo-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
 
             {/* Feature 4 */}
@@ -823,7 +622,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 High availability database clustering hosted on Neon PostgreSQL. Safely query large logs without lag or timeout.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-teal-500 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
 
             {/* Feature 5 */}
@@ -835,7 +634,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Send thermal ESC/POS print batches silently with our lightweight Chrome Extension. Skip browser system dialogs completely.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
 
             {/* Feature 6 */}
@@ -847,7 +646,7 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Local cached operations synchronize instantly once you commit back-end transactions. Zero loss of transaction history.
               </p>
-              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
           </div>
         </div>
@@ -949,7 +748,7 @@ export default function LandingPage() {
 
             <Link
               href="/register"
-              className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 rounded-xl hover:from-teal-600 hover:to-emerald-600 transition-all active:scale-[0.98] shadow-md shadow-teal-500/10"
+              className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
             >
               Sign Up In 60 Seconds
             </Link>
@@ -962,7 +761,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
                 <Activity className="h-4.5 w-4.5 text-white" />
               </div>
               <span className="font-bold text-slate-800 text-base">medical.lk</span>
@@ -974,7 +773,7 @@ export default function LandingPage() {
                 href="https://www.quantumblaze.lk" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="bg-gradient-to-r from-teal-600 to-indigo-600 bg-clip-text text-transparent hover:from-teal-500 hover:to-indigo-500 font-extrabold flex items-center gap-0.5 hover:underline transition-all"
+                className="text-teal-600 hover:text-teal-700 font-extrabold flex items-center gap-0.5 hover:underline transition-all"
               >
                 Quantum Blaze
               </a>
