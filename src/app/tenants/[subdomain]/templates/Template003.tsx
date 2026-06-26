@@ -113,7 +113,9 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   const heroHeadline = tenant.hero_headline || `Institute of Longevity`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Developing personalized longevity strategies based on your genetic code and evidence-based medicine.';
   const heroButtonText = tenant.hero_button_text || 'Start your program';
-  const heroBgImage = tenant.hero_bg_image || '/templates/hero-003.png';
+  const heroBgImage = (!tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')) 
+    ? '/templates/hero-003.png' 
+    : tenant.hero_bg_image;
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
@@ -229,64 +231,76 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
       <title>{tenant.website_title || tenant.name}</title>
 
       {/* 1. Header Navigation */}
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 w-full z-50 border-b border-slate-100 shadow-sm transition-all duration-200">
-        <div className="flex justify-between items-center w-full px-6 md:px-10 max-w-7xl mx-auto h-20">
+      <header className="absolute top-[10px] left-[10px] right-[10px] z-50 transition-all duration-200 bg-transparent">
+        <div className="flex justify-between items-center w-full px-4 md:px-6 max-w-7xl mx-auto h-14 bg-white/95 backdrop-blur-md rounded-full border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
           
           {/* Logo brand */}
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-sm">
+            <div className="w-8 h-8 rounded-full bg-slate-950 flex items-center justify-center text-white font-extrabold text-xs">
               G
             </div>
             <span 
-              className="font-extrabold text-base tracking-tight text-slate-900 font-display"
+              className="font-extrabold text-sm tracking-tight text-slate-950 font-display"
               style={headingStyle}
             >
-              GeneX<span className="text-cyan-500">.</span>{tenant.name.split(' ')[0]}
+              Gene<span className="text-cyan-500 font-extrabold">X</span>
             </span>
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden lg:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-slate-500">
-            <a className="hover:text-slate-900 transition-colors" href="#">About</a>
-            <a className="hover:text-slate-900 transition-colors" href="#what-we-do">Research Institute</a>
-            <a className="hover:text-slate-900 transition-colors" href="#what-we-do">Medical Center</a>
-            <a className="hover:text-slate-900 transition-colors" href="#stock">Stock Search</a>
-            <a className="hover:text-slate-900 transition-colors" href="#details">Contacts</a>
+          <div className="hidden lg:flex items-center gap-6 text-[11px] font-semibold text-slate-500 normal-case tracking-normal">
+            <a className="hover:text-slate-950 transition-colors" href="#">About</a>
+            <a className="hover:text-slate-950 transition-colors" href="#what-we-do">Research Institute</a>
+            <a className="hover:text-slate-950 transition-colors" href="#what-we-do">Medical Center</a>
+            <a className="hover:text-slate-950 transition-colors" href="#">Blog</a>
+            <a className="hover:text-slate-955 transition-colors" href="#stock">Store</a>
+            <a className="hover:text-slate-955 transition-colors" href="#details">Contacts</a>
           </div>
 
           {/* Right Action Widgets */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-3 text-slate-400">
-              <button className="text-xs font-bold hover:text-slate-900 transition-colors">EN</button>
-              <User className="h-4 w-4 hover:text-slate-900 cursor-pointer" />
-              <ShoppingCart className="h-4 w-4 hover:text-slate-900 cursor-pointer" />
+            <div className="hidden sm:flex items-center gap-2.5">
+              <button className="text-[11px] font-bold text-slate-500 hover:text-slate-950 flex items-center gap-0.5 mr-1.5">
+                <span>EN</span>
+                <span className="text-[7px] opacity-70">▼</span>
+              </button>
+              <div className="w-7 h-7 rounded-full border border-cyan-100 bg-cyan-50/30 flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:border-cyan-200 transition-all cursor-pointer">
+                <User className="h-3.5 w-3.5" />
+              </div>
+              <div className="w-7 h-7 rounded-full border border-cyan-100 bg-cyan-50/30 flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:border-cyan-200 transition-all cursor-pointer">
+                <ShoppingCart className="h-3.5 w-3.5" />
+              </div>
             </div>
 
             <a 
               href="#stock"
-              className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-md active:scale-95"
+              className="pl-4 pr-1.5 py-1 bg-slate-950 hover:bg-slate-900 text-white rounded-full text-[11px] font-bold tracking-normal transition-all shadow-sm active:scale-95 flex items-center gap-2"
             >
-              {heroButtonText}
+              <span>{heroButtonText || 'Start your program'}</span>
+              <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-slate-950">
+                <ArrowRight className="h-3 w-3" />
+              </div>
             </a>
 
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
               aria-label="Toggle Menu" 
-              className="p-2 lg:hidden text-slate-500 hover:text-slate-900 focus:outline-none"
+              className="p-1.5 lg:hidden text-slate-500 hover:text-slate-950 focus:outline-none rounded-full hover:bg-slate-100"
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
           </div>
         </div>
 
         {/* Mobile Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-slate-100 bg-white px-6 py-4 space-y-3 shadow-md text-left">
-            <a className="block text-xs font-bold uppercase tracking-wider text-slate-500 py-1" href="#" onClick={() => setMobileMenuOpen(false)}>About</a>
-            <a className="block text-xs font-bold uppercase tracking-wider text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Research Institute</a>
-            <a className="block text-xs font-bold uppercase tracking-wider text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Medical Center</a>
-            <a className="block text-xs font-bold uppercase tracking-wider text-slate-500 py-1" href="#stock" onClick={() => setMobileMenuOpen(false)}>Stock Search</a>
-            <a className="block text-xs font-bold uppercase tracking-wider text-slate-500 py-1" href="#details" onClick={() => setMobileMenuOpen(false)}>Contacts</a>
+          <div className="lg:hidden mt-2 mx-auto max-w-7xl border border-slate-100/80 bg-white/95 backdrop-blur-md px-6 py-4 space-y-3 rounded-2xl shadow-lg text-left">
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#" onClick={() => setMobileMenuOpen(false)}>About</a>
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Research Institute</a>
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Medical Center</a>
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#" onClick={() => setMobileMenuOpen(false)}>Blog</a>
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#stock" onClick={() => setMobileMenuOpen(false)}>Store</a>
+            <a className="block text-xs font-semibold text-slate-500 py-1" href="#details" onClick={() => setMobileMenuOpen(false)}>Contacts</a>
           </div>
         )}
       </header>
@@ -294,7 +308,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
       <main>
         
         {/* 2. Longevity Hero Section */}
-        <section className="relative min-h-[85vh] flex items-center bg-slate-950 text-white overflow-hidden">
+        <section className="relative flex items-center bg-slate-950 text-white overflow-hidden rounded-[20px] m-[10px] shadow-xl" style={{ minHeight: 'calc(100vh - 20px)' }}>
           {/* Scientific backdrop image with dark blue tint */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-10" />
@@ -302,10 +316,13 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               src={heroBgImage} 
               alt="DNA Backdrop" 
               className="object-cover w-full h-full opacity-40 filter saturate-50" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/templates/hero-003.png';
+              }}
             />
           </div>
 
-          <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-10 py-20 text-left">
+          <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-10 pt-28 pb-20 text-left">
             <div className="max-w-2xl space-y-8">
               
               <h1 

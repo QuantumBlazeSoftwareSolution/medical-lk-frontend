@@ -14,9 +14,9 @@ function TemplateSelector({ tenant, subdomain }: TenantLandingClientProps) {
   const templateQuery = searchParams.get('template');
   
   // Resolve template: query param first, then tenant config, then default fallback
-  const templateId = (templateQuery || tenant?.template_id || 'default').toLowerCase();
+  const templateId = (templateQuery || tenant?.template_id || 'template-001').toLowerCase();
   
-  const SelectedTemplate = WEBSITE_TEMPLATES[templateId] || WEBSITE_TEMPLATES['default'];
+  const SelectedTemplate = WEBSITE_TEMPLATES[templateId] || WEBSITE_TEMPLATES['template-001'];
   
   return <SelectedTemplate tenant={tenant} subdomain={subdomain} />;
 }

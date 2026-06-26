@@ -112,7 +112,9 @@ export default function Template002({ tenant, subdomain }: Template002Props) {
   const heroHeadline = tenant.hero_headline || `Your Health, Our Priority`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Get professional pharmaceutical care, prescription fulfillment, and authentic medicines from our experienced staff.';
   const heroButtonText = tenant.hero_button_text || 'Find Our Store';
-  const heroBgImage = tenant.hero_bg_image || '/templates/hero-002.png';
+  const heroBgImage = (!tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')) 
+    ? '/templates/hero-002.png' 
+    : tenant.hero_bg_image;
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
@@ -387,6 +389,9 @@ export default function Template002({ tenant, subdomain }: Template002Props) {
               src={heroBgImage} 
               alt="Pharmacy Backdrop" 
               className="object-cover w-full h-full filter grayscale" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/templates/hero-002.png';
+              }}
             />
           </div>
 

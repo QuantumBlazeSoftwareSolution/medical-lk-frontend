@@ -85,7 +85,9 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
   const heroHeadline = tenant.hero_headline || `Welcome to ${tenant.name}`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Your trusted community pharmacy. Providing expert care, authentic medicines, and reliable health services.';
   const heroButtonText = tenant.hero_button_text || 'Get Directions';
-  const heroBgImage = tenant.hero_bg_image || '/templates/hero-001.png';
+  const heroBgImage = (!tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')) 
+    ? '/templates/hero-001.png' 
+    : tenant.hero_bg_image;
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
@@ -323,6 +325,9 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
               src={heroBgImage} 
               alt="Pharmacy showroom" 
               className="object-cover w-full h-full" 
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/templates/hero-001.png';
+              }}
             />
           </div>
 

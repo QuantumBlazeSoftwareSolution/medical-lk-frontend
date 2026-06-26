@@ -7,9 +7,9 @@ import {
   CheckCircle, XCircle, Plus, Search, Building, Clock, 
   ArrowRight, Lock, RefreshCw, Database, Server, LogOut, ChevronRight
 } from 'lucide-react';
-import TemplateDefault from '@/app/tenants/[subdomain]/templates/TemplateDefault';
-import TemplateProHealth from '@/app/tenants/[subdomain]/templates/TemplateProHealth';
-import TemplateGeneX from '@/app/tenants/[subdomain]/templates/TemplateGeneX';
+import Template001 from '@/app/tenants/[subdomain]/templates/Template001';
+import Template002 from '@/app/tenants/[subdomain]/templates/Template002';
+import Template003 from '@/app/tenants/[subdomain]/templates/Template003';
 
 const mockPreviewTenant = {
   name: "Lanka Care Pharmacy",
@@ -26,7 +26,7 @@ const mockPreviewTenant = {
   hero_headline: "Your Health, Our Priority",
   hero_subheadline: "Order online, search available medicines, and consult our licensed pharmacists 24/7.",
   hero_button_text: "Refill Now",
-  hero_bg_image: "https://images.unsplash.com/photo-1631517791424-9d8af325e24a?auto=format&fit=crop&w=800&q=80",
+  hero_bg_image: "",
   opening_hours: JSON.stringify({ MondayOpen: "08:00 AM", MondayClose: "09:00 PM", SundayOpen: "Closed" }),
   display_nmra_number: "NMRA-PH-8921",
   display_br_number: "PV-8910-12",
@@ -181,7 +181,14 @@ export default function DeveloperBackDoorDashboard() {
 
   const switchTenantTemplate = async (id: string, currentTemplate: string) => {
     setActionLoading(`template-${id}`);
-    const nextTemplate = currentTemplate === 'prohealth' ? 'default' : 'prohealth';
+    let nextTemplate = 'template-001';
+    if (currentTemplate === 'template-001' || currentTemplate === 'default') {
+      nextTemplate = 'template-002';
+    } else if (currentTemplate === 'template-002' || currentTemplate === 'prohealth') {
+      nextTemplate = 'template-003';
+    } else if (currentTemplate === 'template-003' || currentTemplate === 'genex') {
+      nextTemplate = 'template-001';
+    }
     try {
       const res = await fetch(`${API_BASE}/api/admin/tenants/${id}/template`, {
         method: 'PUT',
@@ -270,15 +277,16 @@ export default function DeveloperBackDoorDashboard() {
 
   // Template usage statistics count
   const templateStats = React.useMemo(() => {
-    let proHealthCount = 0;
-    let defaultCount = 0;
-    let genexCount = 0;
+    let t001 = 0;
+    let t002 = 0;
+    let t003 = 0;
     tenants.forEach(t => {
-      if (t.template_id === 'prohealth') proHealthCount++;
-      else if (t.template_id === 'genex') genexCount++;
-      else defaultCount++;
+      const tid = (t.template_id || '').toLowerCase();
+      if (tid === 'template-002' || tid === 'prohealth') t002++;
+      else if (tid === 'template-003' || tid === 'genex') t003++;
+      else t001++;
     });
-    return { prohealth: proHealthCount, default: defaultCount, genex: genexCount };
+    return { template001: t001, template002: t002, template003: t003 };
   }, [tenants]);
 
   if (!authenticated) {
@@ -639,17 +647,17 @@ export default function DeveloperBackDoorDashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">TemplateDefault</h3>
+                      <h3 className="font-extrabold text-sm text-slate-200">Template001</h3>
                       <p className="text-[10px] text-slate-500 mt-0.5">Classic colorful pharmacy aesthetic</p>
                     </div>
                     <span className="px-2.5 py-1 bg-slate-950/60 text-slate-400 border border-slate-800 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: default
+                      ID: template-001
                     </span>
                   </div>
                   
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-slate-100">{templateStats.default} pharmacies</span>
+                    <span className="text-3xl font-black text-slate-100">{templateStats.template001} pharmacies</span>
                   </div>
 
                   <hr className="border-slate-800" />
@@ -660,7 +668,7 @@ export default function DeveloperBackDoorDashboard() {
                 </div>
                 <div className="pt-2">
                   <button 
-                    onClick={() => setPreviewTemplateId('default')}
+                    onClick={() => setPreviewTemplateId('template-001')}
                     className="w-full py-2.5 bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
                   >
                     View Layout Design
@@ -673,17 +681,17 @@ export default function DeveloperBackDoorDashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">TemplateProHealth</h3>
+                      <h3 className="font-extrabold text-sm text-slate-200">Template002</h3>
                       <p className="text-[10px] text-slate-500 mt-0.5">Professional teal/solid clinical theme</p>
                     </div>
                     <span className="px-2.5 py-1 bg-teal-900/10 text-teal-400 border border-teal-800/40 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: prohealth
+                      ID: template-002
                     </span>
                   </div>
                   
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-teal-400">{templateStats.prohealth} pharmacies</span>
+                    <span className="text-3xl font-black text-teal-400">{templateStats.template002} pharmacies</span>
                   </div>
 
                   <hr className="border-slate-800" />
@@ -694,7 +702,7 @@ export default function DeveloperBackDoorDashboard() {
                 </div>
                 <div className="pt-2">
                   <button 
-                    onClick={() => setPreviewTemplateId('prohealth')}
+                    onClick={() => setPreviewTemplateId('template-002')}
                     className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center"
                   >
                     View Layout Design
@@ -707,17 +715,17 @@ export default function DeveloperBackDoorDashboard() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">TemplateGeneX</h3>
+                      <h3 className="font-extrabold text-sm text-slate-200">Template003</h3>
                       <p className="text-[10px] text-slate-500 mt-0.5">Biotech longevity clinical theme</p>
                     </div>
                     <span className="px-2.5 py-1 bg-cyan-900/10 text-cyan-400 border border-cyan-800/40 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: genex
+                      ID: template-003
                     </span>
                   </div>
                   
                   <div className="flex justify-between items-baseline pt-2">
                     <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-cyan-400">{templateStats.genex} pharmacies</span>
+                    <span className="text-3xl font-black text-cyan-400">{templateStats.template003} pharmacies</span>
                   </div>
 
                   <hr className="border-slate-800" />
@@ -728,7 +736,7 @@ export default function DeveloperBackDoorDashboard() {
                 </div>
                 <div className="pt-2">
                   <button 
-                    onClick={() => setPreviewTemplateId('genex')}
+                    onClick={() => setPreviewTemplateId('template-003')}
                     className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center"
                   >
                     View Layout Design
@@ -987,34 +995,36 @@ export default function DeveloperBackDoorDashboard() {
       )}
       {/* TEMPLATE PREVIEW MODAL */}
       {previewTemplateId && (
-        <div className="fixed inset-0 bg-slate-950/90 z-[300] flex flex-col">
-          {/* Header toolbar */}
-          <div className="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-2.5 text-left">
-              <div className="px-2 py-0.5 bg-teal-600 rounded text-white text-[10px] font-bold uppercase">
+        <div className="fixed inset-0 bg-[#f8f9ff] z-[300] overflow-y-auto">
+          {/* Floating Absolute Preview Control Popup */}
+          <div className="fixed top-6 right-6 z-[350] bg-slate-950/90 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-[0_10px_40px_rgba(0,0,0,0.5)] flex flex-col gap-3 min-w-[220px] text-left">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-teal-500/10 border border-teal-500/30 rounded text-teal-400 text-[10px] font-black uppercase tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span>
                 Preview Mode
               </div>
-              <h3 className="font-extrabold text-sm text-slate-100">
-                {previewTemplateId === 'prohealth' ? 'TemplateProHealth' : 'TemplateDefault'} - Live Interactive Preview
-              </h3>
+              <h4 className="font-extrabold text-xs text-slate-100 mt-2">
+                {previewTemplateId === 'template-002' ? 'Template002' : previewTemplateId === 'template-003' ? 'Template003' : 'Template001'}
+              </h4>
+              <p className="text-[9px] text-slate-500 font-semibold mt-0.5">Live Interactive Preview</p>
             </div>
             
             <button
               onClick={() => setPreviewTemplateId(null)}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg active:scale-95 transition-all cursor-pointer"
+              className="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl active:scale-95 transition-all cursor-pointer text-center"
             >
               Close Preview
             </button>
           </div>
-          
+
           {/* Main preview frame */}
-          <div className="flex-1 overflow-y-auto bg-[#f8f9ff]">
-            {previewTemplateId === 'prohealth' ? (
-              <TemplateProHealth tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
-            ) : previewTemplateId === 'genex' ? (
-              <TemplateGeneX tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+          <div className="w-full min-h-screen">
+            {previewTemplateId === 'template-002' ? (
+              <Template002 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+            ) : previewTemplateId === 'template-003' ? (
+              <Template003 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
             ) : (
-              <TemplateDefault tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+              <Template001 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
             )}
           </div>
         </div>
