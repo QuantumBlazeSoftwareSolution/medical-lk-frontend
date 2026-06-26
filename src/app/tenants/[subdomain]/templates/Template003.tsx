@@ -20,12 +20,12 @@ const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
   )
 });
 
-interface TemplateGeneXProps {
+interface Template003Props {
   tenant: any;
   subdomain: string;
 }
 
-export default function TemplateGeneX({ tenant, subdomain }: TemplateGeneXProps) {
+export default function Template003({ tenant, subdomain }: Template003Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
@@ -113,7 +113,7 @@ export default function TemplateGeneX({ tenant, subdomain }: TemplateGeneXProps)
   const heroHeadline = tenant.hero_headline || `Institute of Longevity`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Developing personalized longevity strategies based on your genetic code and evidence-based medicine.';
   const heroButtonText = tenant.hero_button_text || 'Start your program';
-  const heroBgImage = tenant.hero_bg_image || 'https://images.unsplash.com/photo-1530026405186-ed1ea0ac7a63?auto=format&fit=crop&w=1200&q=80';
+  const heroBgImage = tenant.hero_bg_image || '/templates/hero-003.png';
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours

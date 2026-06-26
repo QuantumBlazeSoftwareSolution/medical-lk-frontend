@@ -19,12 +19,12 @@ const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
   )
 });
 
-interface TemplateProHealthProps {
+interface Template002Props {
   tenant: any;
   subdomain: string;
 }
 
-export default function TemplateProHealth({ tenant, subdomain }: TemplateProHealthProps) {
+export default function Template002({ tenant, subdomain }: Template002Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
@@ -112,7 +112,7 @@ export default function TemplateProHealth({ tenant, subdomain }: TemplateProHeal
   const heroHeadline = tenant.hero_headline || `Your Health, Our Priority`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Get professional pharmaceutical care, prescription fulfillment, and authentic medicines from our experienced staff.';
   const heroButtonText = tenant.hero_button_text || 'Find Our Store';
-  const heroBgImage = tenant.hero_bg_image || 'https://images.unsplash.com/photo-1631517791424-9d8af325e24a?auto=format&fit=crop&w=1200&q=80';
+  const heroBgImage = tenant.hero_bg_image || '/templates/hero-002.png';
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours

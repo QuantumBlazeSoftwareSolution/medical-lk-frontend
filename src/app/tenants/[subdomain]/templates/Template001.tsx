@@ -19,12 +19,12 @@ const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
   )
 });
 
-interface TemplateDefaultProps {
+interface Template001Props {
   tenant: any;
   subdomain: string;
 }
 
-export default function TemplateDefault({ tenant, subdomain }: TemplateDefaultProps) {
+export default function Template001({ tenant, subdomain }: Template001Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
@@ -85,7 +85,7 @@ export default function TemplateDefault({ tenant, subdomain }: TemplateDefaultPr
   const heroHeadline = tenant.hero_headline || `Welcome to ${tenant.name}`;
   const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Your trusted community pharmacy. Providing expert care, authentic medicines, and reliable health services.';
   const heroButtonText = tenant.hero_button_text || 'Get Directions';
-  const heroBgImage = tenant.hero_bg_image || 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80';
+  const heroBgImage = tenant.hero_bg_image || '/templates/hero-001.png';
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
