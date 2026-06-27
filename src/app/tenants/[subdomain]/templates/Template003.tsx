@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import nextDynamic from 'next/dynamic';
 import { 
   MapPin, Mail, Phone, Loader2, Activity, Heart, Clock, 
@@ -29,12 +29,28 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOpenNow, setIsOpenNow] = useState(false);
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
+  const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
+  const heroSectionRef = useRef<HTMLElement>(null);
   
   // Inventory state
   const [searchQuery, setSearchQuery] = useState('');
   const [batches, setBatches] = useState<any[]>([]);
   const [loadingInventory, setLoadingInventory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Detect scroll past hero using IntersectionObserver (works in preview containers too)
+  useEffect(() => {
+    if (!heroSectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // When hero is NOT intersecting the viewport → we're past it
+        setIsScrolledPastHero(!entry.isIntersecting);
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(heroSectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   // Apply dynamic favicon if configured
   useEffect(() => {
@@ -230,54 +246,131 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
     >
       <title>{tenant.website_title || tenant.name}</title>
 
-      {/* 1. Header Navigation */}
-      <header className="absolute top-[10px] left-[10px] right-[10px] z-50 transition-all duration-200 bg-transparent">
-        <div className="flex justify-between items-center w-full px-4 md:px-6 max-w-7xl mx-auto h-14 bg-white/95 backdrop-blur-md rounded-full border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
+      {/* 1. Header Navigation — iOS 26 Liquid Glass */}
+      <header className="sticky top-0 z-50 transition-all duration-300 bg-transparent pt-[20px] px-[20px]" style={{ marginBottom: '-76px' }}>
+        <div 
+          className="flex justify-between items-center w-full px-5 md:px-6 max-w-7xl mx-auto h-14 rounded-full transition-all duration-500 relative overflow-hidden"
+          style={isScrolledPastHero ? {
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.65) 70%, rgba(255,255,255,0.72) 100%)',
+            backdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
+            WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
+            border: '0.5px solid rgba(0, 0, 0, 0.08)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -0.5px 0 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
+          } : {
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.12) 100%)',
+            backdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
+            WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
+            border: '0.5px solid rgba(255, 255, 255, 0.28)',
+            boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.35), inset 0 -0.5px 0 0 rgba(255,255,255,0.08), inset 0 0 16px 0 rgba(255,255,255,0.04), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
+          }}
+        >
+          {/* Liquid specular highlight shimmer */}
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none transition-opacity duration-500"
+            style={{
+              background: isScrolledPastHero 
+                ? 'linear-gradient(105deg, rgba(255,255,255,0.5) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.2) 100%)'
+                : 'linear-gradient(105deg, rgba(255,255,255,0.12) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.06) 100%)',
+            }}
+          />
           
           {/* Logo brand */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-slate-950 flex items-center justify-center text-white font-extrabold text-xs">
+          <div className="flex items-center gap-2 relative z-10">
+            <div 
+              className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs transition-all duration-500 ${isScrolledPastHero ? 'text-slate-800' : 'text-white'}`}
+              style={isScrolledPastHero ? {
+                background: 'rgba(0,0,0,0.06)',
+                border: '0.5px solid rgba(0,0,0,0.1)',
+                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
+              } : {
+                background: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '0.5px solid rgba(255,255,255,0.22)',
+                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
+              }}
+            >
               G
             </div>
             <span 
-              className="font-extrabold text-sm tracking-tight text-slate-950 font-display"
+              className={`font-extrabold text-sm tracking-tight font-display transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-800' : 'text-white/90'}`}
               style={headingStyle}
             >
-              Gene<span className="text-cyan-500 font-extrabold">X</span>
+              Gene<span className={`font-extrabold transition-colors duration-500 ${isScrolledPastHero ? 'text-cyan-600' : 'text-cyan-400'}`}>X</span>
             </span>
           </div>
 
           {/* Navigation Links */}
-          <div className="hidden lg:flex items-center gap-6 text-[11px] font-semibold text-slate-500 normal-case tracking-normal">
-            <a className="hover:text-slate-950 transition-colors" href="#">About</a>
-            <a className="hover:text-slate-950 transition-colors" href="#what-we-do">Research Institute</a>
-            <a className="hover:text-slate-950 transition-colors" href="#what-we-do">Medical Center</a>
-            <a className="hover:text-slate-950 transition-colors" href="#">Blog</a>
-            <a className="hover:text-slate-955 transition-colors" href="#stock">Store</a>
-            <a className="hover:text-slate-955 transition-colors" href="#details">Contacts</a>
+          <div className={`hidden lg:flex items-center gap-6 text-[11px] font-semibold normal-case tracking-normal relative z-10 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-500' : 'text-white/55'}`}>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#">About</a>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#what-we-do">Research Institute</a>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#what-we-do">Medical Center</a>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#">Blog</a>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#stock">Store</a>
+            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#details">Contacts</a>
           </div>
 
           {/* Right Action Widgets */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 relative z-10">
             <div className="hidden sm:flex items-center gap-2.5">
-              <button className="text-[11px] font-bold text-slate-500 hover:text-slate-950 flex items-center gap-0.5 mr-1.5">
+              <button className={`text-[11px] font-bold flex items-center gap-0.5 mr-1 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-400 hover:text-slate-700' : 'text-white/45 hover:text-white/90'}`}>
                 <span>EN</span>
-                <span className="text-[7px] opacity-70">▼</span>
+                <span className="text-[7px] opacity-60">▼</span>
               </button>
-              <div className="w-7 h-7 rounded-full border border-cyan-100 bg-cyan-50/30 flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:border-cyan-200 transition-all cursor-pointer">
+              <div 
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-800' : 'text-white/55 hover:text-white/90'}`}
+                style={isScrolledPastHero ? {
+                  background: 'rgba(0,0,0,0.04)',
+                  border: '0.5px solid rgba(0,0,0,0.08)',
+                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
+                } : {
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '0.5px solid rgba(255,255,255,0.18)',
+                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
+                }}
+              >
                 <User className="h-3.5 w-3.5" />
               </div>
-              <div className="w-7 h-7 rounded-full border border-cyan-100 bg-cyan-50/30 flex items-center justify-center text-cyan-600 hover:text-cyan-700 hover:border-cyan-200 transition-all cursor-pointer">
+              <div 
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-800' : 'text-white/55 hover:text-white/90'}`}
+                style={isScrolledPastHero ? {
+                  background: 'rgba(0,0,0,0.04)',
+                  border: '0.5px solid rgba(0,0,0,0.08)',
+                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
+                } : {
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '0.5px solid rgba(255,255,255,0.18)',
+                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
+                }}
+              >
                 <ShoppingCart className="h-3.5 w-3.5" />
               </div>
             </div>
 
             <a 
               href="#stock"
-              className="pl-4 pr-1.5 py-1 bg-slate-950 hover:bg-slate-900 text-white rounded-full text-[11px] font-bold tracking-normal transition-all shadow-sm active:scale-95 flex items-center gap-2"
+              className={`pl-4 pr-1.5 py-1 rounded-full text-[11px] font-bold tracking-normal transition-all duration-500 active:scale-95 flex items-center gap-2 ${isScrolledPastHero ? 'text-slate-700' : 'text-white/85'}`}
+              style={isScrolledPastHero ? {
+                background: 'rgba(0,0,0,0.06)',
+                border: '0.5px solid rgba(0,0,0,0.1)',
+                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
+              } : {
+                background: 'rgba(255,255,255,0.1)',
+                border: '0.5px solid rgba(255,255,255,0.2)',
+                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
+              }}
             >
               <span>{heroButtonText || 'Start your program'}</span>
-              <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-slate-950">
+              <div 
+                className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-500 ${isScrolledPastHero ? 'text-slate-700' : 'text-white/90'}`}
+                style={isScrolledPastHero ? {
+                  background: 'rgba(0,0,0,0.08)',
+                  border: '0.5px solid rgba(0,0,0,0.1)',
+                } : {
+                  background: 'rgba(255,255,255,0.15)',
+                  border: '0.5px solid rgba(255,255,255,0.22)',
+                }}
+              >
                 <ArrowRight className="h-3 w-3" />
               </div>
             </a>
@@ -285,22 +378,37 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
               aria-label="Toggle Menu" 
-              className="p-1.5 lg:hidden text-slate-500 hover:text-slate-950 focus:outline-none rounded-full hover:bg-slate-100"
+              className={`p-1.5 lg:hidden focus:outline-none rounded-full transition-all duration-500 ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900 hover:bg-black/5' : 'text-white/55 hover:text-white hover:bg-white/10'}`}
             >
               <Menu size={18} />
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown */}
+        {/* Mobile Dropdown — Liquid Glass */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-2 mx-auto max-w-7xl border border-slate-100/80 bg-white/95 backdrop-blur-md px-6 py-4 space-y-3 rounded-2xl shadow-lg text-left">
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#" onClick={() => setMobileMenuOpen(false)}>About</a>
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Research Institute</a>
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Medical Center</a>
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#" onClick={() => setMobileMenuOpen(false)}>Blog</a>
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#stock" onClick={() => setMobileMenuOpen(false)}>Store</a>
-            <a className="block text-xs font-semibold text-slate-500 py-1" href="#details" onClick={() => setMobileMenuOpen(false)}>Contacts</a>
+          <div 
+            className="lg:hidden mt-2 mx-auto max-w-7xl px-6 py-4 space-y-3 rounded-2xl text-left relative overflow-hidden"
+            style={isScrolledPastHero ? {
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.72) 100%)',
+              backdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
+              WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
+              border: '0.5px solid rgba(0,0,0,0.08)',
+              boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), 0 8px 40px rgba(0,0,0,0.06)',
+            } : {
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.08) 100%)',
+              backdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
+              WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
+              border: '0.5px solid rgba(255, 255, 255, 0.22)',
+              boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.3), inset 0 0 16px 0 rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.08)',
+            }}
+          >
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#" onClick={() => setMobileMenuOpen(false)}>About</a>
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Research Institute</a>
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Medical Center</a>
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#" onClick={() => setMobileMenuOpen(false)}>Blog</a>
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#stock" onClick={() => setMobileMenuOpen(false)}>Store</a>
+            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#details" onClick={() => setMobileMenuOpen(false)}>Contacts</a>
           </div>
         )}
       </header>
@@ -308,7 +416,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
       <main>
         
         {/* 2. Longevity Hero Section */}
-        <section className="relative flex items-center bg-slate-950 text-white overflow-hidden rounded-[20px] m-[10px] shadow-xl" style={{ minHeight: 'calc(100vh - 20px)' }}>
+        <section ref={heroSectionRef} className="relative flex items-center bg-slate-950 text-white overflow-hidden rounded-[20px] m-[10px] shadow-xl" style={{ minHeight: 'calc(100vh - 20px)' }}>
           {/* Scientific backdrop image with dark blue tint */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-10" />

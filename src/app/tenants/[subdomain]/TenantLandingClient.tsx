@@ -14,7 +14,10 @@ function TemplateSelector({ tenant, subdomain }: TenantLandingClientProps) {
   const templateQuery = searchParams.get('template');
   
   // Resolve template: query param first, then tenant config, then default fallback
-  const templateId = (templateQuery || tenant?.template_id || 'template-001').toLowerCase();
+  let templateId = (templateQuery || tenant?.template_id || 'template-001').toLowerCase();
+  if (templateId === 'default') templateId = 'template-001';
+  if (templateId === 'prohealth') templateId = 'template-002';
+  if (templateId === 'genex') templateId = 'template-003';
   
   const SelectedTemplate = WEBSITE_TEMPLATES[templateId] || WEBSITE_TEMPLATES['template-001'];
   

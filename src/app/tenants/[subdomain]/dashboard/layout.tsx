@@ -9,7 +9,7 @@ import {
   Users, Settings, LogOut, Loader2, Activity, User,
   Truck, BarChart3, Globe, ShieldCheck, ClipboardList,
   Search, Bell, ChevronDown, AlertTriangle, Hourglass,
-  Building2, LifeBuoy, Link2, Monitor, ChevronRight
+  Building2, LifeBuoy, Link2, Monitor, ChevronRight, Layout
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (pathname.startsWith('/dashboard/reports')) {
         setReportsOpen(true);
       }
-      if (pathname.startsWith('/dashboard/website-builder') || pathname.startsWith('/dashboard/domain')) {
+      if (pathname.startsWith('/dashboard/website-builder') || pathname.startsWith('/dashboard/domain') || pathname.startsWith('/dashboard/templates')) {
         setCustomerFacingOpen(true);
       }
     }
@@ -276,6 +276,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   >
                     <Globe size={13} />
                     <span>Website Builder</span>
+                  </Link>
+
+                  <Link
+                    href="/dashboard/templates"
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
+                      pathname === '/dashboard/templates' || pathname.startsWith('/dashboard/templates/')
+                        ? 'bg-white/10 text-white'
+                        : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <Layout size={13} />
+                    <span>Website Templates</span>
                   </Link>
 
                   <Link
