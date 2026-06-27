@@ -175,11 +175,23 @@ export default function WebsiteTemplatesPage() {
                     <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{card.codename}</span>
                   </div>
                   
-                  {isCurrentlyActive && (
-                    <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">
-                      Active
-                    </span>
-                  )}
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    {isCurrentlyActive && (
+                      <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">
+                        Active
+                      </span>
+                    )}
+                    <a
+                      href={`http://${subdomain}.localhost:3000?template=${card.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[10px] text-[#0f3d57] font-semibold hover:underline flex items-center gap-0.5"
+                    >
+                      <Eye size={10} />
+                      <span>Preview Live</span>
+                    </a>
+                  </div>
                 </div>
 
                 <p className="text-xs text-[#42474d] leading-relaxed mb-5">{card.description}</p>
