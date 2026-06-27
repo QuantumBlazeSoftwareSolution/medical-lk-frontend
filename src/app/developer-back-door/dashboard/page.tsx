@@ -62,11 +62,13 @@ export default function DeveloperBackDoorDashboard() {
   });
   const [tenants, setTenants] = useState<any[]>([]);
   const [medicines, setMedicines] = useState<any[]>([]);
+  const [dbTemplates, setDbTemplates] = useState<any[]>([]);
   
   // Loaders & Interactivity
   const [loadingOverview, setLoadingOverview] = useState(false);
   const [loadingTenants, setLoadingTenants] = useState(false);
   const [loadingMedicines, setLoadingMedicines] = useState(false);
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   
   // Modals / Forms
@@ -151,12 +153,28 @@ export default function DeveloperBackDoorDashboard() {
     }
   };
 
+  const fetchTemplates = async () => {
+    setLoadingTemplates(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/templates`);
+      if (res.ok) {
+        const data = await res.json();
+        setDbTemplates(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingTemplates(false);
+    }
+  };
+
   // Switch tab loader triggers
   const handleTabChange = (tab: any) => {
     setActiveTab(tab);
     if (tab === 'overview') fetchOverview();
     if (tab === 'pharmacies') fetchTenants();
     if (tab === 'medicines') fetchMedicines();
+    if (tab === 'templates') fetchTemplates();
   };
 
   // Administrative Actions
@@ -197,6 +215,42 @@ export default function DeveloperBackDoorDashboard() {
       });
       if (res.ok) {
         fetchTenants();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const toggleTemplateActive = async (id: string, currentStatus: boolean) => {
+    setActionLoading(`template-active-${id}`);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/templates/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: !currentStatus })
+      });
+      if (res.ok) {
+        fetchTemplates();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const updateTemplatePricing = async (id: string, monthly: number, annual: number) => {
+    setActionLoading(`template-pricing-${id}`);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/templates/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cost_monthly: monthly, cost_annual: annual })
+      });
+      if (res.ok) {
+        fetchTemplates();
       }
     } catch (e) {
       console.error(e);
@@ -641,109 +695,126 @@ export default function DeveloperBackDoorDashboard() {
 
             {/* Template Distribution Summary Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
-              {/* Default Template card */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">Template001</h3>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Classic colorful pharmacy aesthetic</p>
+              {dbTemplates.map((template) => {
+                const isT001 = template.id === 'template-001';
+                const isT002 = template.id === 'template-002';
+                const isT003 = template.id === 'template-003';
+                
+                const activeCount = isT001 ? templateStats.template001
+                  : isT002 ? templateStats.template002
+                  : isT003 ? templateStats.template003
+                  : 0;
+
+                const bgGlow = isT001 ? 'bg-slate-900 border-slate-800'
+                  : isT002 ? 'bg-slate-900 border-teal-900/40'
+                  : 'bg-slate-900 border-cyan-900/40';
+
+                const textBadge = isT001 ? 'text-slate-400 border-slate-800 bg-slate-950/60'
+                  : isT002 ? 'text-teal-400 border-teal-800/40 bg-teal-900/10'
+                  : 'text-cyan-400 border-cyan-800/40 bg-cyan-900/10';
+
+                const statCountText = isT001 ? 'text-slate-100'
+                  : isT002 ? 'text-teal-400'
+                  : 'text-cyan-400';
+
+                return (
+                  <div key={template.id} className={`${bgGlow} border rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xl`}>
+                    <div className="space-y-4">
+                      
+                      {/* Name & Codename */}
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-extrabold text-sm text-slate-200">{template.name}</h3>
+                          <p className="text-[10px] text-slate-500 mt-0.5">{template.codename}</p>
+                        </div>
+                        <span className={`px-2.5 py-1 font-mono text-xs font-bold rounded-lg uppercase ${textBadge}`}>
+                          ID: {template.id}
+                        </span>
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-[11px] text-slate-400 leading-relaxed min-h-[48px]">
+                        {template.description || 'Custom template layout for pharmacy frontends.'}
+                      </p>
+
+                      {/* File Path */}
+                      <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800/50">
+                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-wide">Component Path:</span>
+                        <code className="text-[10px] text-slate-300 font-mono break-all">{template.file_path}</code>
+                      </div>
+
+                      {/* Active Count */}
+                      <div className="flex justify-between items-baseline pt-2">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution:</span>
+                        <span className={`text-3xl font-black ${statCountText}`}>{activeCount} pharmacies</span>
+                      </div>
+
+                      <hr className="border-slate-850" />
+
+                      {/* pricing controls */}
+                      <div className="space-y-3">
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wide">Subscription Fees (LKR)</span>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">Monthly</label>
+                            <input
+                              type="number"
+                              defaultValue={template.cost_monthly}
+                              onBlur={(e) => updateTemplatePricing(template.id, parseFloat(e.target.value) || 0.0, template.cost_annual)}
+                              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-200 text-xs focus:outline-none focus:border-teal-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">Annual</label>
+                            <input
+                              type="number"
+                              defaultValue={template.cost_annual}
+                              onBlur={(e) => updateTemplatePricing(template.id, template.cost_monthly, parseFloat(e.target.value) || 0.0)}
+                              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-200 text-xs focus:outline-none focus:border-teal-500"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr className="border-slate-850" />
+
+                      {/* Activation toggling */}
+                      <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/40">
+                        <div>
+                          <span className="block text-[10px] font-bold text-slate-300">Layout Availability</span>
+                          <span className="text-[9px] text-slate-500">Enable/disable for pharmacy selection</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => toggleTemplateActive(template.id, template.is_active)}
+                          disabled={actionLoading === `template-active-${template.id}`}
+                          className={`w-10 h-5 rounded-full relative transition-colors cursor-pointer disabled:opacity-50 ${
+                            template.is_active ? 'bg-teal-500' : 'bg-slate-800'
+                          }`}
+                        >
+                          <span className={`absolute top-[2px] w-3.5 h-3.5 bg-white rounded-full transition-transform ${
+                            template.is_active ? 'translate-x-[22px]' : 'translate-x-[4px]'
+                          }`} />
+                        </button>
+                      </div>
+
                     </div>
-                    <span className="px-2.5 py-1 bg-slate-950/60 text-slate-400 border border-slate-800 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: template-001
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-baseline pt-2">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-slate-100">{templateStats.template001} pharmacies</span>
-                  </div>
 
-                  <hr className="border-slate-800" />
-                  <div className="text-[11px] text-slate-400 space-y-2 leading-relaxed">
-                    <p>&bull; Includes color-pickable brand assets dynamically rendered on-demand.</p>
-                    <p>&bull; Features announcement strip, medical testimonials, and leaflet navigation map.</p>
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <button 
-                    onClick={() => setPreviewTemplateId('template-001')}
-                    className="w-full py-2.5 bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer text-center"
-                  >
-                    View Layout Design
-                  </button>
-                </div>
-              </div>
-
-              {/* ProHealth Template card */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">Template002</h3>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Professional teal/solid clinical theme</p>
+                    <div className="pt-2">
+                      <button 
+                        onClick={() => setPreviewTemplateId(template.id)}
+                        className={`w-full py-2.5 text-slate-200 border rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer text-center ${
+                          isT001 ? 'bg-slate-950 hover:bg-slate-850 border-slate-800'
+                            : isT002 ? 'bg-teal-900/35 hover:bg-teal-900/50 border-teal-800/40 text-teal-300'
+                            : 'bg-cyan-900/35 hover:bg-cyan-900/50 border-cyan-800/40 text-cyan-300'
+                        }`}
+                      >
+                        View Layout Design
+                      </button>
                     </div>
-                    <span className="px-2.5 py-1 bg-teal-900/10 text-teal-400 border border-teal-800/40 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: template-002
-                    </span>
                   </div>
-                  
-                  <div className="flex justify-between items-baseline pt-2">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-teal-400">{templateStats.template002} pharmacies</span>
-                  </div>
-
-                  <hr className="border-slate-800" />
-                  <div className="text-[11px] text-slate-400 space-y-2 leading-relaxed">
-                    <p>&bull; Features solid color medical typography for maximum professional impact.</p>
-                    <p>&bull; Integrated real-time client-side public stock lookup search component.</p>
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <button 
-                    onClick={() => setPreviewTemplateId('template-002')}
-                    className="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center"
-                  >
-                    View Layout Design
-                  </button>
-                </div>
-              </div>
-
-              {/* GeneX Template card */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="font-extrabold text-sm text-slate-200">Template003</h3>
-                      <p className="text-[10px] text-slate-500 mt-0.5">Biotech longevity clinical theme</p>
-                    </div>
-                    <span className="px-2.5 py-1 bg-cyan-900/10 text-cyan-400 border border-cyan-800/40 font-mono text-xs font-bold rounded-lg uppercase">
-                      ID: template-003
-                    </span>
-                  </div>
-                  
-                  <div className="flex justify-between items-baseline pt-2">
-                    <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution count:</span>
-                    <span className="text-3xl font-black text-cyan-400">{templateStats.template003} pharmacies</span>
-                  </div>
-
-                  <hr className="border-slate-800" />
-                  <div className="text-[11px] text-slate-400 space-y-2 leading-relaxed">
-                    <p>&bull; Premium clinical DNA double-helix layouts and medical graphics.</p>
-                    <p>&bull; Customized statistics grid panels, research spotlights, and stock query search list.</p>
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <button 
-                    onClick={() => setPreviewTemplateId('template-003')}
-                    className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer text-center"
-                  >
-                    View Layout Design
-                  </button>
-                </div>
-              </div>
-
+                );
+              })}
             </div>
           </div>
         )}
