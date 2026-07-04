@@ -32,6 +32,8 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import confetti from 'canvas-confetti';
+import RippleDisplacementSlider from '@/components/ui/ripple-displacement-slider';
+import { rippleSlides } from '@/lib/data/ripple-slides';
 
 // Register GSAP Plugin
 if (typeof window !== 'undefined') {
@@ -438,6 +440,9 @@ export default function LandingPage() {
                 <p className="text-xs text-slate-500">Patient Data Security</p>
               </div>
             </div>
+          </div>
+          <div className="h-[600px] w-full">
+            <RippleDisplacementSlider slides={rippleSlides} />
           </div>
         </div>
       </section>
