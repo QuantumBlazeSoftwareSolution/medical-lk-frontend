@@ -6,7 +6,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Activity, Loader2, Lock } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
-export default function TenantLoginPage({ params }: { params: Promise<{ subdomain: string }> }) {
+export default function TenantLoginPage({
+  params,
+}: {
+  params: Promise<{ subdomain: string }>;
+}) {
   const resolvedParams = React.use(params);
   const subdomain = resolvedParams.subdomain;
   const router = useRouter();
@@ -53,9 +57,9 @@ export default function TenantLoginPage({ params }: { params: Promise<{ subdomai
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 px-6 overflow-hidden">
       {/* Background visual element */}
-      <div 
-        className="absolute w-96 h-96 rounded-full blur-3xl opacity-10" 
-        style={{ backgroundColor: primaryColor }} 
+      <div
+        className="absolute w-96 h-96 rounded-full blur-3xl opacity-10"
+        style={{ backgroundColor: primaryColor }}
       />
 
       <div className="w-full max-w-md relative">
@@ -129,7 +133,10 @@ export default function TenantLoginPage({ params }: { params: Promise<{ subdomai
         </div>
 
         <div className="mt-8 text-center text-xs text-slate-600">
-          <a href="/" className="hover:underline hover:text-slate-400 transition-colors">
+          <a
+            href="/"
+            className="hover:underline hover:text-slate-400 transition-colors"
+          >
             &larr; Back to medical.lk landing page
           </a>
         </div>

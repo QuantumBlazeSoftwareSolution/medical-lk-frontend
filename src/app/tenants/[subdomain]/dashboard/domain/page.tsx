@@ -3,9 +3,16 @@
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Link2, Globe, ShieldCheck, CheckCircle2, 
-  HelpCircle, Copy, Check, Loader2, Info
+import {
+  Link2,
+  Globe,
+  ShieldCheck,
+  CheckCircle2,
+  HelpCircle,
+  Copy,
+  Check,
+  Loader2,
+  Info,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -33,10 +40,14 @@ export default function DomainPage() {
   };
 
   const requestDomainMutation = useMutation({
-    mutationFn: (payload: { subject: string; category: string; message: string }) =>
+    mutationFn: (payload: {
+      subject: string;
+      category: string;
+      message: string;
+    }) =>
       apiFetch('/api/support/ticket', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       }),
     onSuccess: () => {
       setSuccess(true);
@@ -46,19 +57,20 @@ export default function DomainPage() {
     },
     onError: (err: any) => {
       setFormError(err.message || 'Failed to submit domain request.');
-    }
+    },
   });
 
   const handleSaveDomain = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
-    
+
     if (!customDomain.trim()) {
       setFormError('Please enter a valid domain name.');
       return;
     }
-    
-    const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
+
+    const domainRegex =
+      /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
     if (!domainRegex.test(customDomain.trim())) {
       setFormError('Please enter a valid domain format (e.g. pharmacy.lk).');
       return;
@@ -67,7 +79,7 @@ export default function DomainPage() {
     requestDomainMutation.mutate({
       subject: `[Custom Domain Request] ${customDomain.trim()}`,
       category: 'Billing & Subscriptions',
-      message: `Please map the custom domain: "${customDomain.trim()}" to my pharmacy subdomain: "${subdomain}.medical.lk".`
+      message: `Please map the custom domain: "${customDomain.trim()}" to my pharmacy subdomain: "${subdomain}.medical.lk".`,
     });
   };
 
@@ -79,8 +91,12 @@ export default function DomainPage() {
           <Link2 className="h-6 w-6" />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">Domain Settings</h1>
-          <p className="text-xs text-[#42474d]">Configure your pharmacy's custom domain name or subdomain settings.</p>
+          <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">
+            Domain Settings
+          </h1>
+          <p className="text-xs text-[#42474d]">
+            Configure your pharmacy's custom domain name or subdomain settings.
+          </p>
         </div>
       </div>
 
@@ -93,12 +109,19 @@ export default function DomainPage() {
               <Globe size={16} className="text-[#0f3d57]" />
               <span>Default System Subdomain</span>
             </h2>
-            <p className="text-[11px] text-[#72787e] mb-4">Your pharmacy is accessible by default via our shared platform domain.</p>
-            
+            <p className="text-[11px] text-[#72787e] mb-4">
+              Your pharmacy is accessible by default via our shared platform
+              domain.
+            </p>
+
             <div className="p-4 bg-[#f8f9fa] rounded-xl border border-[#e2e8f0] flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Active Subdomain</p>
-                <p className="text-sm font-bold text-[#0f3d57] mt-0.5">{subdomain}.medical.lk</p>
+                <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                  Active Subdomain
+                </p>
+                <p className="text-sm font-bold text-[#0f3d57] mt-0.5">
+                  {subdomain}.medical.lk
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1">
@@ -106,11 +129,20 @@ export default function DomainPage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() => handleCopy(`http://${subdomain}.localhost:3000`, 'subdomain')}
+                  onClick={() =>
+                    handleCopy(
+                      `http://${subdomain}.localhost:3000`,
+                      'subdomain'
+                    )
+                  }
                   className="p-2 border border-slate-200 hover:bg-white text-slate-600 rounded-lg transition-colors cursor-pointer"
                   title="Copy link"
                 >
-                  {copiedField === 'subdomain' ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                  {copiedField === 'subdomain' ? (
+                    <Check size={14} className="text-emerald-600" />
+                  ) : (
+                    <Copy size={14} />
+                  )}
                 </button>
               </div>
             </div>
@@ -122,14 +154,27 @@ export default function DomainPage() {
               <Link2 size={16} className="text-[#0f3d57]" />
               <span>Request Custom Domain Mapping</span>
             </h2>
-            <p className="text-[11px] text-[#72787e] mb-4">Point your own custom branding domain (e.g. mypharmacy.lk) to our servers by submitting a setup request.</p>
+            <p className="text-[11px] text-[#72787e] mb-4">
+              Point your own custom branding domain (e.g. mypharmacy.lk) to our
+              servers by submitting a setup request.
+            </p>
 
             {success && (
               <div className="p-4 mb-5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-2.5">
-                <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-600" />
+                <CheckCircle2
+                  size={16}
+                  className="shrink-0 mt-0.5 text-emerald-600"
+                />
                 <div>
-                  <p className="font-bold">Domain request submitted successfully!</p>
-                  <p className="mt-0.5">Our engineering team has been notified. We will verify your DNS settings and map your custom domain within 24 hours. You can track the status of this request under Technical Support.</p>
+                  <p className="font-bold">
+                    Domain request submitted successfully!
+                  </p>
+                  <p className="mt-0.5">
+                    Our engineering team has been notified. We will verify your
+                    DNS settings and map your custom domain within 24 hours. You
+                    can track the status of this request under Technical
+                    Support.
+                  </p>
                 </div>
               </div>
             )}
@@ -146,7 +191,9 @@ export default function DomainPage() {
 
             <form onSubmit={handleSaveDomain} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Desired Custom Domain Name</label>
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
+                  Desired Custom Domain Name
+                </label>
                 <div className="flex gap-3">
                   <input
                     type="text"
@@ -177,7 +224,13 @@ export default function DomainPage() {
             <div className="p-3 bg-[#f0f4f8] rounded-xl border border-blue-100 flex items-start gap-2.5 text-[11px] text-[#0f3d57] mt-5">
               <Info size={15} className="shrink-0 text-[#0f3d57] mt-0.5" />
               <p className="leading-relaxed">
-                <strong>Manual Setup Process:</strong> Our engineering team will manually configure routing and map your custom domain. Once you submit a request, we will review the domain and guide you through any necessary secure verification steps on your domain registrar. This process typically takes up to 24 hours. You can monitor the progress of your request under the <strong>Technical Support</strong> tab.
+                <strong>Manual Setup Process:</strong> Our engineering team will
+                manually configure routing and map your custom domain. Once you
+                submit a request, we will review the domain and guide you
+                through any necessary secure verification steps on your domain
+                registrar. This process typically takes up to 24 hours. You can
+                monitor the progress of your request under the{' '}
+                <strong>Technical Support</strong> tab.
               </p>
             </div>
           </div>
@@ -193,16 +246,24 @@ export default function DomainPage() {
 
             <div className="space-y-4">
               <div>
-                <h4 className="text-xs font-bold text-[#00273b] mb-1">How does the custom domain request work?</h4>
+                <h4 className="text-xs font-bold text-[#00273b] mb-1">
+                  How does the custom domain request work?
+                </h4>
                 <p className="text-[11px] text-[#72787e] leading-relaxed">
-                  Once you submit a request, our team will review the domain and contact you with details to complete the setup securely. We handle all backend server routing on our end.
+                  Once you submit a request, our team will review the domain and
+                  contact you with details to complete the setup securely. We
+                  handle all backend server routing on our end.
                 </p>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold text-[#00273b] mb-1">How long does the setup take?</h4>
+                <h4 className="text-xs font-bold text-[#00273b] mb-1">
+                  How long does the setup take?
+                </h4>
                 <p className="text-[11px] text-[#72787e] leading-relaxed">
-                  Typically, custom domain mappings are fully activated and provisioned with SSL certificates within 24 hours of receiving the request.
+                  Typically, custom domain mappings are fully activated and
+                  provisioned with SSL certificates within 24 hours of receiving
+                  the request.
                 </p>
               </div>
 
@@ -210,7 +271,11 @@ export default function DomainPage() {
                 <Info size={16} className="shrink-0 text-blue-600 mt-0.5" />
                 <div>
                   <p className="font-bold">Need help?</p>
-                  <p className="mt-0.5">If you're having trouble or have questions about custom domains, feel free to open a ticket in the Technical Support section.</p>
+                  <p className="mt-0.5">
+                    If you're having trouble or have questions about custom
+                    domains, feel free to open a ticket in the Technical Support
+                    section.
+                  </p>
                 </div>
               </div>
             </div>

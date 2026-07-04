@@ -3,9 +3,16 @@
 import React, { useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  LifeBuoy, Loader2, Send, CheckCircle2, 
-  AlertCircle, History, MessageSquare, Clock, ShieldAlert
+import {
+  LifeBuoy,
+  Loader2,
+  Send,
+  CheckCircle2,
+  AlertCircle,
+  History,
+  MessageSquare,
+  Clock,
+  ShieldAlert,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -28,7 +35,11 @@ export default function SupportPage() {
 
   // 2. Submit ticket mutation
   const submitTicketMutation = useMutation({
-    mutationFn: (newTicket: { subject: string; category: string; message: string }) =>
+    mutationFn: (newTicket: {
+      subject: string;
+      category: string;
+      message: string;
+    }) =>
       apiFetch('/api/support/ticket', {
         method: 'POST',
         body: JSON.stringify(newTicket),
@@ -49,7 +60,7 @@ export default function SupportPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
-    
+
     if (!subject.trim()) {
       setFormError('Please enter a ticket subject.');
       return;
@@ -72,7 +83,7 @@ export default function SupportPage() {
     'Billing & Subscriptions',
     'Bug / System Glitch',
     'Feature Request',
-    'General Question'
+    'General Question',
   ];
 
   return (
@@ -83,8 +94,12 @@ export default function SupportPage() {
           <LifeBuoy className="h-6 w-6 animate-spin-slow" />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">Technical Support</h1>
-          <p className="text-xs text-[#42474d]">Submit issue tickets directly to the Quantum Blaze support team.</p>
+          <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">
+            Technical Support
+          </h1>
+          <p className="text-xs text-[#42474d]">
+            Submit issue tickets directly to the Quantum Blaze support team.
+          </p>
         </div>
       </div>
 
@@ -102,7 +117,10 @@ export default function SupportPage() {
                 <CheckCircle2 size={16} className="shrink-0 mt-0.5" />
                 <div>
                   <p className="font-bold">Ticket Submitted successfully!</p>
-                  <p className="mt-0.5">We have emailed the support request to our developers. We will get back to you shortly.</p>
+                  <p className="mt-0.5">
+                    We have emailed the support request to our developers. We
+                    will get back to you shortly.
+                  </p>
                 </div>
               </div>
             )}
@@ -116,20 +134,26 @@ export default function SupportPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Category</label>
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
+                  Category
+                </label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full bg-[#f8f9fa] border border-[#d2d5d8] rounded-xl px-3.5 py-2.5 outline-none text-xs focus:border-[#0f3d57] transition-all cursor-pointer"
                 >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Subject / Short Title</label>
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
+                  Subject / Short Title
+                </label>
                 <input
                   type="text"
                   placeholder="Briefly summarize the problem"
@@ -141,7 +165,9 @@ export default function SupportPage() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">Detailed Message</label>
+                <label className="block text-[10px] font-bold text-[#42474d] uppercase tracking-wide mb-1.5">
+                  Detailed Message
+                </label>
                 <textarea
                   placeholder="Describe the issue in detail. If it is a POS issue, please state the receipt or transaction number."
                   value={message}
@@ -170,8 +196,14 @@ export default function SupportPage() {
 
           <div className="mt-6 pt-5 border-t border-[#eceef1] text-[10px] text-[#72787e] leading-normal space-y-2.5">
             <p className="flex gap-2 items-start">
-              <ShieldAlert size={12} className="shrink-0 text-amber-500 mt-0.5" />
-              <span>This ticket is saved on the secure database and copied directly to Quantum Blaze developer engineers.</span>
+              <ShieldAlert
+                size={12}
+                className="shrink-0 text-amber-500 mt-0.5"
+              />
+              <span>
+                This ticket is saved on the secure database and copied directly
+                to Quantum Blaze developer engineers.
+              </span>
             </p>
           </div>
         </div>
@@ -191,8 +223,13 @@ export default function SupportPage() {
           ) : tickets.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center p-12 text-[#72787e] text-center border-2 border-dashed border-[#eceef1] rounded-2xl min-h-[300px]">
               <LifeBuoy size={36} className="text-slate-300 mb-3" />
-              <p className="text-xs font-bold text-[#00273b]">No tickets submitted yet</p>
-              <p className="text-[11px] text-slate-400 max-w-xs mt-1">If you experience any POS, stock checkout, or hosting issues, file a ticket on the left.</p>
+              <p className="text-xs font-bold text-[#00273b]">
+                No tickets submitted yet
+              </p>
+              <p className="text-[11px] text-slate-400 max-w-xs mt-1">
+                If you experience any POS, stock checkout, or hosting issues,
+                file a ticket on the left.
+              </p>
             </div>
           ) : (
             <div className="space-y-4 max-h-[520px] overflow-y-auto pr-1">
@@ -202,9 +239,12 @@ export default function SupportPage() {
                   in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
                   resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
                 };
-                
+
                 return (
-                  <div key={t.id} className="p-4 rounded-xl border border-[#eceef1] hover:border-[#d2d5d8] bg-white transition-all">
+                  <div
+                    key={t.id}
+                    className="p-4 rounded-xl border border-[#eceef1] hover:border-[#d2d5d8] bg-white transition-all"
+                  >
                     <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[9px] font-bold text-slate-400 bg-slate-100 border border-slate-200/80 px-2 py-0.5 rounded uppercase font-mono">
@@ -214,17 +254,24 @@ export default function SupportPage() {
                           {t.category}
                         </span>
                       </div>
-                      <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${badgeColors[t.status] || 'bg-slate-50 text-slate-700 border-slate-200'}`}>
+                      <span
+                        className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full border ${badgeColors[t.status] || 'bg-slate-50 text-slate-700 border-slate-200'}`}
+                      >
                         {t.status.replace('_', ' ')}
                       </span>
                     </div>
 
-                    <h3 className="text-xs font-bold text-[#00273b] mb-1">{t.subject}</h3>
-                    <p className="text-[11px] text-[#42474d] leading-relaxed mb-3 whitespace-pre-wrap">{t.message}</p>
+                    <h3 className="text-xs font-bold text-[#00273b] mb-1">
+                      {t.subject}
+                    </h3>
+                    <p className="text-[11px] text-[#42474d] leading-relaxed mb-3 whitespace-pre-wrap">
+                      {t.message}
+                    </p>
 
                     <div className="flex items-center justify-between text-[9px] text-[#72787e] pt-2.5 border-t border-[#f7f9fc]">
                       <span className="flex items-center gap-1">
-                        <Clock size={10} /> {new Date(t.created_at).toLocaleString()}
+                        <Clock size={10} />{' '}
+                        {new Date(t.created_at).toLocaleString()}
                       </span>
                       <span>
                         Filed by: <strong>{t.submitted_by}</strong>

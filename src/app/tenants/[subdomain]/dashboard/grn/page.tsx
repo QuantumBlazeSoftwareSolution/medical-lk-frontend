@@ -3,10 +3,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Plus, Loader2, AlertCircle, Calendar, 
-  Trash2, UserPlus, Check, Search, ReceiptText, 
-  ChevronDown, Package, X, History, Save, Sparkles, CheckCircle
+import {
+  Plus,
+  Loader2,
+  AlertCircle,
+  Calendar,
+  Trash2,
+  UserPlus,
+  Check,
+  Search,
+  ReceiptText,
+  ChevronDown,
+  Package,
+  X,
+  History,
+  Save,
+  Sparkles,
+  CheckCircle,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -24,11 +37,13 @@ export default function GoodsReceivedNotes() {
   const params = useParams();
   const subdomain = (params?.subdomain as string) || 'default';
   const [activeTab, setActiveTab] = useState<'history' | 'new'>('history');
-  
+
   // New GRN states
   const [grnNumber, setGrnNumber] = useState('');
   const [selectedSupplierId, setSelectedSupplierId] = useState('');
-  const [receivedDate, setReceivedDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [receivedDate, setReceivedDate] = useState(
+    () => new Date().toISOString().split('T')[0]
+  );
   const [grnRows, setGrnRows] = useState<GRNRow[]>([]);
   const [grnError, setGrnError] = useState('');
 
@@ -44,7 +59,7 @@ export default function GoodsReceivedNotes() {
   // Search Combobox states
   const [supplierSearchQuery, setSupplierSearchQuery] = useState('');
   const [showSupplierDropdown, setShowSupplierDropdown] = useState(false);
-  
+
   const [medicineSearchQuery, setMedicineSearchQuery] = useState('');
   const [showMedicineDropdown, setShowMedicineDropdown] = useState(false);
 
@@ -64,7 +79,11 @@ export default function GoodsReceivedNotes() {
   const medicineContainerRef = useRef<HTMLDivElement>(null);
 
   // 1. Fetch GRN history
-  const { data: grns = [], isLoading: grnsLoading, refetch: refetchGrns } = useQuery<any[]>({
+  const {
+    data: grns = [],
+    isLoading: grnsLoading,
+    refetch: refetchGrns,
+  } = useQuery<any[]>({
     queryKey: ['grns-list'],
     queryFn: () => apiFetch('/api/inventory/grns'),
   });
@@ -92,7 +111,9 @@ export default function GoodsReceivedNotes() {
         if (parsed.selectedSupplierId) {
           setSelectedSupplierId(parsed.selectedSupplierId);
           // Pre-populate search query for supplier if list exists
-          const supplier = suppliers.find(s => s.id === parsed.selectedSupplierId);
+          const supplier = suppliers.find(
+            (s) => s.id === parsed.selectedSupplierId
+          );
           if (supplier) setSupplierSearchQuery(supplier.name);
         }
         if (parsed.receivedDate) setReceivedDate(parsed.receivedDate);
@@ -106,25 +127,39 @@ export default function GoodsReceivedNotes() {
 
   // Sync state to local storage to auto-save draft
   useEffect(() => {
-    if (activeTab === 'new' && (grnNumber || selectedSupplierId || grnRows.length > 0)) {
+    if (
+      activeTab === 'new' &&
+      (grnNumber || selectedSupplierId || grnRows.length > 0)
+    ) {
       const draftKey = `medical-lk-grn-draft-${subdomain}`;
-      const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const timeString = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
       const draftPayload = {
         grnNumber,
         selectedSupplierId,
         receivedDate,
         grnRows,
-        savedTime: timeString
+        savedTime: timeString,
       };
       localStorage.setItem(draftKey, JSON.stringify(draftPayload));
       setLastSavedTime(timeString);
     }
-  }, [grnNumber, selectedSupplierId, receivedDate, grnRows, subdomain, activeTab]);
+  }, [
+    grnNumber,
+    selectedSupplierId,
+    receivedDate,
+    grnRows,
+    subdomain,
+    activeTab,
+  ]);
 
   // Supplier Search sync when selectedSupplierId changes
   useEffect(() => {
     if (selectedSupplierId && suppliers.length > 0) {
-      const supplier = suppliers.find(s => s.id === selectedSupplierId);
+      const supplier = suppliers.find((s) => s.id === selectedSupplierId);
       if (supplier) {
         setSupplierSearchQuery(supplier.name);
       }
@@ -134,10 +169,16 @@ export default function GoodsReceivedNotes() {
   // Click outside listener for comboboxes
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (supplierContainerRef.current && !supplierContainerRef.current.contains(event.target as Node)) {
+      if (
+        supplierContainerRef.current &&
+        !supplierContainerRef.current.contains(event.target as Node)
+      ) {
         setShowSupplierDropdown(false);
       }
-      if (medicineContainerRef.current && !medicineContainerRef.current.contains(event.target as Node)) {
+      if (
+        medicineContainerRef.current &&
+        !medicineContainerRef.current.contains(event.target as Node)
+      ) {
         setShowMedicineDropdown(false);
       }
     }
@@ -147,20 +188,21 @@ export default function GoodsReceivedNotes() {
 
   // 4. Create Supplier mutation
   const createSupplierMutation = useMutation({
-    mutationFn: (payload: any) => apiFetch('/api/inventory/suppliers', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    mutationFn: (payload: any) =>
+      apiFetch('/api/inventory/suppliers', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     onSuccess: (data) => {
       refetchSuppliers();
       setShowAddSupplier(false);
-      
+
       // Auto-select the newly added supplier
       if (data && data.id) {
         setSelectedSupplierId(data.id);
         setSupplierSearchQuery(data.name || supplierName.trim());
       }
-      
+
       setSupplierName('');
       setSupplierPhone('');
       setSupplierEmail('');
@@ -168,21 +210,22 @@ export default function GoodsReceivedNotes() {
     },
     onError: (err: any) => {
       setSupplierError(err.message || 'Failed to register supplier.');
-    }
+    },
   });
 
   // 5. Create GRN mutation
   const createGRNMutation = useMutation({
-    mutationFn: (payload: any) => apiFetch('/api/inventory/grns', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    mutationFn: (payload: any) =>
+      apiFetch('/api/inventory/grns', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['grns-list'] });
       qc.invalidateQueries({ queryKey: ['batches-all'] });
       qc.invalidateQueries({ queryKey: ['medicines-list'] });
       qc.invalidateQueries({ queryKey: ['inventory-alerts'] });
-      
+
       // Clear local storage draft
       const draftKey = `medical-lk-grn-draft-${subdomain}`;
       localStorage.removeItem(draftKey);
@@ -197,7 +240,7 @@ export default function GoodsReceivedNotes() {
     },
     onError: (err: any) => {
       setGrnError(err.message || 'Failed to submit Goods Received Note.');
-    }
+    },
   });
 
   // Handle supplier submit
@@ -210,7 +253,7 @@ export default function GoodsReceivedNotes() {
       name: supplierName.trim(),
       phone: supplierPhone.trim() || null,
       email: supplierEmail.trim() || null,
-      address: supplierAddress.trim() || null
+      address: supplierAddress.trim() || null,
     });
   };
 
@@ -244,7 +287,9 @@ export default function GoodsReceivedNotes() {
 
     // Check for duplicates
     const duplicateIdx = grnRows.findIndex(
-      r => r.medicine_id === activeMedId && r.batch_number.toLowerCase() === activeBatchNum.trim().toLowerCase()
+      (r) =>
+        r.medicine_id === activeMedId &&
+        r.batch_number.toLowerCase() === activeBatchNum.trim().toLowerCase()
     );
 
     if (duplicateIdx > -1) {
@@ -262,11 +307,11 @@ export default function GoodsReceivedNotes() {
         quantity_received: Number(activeQty),
         purchase_price: Number(activePPrice),
         selling_price: Number(activeSPrice),
-        expiry_date: activeExpDate
+        expiry_date: activeExpDate,
       };
-      setGrnRows(prev => [...prev, newRow]);
+      setGrnRows((prev) => [...prev, newRow]);
     }
-    
+
     // Clear active item form states
     setActiveMedId('');
     setMedicineSearchQuery('');
@@ -281,7 +326,7 @@ export default function GoodsReceivedNotes() {
   const removeRow = (idx: number) => {
     const updated = grnRows.filter((_, i) => i !== idx);
     setGrnRows(updated);
-    
+
     // Clear draft if no rows remain
     if (updated.length === 0 && !grnNumber && !selectedSupplierId) {
       const draftKey = `medical-lk-grn-draft-${subdomain}`;
@@ -306,7 +351,10 @@ export default function GoodsReceivedNotes() {
   };
 
   // Calculate sum of cost price * quantities
-  const totalCalculatedValue = grnRows.reduce((sum, r) => sum + (r.purchase_price * r.quantity_received), 0);
+  const totalCalculatedValue = grnRows.reduce(
+    (sum, r) => sum + r.purchase_price * r.quantity_received,
+    0
+  );
 
   // Submit GRN
   const handleGRNSubmit = (e: React.FormEvent) => {
@@ -331,36 +379,47 @@ export default function GoodsReceivedNotes() {
     createGRNMutation.mutate({
       grn_number: grnNumber.trim(),
       supplier_id: selectedSupplierId,
-      received_date: receivedDate ? new Date(receivedDate).toISOString() : new Date().toISOString(),
+      received_date: receivedDate
+        ? new Date(receivedDate).toISOString()
+        : new Date().toISOString(),
       total_amount: totalCalculatedValue,
-      items: grnRows
+      items: grnRows,
     });
   };
 
   // Filters for Searchable Suppliers
-  const filteredSuppliers = suppliers.filter(s => 
+  const filteredSuppliers = suppliers.filter((s) =>
     s.name.toLowerCase().includes(supplierSearchQuery.toLowerCase())
   );
 
   // Filters for Searchable Medicines
-  const filteredMedicines = medicines.filter(m => 
-    m.name.toLowerCase().includes(medicineSearchQuery.toLowerCase()) ||
-    (m.generic_name && m.generic_name.toLowerCase().includes(medicineSearchQuery.toLowerCase())) ||
-    (m.barcode && m.barcode.includes(medicineSearchQuery))
+  const filteredMedicines = medicines.filter(
+    (m) =>
+      m.name.toLowerCase().includes(medicineSearchQuery.toLowerCase()) ||
+      (m.generic_name &&
+        m.generic_name
+          .toLowerCase()
+          .includes(medicineSearchQuery.toLowerCase())) ||
+      (m.barcode && m.barcode.includes(medicineSearchQuery))
   );
 
-  const selectedMed = medicines.find(m => m.id === activeMedId);
-  const isActiveExpDateInPast = activeExpDate && new Date(activeExpDate) < new Date();
+  const selectedMed = medicines.find((m) => m.id === activeMedId);
+  const isActiveExpDateInPast =
+    activeExpDate && new Date(activeExpDate) < new Date();
 
   return (
     <div className="space-y-ds-lg max-w-[1200px] mx-auto w-full text-on-background text-left font-sans">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-ds-md border-b border-outline-variant/30 pb-4">
         <div>
-          <h2 className="font-display text-headline-lg font-bold text-primary mb-1">Goods Received Notes (GRN)</h2>
-          <p className="text-body-sm text-on-surface-variant font-medium">Log supplier stock entries and manage batch inventory.</p>
+          <h2 className="font-display text-headline-lg font-bold text-primary mb-1">
+            Goods Received Notes (GRN)
+          </h2>
+          <p className="text-body-sm text-on-surface-variant font-medium">
+            Log supplier stock entries and manage batch inventory.
+          </p>
         </div>
-        
+
         {/* Tabs switcher inside header */}
         <div className="flex gap-6 border-b-2 border-transparent">
           <button
@@ -402,8 +461,10 @@ export default function GoodsReceivedNotes() {
           ) : grns.length === 0 ? (
             <div className="flex-grow flex flex-col items-center justify-center text-outline gap-3 py-16">
               <ReceiptText className="h-10 w-10 text-outline-variant" />
-              <span className="text-body-sm font-medium">No Goods Received Notes logged yet.</span>
-              <button 
+              <span className="text-body-sm font-medium">
+                No Goods Received Notes logged yet.
+              </span>
+              <button
                 onClick={() => setActiveTab('new')}
                 className="px-4 py-2 bg-secondary hover:bg-secondary/90 text-white font-sans text-xs font-semibold uppercase tracking-wider rounded-lg transition-colors cursor-pointer"
               >
@@ -415,22 +476,40 @@ export default function GoodsReceivedNotes() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-surface-container-low border-b border-outline-variant/60">
-                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">GRN / Invoice Reference</th>
-                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Supplier</th>
-                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Received Date</th>
-                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right">Invoice Value (LKR)</th>
+                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      GRN / Invoice Reference
+                    </th>
+                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Supplier
+                    </th>
+                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
+                      Received Date
+                    </th>
+                    <th className="px-6 py-3.5 text-xs font-semibold text-on-surface-variant uppercase tracking-wider text-right">
+                      Invoice Value (LKR)
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-container-low text-body-sm">
                   {grns.map((g) => (
-                    <tr key={g.id} className="hover:bg-background transition-colors cursor-pointer">
-                      <td className="px-6 py-4 font-mono font-semibold text-primary">{g.grn_number}</td>
-                      <td className="px-6 py-4 text-on-surface-variant font-medium">{g.supplier_name}</td>
+                    <tr
+                      key={g.id}
+                      className="hover:bg-background transition-colors cursor-pointer"
+                    >
+                      <td className="px-6 py-4 font-mono font-semibold text-primary">
+                        {g.grn_number}
+                      </td>
+                      <td className="px-6 py-4 text-on-surface-variant font-medium">
+                        {g.supplier_name}
+                      </td>
                       <td className="px-6 py-4 text-outline font-mono">
                         {new Date(g.received_date).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 text-right font-mono font-bold text-secondary">
-                        {g.total_amount.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {g.total_amount.toLocaleString('en-LK', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </td>
                     </tr>
                   ))}
@@ -450,23 +529,27 @@ export default function GoodsReceivedNotes() {
           )}
 
           <form onSubmit={handleGRNSubmit} className="space-y-ds-lg">
-            
             {/* Top Toolbar / Draft Status */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white border border-outline-variant/40 rounded-xl px-5 py-3 shadow-[0_2px_8px_rgba(0,0,0,0.02)] gap-3">
               <div className="flex items-center gap-2 text-outline text-xs">
                 {lastSavedTime ? (
                   <>
                     <Save size={14} className="text-secondary" />
-                    <span>Draft auto-saved to browser local storage at <strong>{lastSavedTime}</strong></span>
+                    <span>
+                      Draft auto-saved to browser local storage at{' '}
+                      <strong>{lastSavedTime}</strong>
+                    </span>
                   </>
                 ) : (
                   <>
                     <Sparkles size={14} className="text-primary-container" />
-                    <span>Fill details below to build and record your stock receipt.</span>
+                    <span>
+                      Fill details below to build and record your stock receipt.
+                    </span>
                   </>
                 )}
               </div>
-              
+
               <div className="flex gap-2 w-full sm:w-auto justify-end">
                 {(grnNumber || selectedSupplierId || grnRows.length > 0) && (
                   <button
@@ -482,11 +565,15 @@ export default function GoodsReceivedNotes() {
 
             {/* Supplier & Invoice Card */}
             <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">Supplier &amp; Invoice Details</h3>
+              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">
+                Supplier &amp; Invoice Details
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-ds-gutter">
-                
                 {/* Supplier Search Combobox */}
-                <div className="flex flex-col gap-ds-xs" ref={supplierContainerRef}>
+                <div
+                  className="flex flex-col gap-ds-xs"
+                  ref={supplierContainerRef}
+                >
                   <label className="block font-sans text-xs font-semibold text-on-surface-variant uppercase tracking-wider flex justify-between items-center">
                     <span>Supplier *</span>
                     <button
@@ -500,7 +587,7 @@ export default function GoodsReceivedNotes() {
                       <UserPlus className="h-3 w-3" /> Quick Add
                     </button>
                   </label>
-                  
+
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
                       <Search size={16} />
@@ -523,7 +610,9 @@ export default function GoodsReceivedNotes() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowSupplierDropdown(!showSupplierDropdown)}
+                      onClick={() =>
+                        setShowSupplierDropdown(!showSupplierDropdown)
+                      }
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-outline cursor-pointer"
                     >
                       <ChevronDown size={16} />
@@ -534,7 +623,9 @@ export default function GoodsReceivedNotes() {
                       <div className="absolute left-0 right-0 mt-1.5 bg-white border border-outline-variant rounded-xl shadow-[0_16px_48px_rgba(15,61,87,0.12)] max-h-60 overflow-y-auto z-[100] animate-in fade-in slide-in-from-top-2 duration-150">
                         {filteredSuppliers.length === 0 ? (
                           <div className="p-4 text-center text-outline text-xs">
-                            <p className="mb-2">No suppliers matched "{supplierSearchQuery}"</p>
+                            <p className="mb-2">
+                              No suppliers matched "{supplierSearchQuery}"
+                            </p>
                             <button
                               type="button"
                               onClick={() => {
@@ -560,11 +651,15 @@ export default function GoodsReceivedNotes() {
                                   setShowSupplierDropdown(false);
                                 }}
                                 className={`w-full text-left px-4 py-2 text-xs font-sans hover:bg-surface-container-low transition-colors flex justify-between items-center ${
-                                  selectedSupplierId === s.id ? 'bg-surface-container-low text-primary font-bold' : 'text-on-surface-variant'
+                                  selectedSupplierId === s.id
+                                    ? 'bg-surface-container-low text-primary font-bold'
+                                    : 'text-on-surface-variant'
                                 }`}
                               >
                                 <span>{s.name}</span>
-                                {selectedSupplierId === s.id && <Check size={14} className="text-secondary" />}
+                                {selectedSupplierId === s.id && (
+                                  <Check size={14} className="text-secondary" />
+                                )}
                               </button>
                             ))}
                           </div>
@@ -576,7 +671,10 @@ export default function GoodsReceivedNotes() {
 
                 {/* Invoice Number */}
                 <div className="flex flex-col gap-ds-xs">
-                  <label className="block font-sans text-xs font-semibold text-on-surface-variant uppercase tracking-wider" htmlFor="invoiceNo">
+                  <label
+                    className="block font-sans text-xs font-semibold text-on-surface-variant uppercase tracking-wider"
+                    htmlFor="invoiceNo"
+                  >
                     Supplier Invoice No *
                   </label>
                   <input
@@ -610,22 +708,27 @@ export default function GoodsReceivedNotes() {
 
             {/* Product Item Builder Card */}
             <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">Add Product Item</h3>
-              
+              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">
+                Add Product Item
+              </h3>
+
               {activeItemError && (
                 <div className="mb-4 p-3 text-body-sm text-error bg-error-container border border-error/20 rounded-lg flex items-center gap-2">
-                  <AlertCircle size={15} className="shrink-0" /> {activeItemError}
+                  <AlertCircle size={15} className="shrink-0" />{' '}
+                  {activeItemError}
                 </div>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-ds-gutter">
-                
                 {/* Searchable Medicine Combobox */}
-                <div className="flex flex-col gap-ds-xs md:col-span-2" ref={medicineContainerRef}>
+                <div
+                  className="flex flex-col gap-ds-xs md:col-span-2"
+                  ref={medicineContainerRef}
+                >
                   <label className="block font-sans text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                     Select Medicine / Product *
                   </label>
-                  
+
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
                       <Search size={16} />
@@ -647,7 +750,9 @@ export default function GoodsReceivedNotes() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowMedicineDropdown(!showMedicineDropdown)}
+                      onClick={() =>
+                        setShowMedicineDropdown(!showMedicineDropdown)
+                      }
                       className="absolute inset-y-0 right-0 pr-3 flex items-center text-outline cursor-pointer"
                     >
                       <ChevronDown size={16} />
@@ -658,7 +763,8 @@ export default function GoodsReceivedNotes() {
                       <div className="absolute left-0 right-0 mt-1.5 bg-white border border-outline-variant rounded-xl shadow-[0_16px_48px_rgba(15,61,87,0.12)] max-h-60 overflow-y-auto z-[100] animate-in fade-in slide-in-from-top-2 duration-150">
                         {filteredMedicines.length === 0 ? (
                           <div className="p-4 text-center text-outline text-xs">
-                            No medicines match "{medicineSearchQuery}". Please add them to the catalog first.
+                            No medicines match "{medicineSearchQuery}". Please
+                            add them to the catalog first.
                           </div>
                         ) : (
                           <div className="py-1">
@@ -671,18 +777,30 @@ export default function GoodsReceivedNotes() {
                                   setMedicineSearchQuery(m.name);
                                   setShowMedicineDropdown(false);
                                   // Pre-populate prices
-                                  setActivePPrice(m.purchase_price !== undefined ? m.purchase_price : '');
-                                  setActiveSPrice(m.selling_price !== undefined ? m.selling_price : '');
+                                  setActivePPrice(
+                                    m.purchase_price !== undefined
+                                      ? m.purchase_price
+                                      : ''
+                                  );
+                                  setActiveSPrice(
+                                    m.selling_price !== undefined
+                                      ? m.selling_price
+                                      : ''
+                                  );
                                   setActiveItemError('');
                                 }}
                                 className={`w-full text-left px-4 py-2.5 text-xs hover:bg-surface-container-low transition-colors flex justify-between items-start border-b border-surface-container-low last:border-0 ${
-                                  activeMedId === m.id ? 'bg-surface-container-low text-primary font-bold' : 'text-on-surface-variant'
+                                  activeMedId === m.id
+                                    ? 'bg-surface-container-low text-primary font-bold'
+                                    : 'text-on-surface-variant'
                                 }`}
                               >
                                 <div className="text-left font-sans">
                                   <div className="font-semibold">{m.name}</div>
                                   {m.generic_name && (
-                                    <div className="text-[10px] text-outline mt-0.5">{m.generic_name}</div>
+                                    <div className="text-[10px] text-outline mt-0.5">
+                                      {m.generic_name}
+                                    </div>
                                   )}
                                 </div>
                                 <div className="text-right font-mono text-[10px] text-outline">
@@ -722,7 +840,13 @@ export default function GoodsReceivedNotes() {
                     min="1"
                     placeholder="e.g. 100"
                     value={activeQty}
-                    onChange={(e) => setActiveQty(e.target.value === '' ? '' : parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setActiveQty(
+                        e.target.value === ''
+                          ? ''
+                          : parseInt(e.target.value) || 0
+                      )
+                    }
                     className="w-full bg-background border border-outline-variant rounded-lg px-4 py-2 font-mono text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow text-right"
                   />
                 </div>
@@ -738,7 +862,13 @@ export default function GoodsReceivedNotes() {
                     min="0"
                     placeholder="0.00"
                     value={activePPrice}
-                    onChange={(e) => setActivePPrice(e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setActivePPrice(
+                        e.target.value === ''
+                          ? ''
+                          : parseFloat(e.target.value) || 0
+                      )
+                    }
                     className="w-full bg-background border border-outline-variant rounded-lg px-4 py-2 font-mono text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow text-right"
                   />
                 </div>
@@ -754,7 +884,13 @@ export default function GoodsReceivedNotes() {
                     min="0"
                     placeholder="0.00"
                     value={activeSPrice}
-                    onChange={(e) => setActiveSPrice(e.target.value === '' ? '' : parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setActiveSPrice(
+                        e.target.value === ''
+                          ? ''
+                          : parseFloat(e.target.value) || 0
+                      )
+                    }
                     className="w-full bg-background border border-outline-variant rounded-lg px-4 py-2 font-mono text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow text-right"
                   />
                 </div>
@@ -769,7 +905,9 @@ export default function GoodsReceivedNotes() {
                     value={activeExpDate}
                     onChange={(e) => setActiveExpDate(e.target.value)}
                     className={`w-full bg-background border rounded-lg px-4 py-2 font-mono text-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow ${
-                      isActiveExpDateInPast ? 'border-error ring-1 ring-error/50 bg-error-container/10' : 'border-outline-variant'
+                      isActiveExpDateInPast
+                        ? 'border-error ring-1 ring-error/50 bg-error-container/10'
+                        : 'border-outline-variant'
                     }`}
                   />
                 </div>
@@ -780,8 +918,9 @@ export default function GoodsReceivedNotes() {
                     <div className="text-[11px] text-outline font-sans flex items-center gap-1 bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/30">
                       <Package size={12} className="text-primary-container" />
                       <span>
-                        Catalog Match: <strong>{selectedMed.name}</strong> 
-                        {selectedMed.brand_name && ` | Brand: ${selectedMed.brand_name}`}
+                        Catalog Match: <strong>{selectedMed.name}</strong>
+                        {selectedMed.brand_name &&
+                          ` | Brand: ${selectedMed.brand_name}`}
                         {selectedMed.uom && ` | UOM: ${selectedMed.uom}`}
                       </span>
                     </div>
@@ -790,16 +929,23 @@ export default function GoodsReceivedNotes() {
                   {isActiveExpDateInPast && (
                     <div className="text-[11px] text-error font-sans flex items-center gap-1 bg-error-container/30 px-3 py-1.5 rounded-lg border border-error/20">
                       <AlertCircle size={12} />
-                      <span>Warning: Selected expiry date is in the past! This batch is expired.</span>
+                      <span>
+                        Warning: Selected expiry date is in the past! This batch
+                        is expired.
+                      </span>
                     </div>
                   )}
 
-                  {activeMedId && grnRows.some(r => r.medicine_id === activeMedId) && (
-                    <div className="text-[11px] text-[#b28000] font-sans flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
-                      <AlertCircle size={12} />
-                      <span>Note: This product is already in the list. Adding will merge the quantities.</span>
-                    </div>
-                  )}
+                  {activeMedId &&
+                    grnRows.some((r) => r.medicine_id === activeMedId) && (
+                      <div className="text-[11px] text-[#b28000] font-sans flex items-center gap-1 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-200">
+                        <AlertCircle size={12} />
+                        <span>
+                          Note: This product is already in the list. Adding will
+                          merge the quantities.
+                        </span>
+                      </div>
+                    )}
                 </div>
 
                 {/* Add Item Button */}
@@ -817,13 +963,20 @@ export default function GoodsReceivedNotes() {
 
             {/* GRN Itemized Table Card */}
             <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">GRN Itemized List</h3>
-              
+              <h3 className="font-display text-title-lg font-bold text-primary mb-4 border-b border-outline-variant/30 pb-2 uppercase tracking-wide">
+                GRN Itemized List
+              </h3>
+
               {grnRows.length === 0 ? (
                 <div className="py-12 text-center text-outline flex flex-col items-center justify-center gap-2">
                   <Package size={28} className="text-outline-variant" />
-                  <span className="text-body-sm font-medium">No items added to this stock entry yet.</span>
-                  <span className="text-xs text-outline">Select a medicine and fill the batch fields above to add products.</span>
+                  <span className="text-body-sm font-medium">
+                    No items added to this stock entry yet.
+                  </span>
+                  <span className="text-xs text-outline">
+                    Select a medicine and fill the batch fields above to add
+                    products.
+                  </span>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -831,39 +984,80 @@ export default function GoodsReceivedNotes() {
                     <table className="w-full text-left border-collapse text-xs">
                       <thead>
                         <tr className="bg-surface-container-low border-b border-outline-variant/60">
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">Product Name</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">Batch No</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">Qty</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">Cost (LKR)</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">Retail (LKR)</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">Expiry</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">Total Cost</th>
-                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-center">Action</th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                            Product Name
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                            Batch No
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">
+                            Qty
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">
+                            Cost (LKR)
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">
+                            Retail (LKR)
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider">
+                            Expiry
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-right">
+                            Total Cost
+                          </th>
+                          <th className="px-4 py-3 text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider text-center">
+                            Action
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-surface-container-low text-body-sm">
                         {grnRows.map((row, idx) => {
-                          const med = medicines.find(m => m.id === row.medicine_id);
-                          const lineTotal = row.purchase_price * row.quantity_received;
-                          const isRowExpired = new Date(row.expiry_date) < new Date();
+                          const med = medicines.find(
+                            (m) => m.id === row.medicine_id
+                          );
+                          const lineTotal =
+                            row.purchase_price * row.quantity_received;
+                          const isRowExpired =
+                            new Date(row.expiry_date) < new Date();
                           return (
-                            <tr key={idx} className="hover:bg-background transition-colors">
+                            <tr
+                              key={idx}
+                              className="hover:bg-background transition-colors"
+                            >
                               <td className="px-4 py-3.5 font-semibold text-primary">
                                 {med?.name || 'Unknown Medicine'}
                                 {med?.generic_name && (
-                                  <span className="block text-[10px] text-outline font-normal mt-0.5">{med.generic_name}</span>
+                                  <span className="block text-[10px] text-outline font-normal mt-0.5">
+                                    {med.generic_name}
+                                  </span>
                                 )}
                               </td>
-                              <td className="px-4 py-3.5 font-mono text-xs">{row.batch_number}</td>
-                              <td className="px-4 py-3.5 text-right font-mono font-medium">{row.quantity_received}</td>
-                              <td className="px-4 py-3.5 text-right font-mono">{row.purchase_price.toFixed(2)}</td>
-                              <td className="px-4 py-3.5 text-right font-mono">{row.selling_price.toFixed(2)}</td>
                               <td className="px-4 py-3.5 font-mono text-xs">
-                                <span className={isRowExpired ? 'text-error font-semibold bg-error-container/30 px-1.5 py-0.5 rounded border border-error/10' : ''}>
+                                {row.batch_number}
+                              </td>
+                              <td className="px-4 py-3.5 text-right font-mono font-medium">
+                                {row.quantity_received}
+                              </td>
+                              <td className="px-4 py-3.5 text-right font-mono">
+                                {row.purchase_price.toFixed(2)}
+                              </td>
+                              <td className="px-4 py-3.5 text-right font-mono">
+                                {row.selling_price.toFixed(2)}
+                              </td>
+                              <td className="px-4 py-3.5 font-mono text-xs">
+                                <span
+                                  className={
+                                    isRowExpired
+                                      ? 'text-error font-semibold bg-error-container/30 px-1.5 py-0.5 rounded border border-error/10'
+                                      : ''
+                                  }
+                                >
                                   {row.expiry_date}
                                 </span>
                               </td>
-                              <td className="px-4 py-3.5 text-right font-mono font-bold text-secondary">{lineTotal.toFixed(2)}</td>
+                              <td className="px-4 py-3.5 text-right font-mono font-bold text-secondary">
+                                {lineTotal.toFixed(2)}
+                              </td>
                               <td className="px-4 py-3.5 text-center">
                                 <button
                                   type="button"
@@ -883,13 +1077,30 @@ export default function GoodsReceivedNotes() {
                   {/* Summary Card */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-primary-container text-on-primary-container rounded-xl border border-primary/10 gap-4 shadow-[0_4px_12px_rgba(15,61,87,0.05)]">
                     <div className="text-left font-sans text-xs">
-                      <span className="block text-white font-bold uppercase tracking-wider mb-1">Stock Receipt Summary</span>
-                      <span>Total Added Items: <strong className="text-white text-sm">{grnRows.length}</strong> | Total Units: <strong className="text-white text-sm">{grnRows.reduce((s,r) => s+r.quantity_received, 0)}</strong></span>
+                      <span className="block text-white font-bold uppercase tracking-wider mb-1">
+                        Stock Receipt Summary
+                      </span>
+                      <span>
+                        Total Added Items:{' '}
+                        <strong className="text-white text-sm">
+                          {grnRows.length}
+                        </strong>{' '}
+                        | Total Units:{' '}
+                        <strong className="text-white text-sm">
+                          {grnRows.reduce((s, r) => s + r.quantity_received, 0)}
+                        </strong>
+                      </span>
                     </div>
                     <div className="text-right font-mono">
-                      <span className="text-[10px] uppercase tracking-wider block text-on-primary-container/80 font-sans font-semibold">Calculated Net Value</span>
+                      <span className="text-[10px] uppercase tracking-wider block text-on-primary-container/80 font-sans font-semibold">
+                        Calculated Net Value
+                      </span>
                       <span className="text-2xl font-extrabold text-secondary-container">
-                        LKR {totalCalculatedValue.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        LKR{' '}
+                        {totalCalculatedValue.toLocaleString('en-LK', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                       </span>
                     </div>
                   </div>
@@ -912,7 +1123,8 @@ export default function GoodsReceivedNotes() {
                     >
                       {createGRNMutation.isPending ? (
                         <>
-                          <Loader2 className="h-4 w-4 animate-spin" /> Submitting...
+                          <Loader2 className="h-4 w-4 animate-spin" />{' '}
+                          Submitting...
                         </>
                       ) : (
                         <>
@@ -935,10 +1147,12 @@ export default function GoodsReceivedNotes() {
             <div className="flex items-center justify-between border-b border-outline-variant/30 pb-4 mb-6">
               <div className="flex items-center gap-3">
                 <UserPlus className="h-5 w-5 text-primary-container" />
-                <h3 className="text-lg font-bold text-primary font-display">Register Supplier</h3>
+                <h3 className="text-lg font-bold text-primary font-display">
+                  Register Supplier
+                </h3>
               </div>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setShowAddSupplier(false)}
                 className="text-outline hover:text-on-surface-variant hover:bg-surface-container rounded-full p-1.5 transition-colors cursor-pointer"
               >

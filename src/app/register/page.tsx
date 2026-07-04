@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
   Building2,
   User,
@@ -25,35 +25,35 @@ import {
   AlertCircle,
   Bookmark,
   Clipboard,
-} from "lucide-react";
-import { BASE_URL } from "@/utils/api";
+} from 'lucide-react';
+import { BASE_URL } from '@/utils/api';
 
 export default function RegisterWizard() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [globalError, setGlobalError] = useState("");
+  const [globalError, setGlobalError] = useState('');
 
   // Step 1 Fields: Business Info
-  const [pharmacyName, setPharmacyName] = useState("");
-  const [regNumber, setRegNumber] = useState("");
-  const [brNumber, setBrNumber] = useState("");
-  const [businessEmail, setBusinessEmail] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
-  const [city, setCity] = useState("");
+  const [pharmacyName, setPharmacyName] = useState('');
+  const [regNumber, setRegNumber] = useState('');
+  const [brNumber, setBrNumber] = useState('');
+  const [businessEmail, setBusinessEmail] = useState('');
+  const [contactNumber, setContactNumber] = useState('');
+  const [city, setCity] = useState('');
 
   // Step 2 Fields: Subdomain
-  const [subdomain, setSubdomain] = useState("");
+  const [subdomain, setSubdomain] = useState('');
   const [subdomainChecking, setSubdomainChecking] = useState(false);
   const [subdomainAvailable, setSubdomainAvailable] = useState<boolean | null>(
-    null,
+    null
   );
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
   // Step 3 Fields: Admin Account
-  const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -65,9 +65,9 @@ export default function RegisterWizard() {
     if (pharmacyName && step === 1) {
       const slug = pharmacyName
         .toLowerCase()
-        .replace(/[^a-z0-9]/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
+        .replace(/[^a-z0-9]/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
 
       setSubdomain(slug);
 
@@ -75,7 +75,7 @@ export default function RegisterWizard() {
       if (slug) {
         setSuggestions([
           `${slug}-med`,
-          `${slug.replace("-", "")}pharmacy`,
+          `${slug.replace('-', '')}pharmacy`,
           `${slug}-medical`,
         ]);
       }
@@ -94,7 +94,7 @@ export default function RegisterWizard() {
       // Call public config endpoint on this subdomain to check if it already exists
       const response = await fetch(`${BASE_URL}/api/tenant/public`, {
         headers: {
-          "X-Tenant-Subdomain": sub,
+          'X-Tenant-Subdomain': sub,
         },
       });
       if (response.ok) {
@@ -122,33 +122,33 @@ export default function RegisterWizard() {
 
   // Step 1 Validation
   const validateStep1 = () => {
-    if (!pharmacyName.trim()) return "Pharmacy Name is required.";
-    if (!regNumber.trim()) return "NMRA Registration Number is required.";
-    if (!businessEmail.trim()) return "Business Email is required.";
-    if (!contactNumber.trim()) return "Contact Number is required.";
-    if (!city) return "Please select a city.";
-    return "";
+    if (!pharmacyName.trim()) return 'Pharmacy Name is required.';
+    if (!regNumber.trim()) return 'NMRA Registration Number is required.';
+    if (!businessEmail.trim()) return 'Business Email is required.';
+    if (!contactNumber.trim()) return 'Contact Number is required.';
+    if (!city) return 'Please select a city.';
+    return '';
   };
 
   // Step 2 Validation
   const validateStep2 = () => {
-    if (!subdomain.trim()) return "Subdomain is required.";
-    if (subdomainAvailable === false) return "This subdomain is already taken.";
-    return "";
+    if (!subdomain.trim()) return 'Subdomain is required.';
+    if (subdomainAvailable === false) return 'This subdomain is already taken.';
+    return '';
   };
 
   // Step 3 Validation
   const validateStep3 = () => {
-    if (!fullName.trim()) return "Full Name is required.";
-    if (!username.trim()) return "Admin Username is required.";
-    if (password.length < 8) return "Password must be at least 8 characters.";
-    if (password !== confirmPassword) return "Passwords do not match.";
-    if (!agreeTerms) return "You must agree to the Terms and Privacy Policy.";
-    return "";
+    if (!fullName.trim()) return 'Full Name is required.';
+    if (!username.trim()) return 'Admin Username is required.';
+    if (password.length < 8) return 'Password must be at least 8 characters.';
+    if (password !== confirmPassword) return 'Passwords do not match.';
+    if (!agreeTerms) return 'You must agree to the Terms and Privacy Policy.';
+    return '';
   };
 
   const handleNext = () => {
-    setGlobalError("");
+    setGlobalError('');
     if (step === 1) {
       const err = validateStep1();
       if (err) {
@@ -167,7 +167,7 @@ export default function RegisterWizard() {
   };
 
   const handleBack = () => {
-    setGlobalError("");
+    setGlobalError('');
     if (step > 1) {
       setStep(step - 1);
     }
@@ -176,7 +176,7 @@ export default function RegisterWizard() {
   // Final Registration Request Submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setGlobalError("");
+    setGlobalError('');
     const err = validateStep3();
     if (err) {
       setGlobalError(err);
@@ -187,9 +187,9 @@ export default function RegisterWizard() {
 
     try {
       const response = await fetch(`${BASE_URL}/api/auth/onboard`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           pharmacy_name: pharmacyName.trim(),
@@ -202,18 +202,21 @@ export default function RegisterWizard() {
           contact_number: contactNumber.trim(),
           city: city,
           full_name: fullName.trim(),
-          origin: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000',
+          origin:
+            typeof window !== 'undefined'
+              ? window.location.origin
+              : 'http://localhost:3000',
         }),
       });
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.detail || "Failed to complete registration.");
+        throw new Error(data.detail || 'Failed to complete registration.');
       }
 
       setStep(4);
     } catch (err: any) {
-      setGlobalError(err.message || "Onboarding failed. Please try again.");
+      setGlobalError(err.message || 'Onboarding failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -254,16 +257,19 @@ export default function RegisterWizard() {
         {/* Dynamic Image Graphic */}
         <div className="relative z-10 flex-grow flex items-center justify-center py-6">
           <div className="w-full max-w-sm aspect-square bg-[#00273b] rounded-2xl border border-white/10 relative overflow-hidden shadow-2xl">
-            <img 
-              src="/onboarding-pitch-banner.png" 
-              alt="Pharmacy SaaS Interface" 
+            <img
+              src="/onboarding-pitch-banner.png"
+              alt="Pharmacy SaaS Interface"
               className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-lighten"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#001e2f] via-[#001e2f]/50 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8 text-white z-10">
-              <span className="text-xs uppercase font-bold tracking-widest text-teal-400 mb-2">Sri Lanka B2B Enterprise</span>
+              <span className="text-xs uppercase font-bold tracking-widest text-teal-400 mb-2">
+                Sri Lanka B2B Enterprise
+              </span>
               <h3 className="font-display text-xl font-bold leading-snug">
-                Clinical-clean software architecture tailored for regulatory compliance.
+                Clinical-clean software architecture tailored for regulatory
+                compliance.
               </h3>
             </div>
           </div>
@@ -289,8 +295,8 @@ export default function RegisterWizard() {
           {/* Testimonial Quote */}
           <div className="bg-[#0f3d57]/50 backdrop-blur-sm p-4 rounded-xl border border-teal-500/10">
             <p className="text-slate-300 text-xs italic mb-2 leading-relaxed">
-              "Signing up for Medical.lk streamlined our stock logistics and
-              POS checkout. Highly recommended."
+              "Signing up for Medical.lk streamlined our stock logistics and POS
+              checkout. Highly recommended."
             </p>
             <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wide">
               - Perera Medical Pharmacy
@@ -327,15 +333,15 @@ export default function RegisterWizard() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       step > 1
-                        ? "bg-[#00273b] text-white"
-                        : "bg-[#2ECC71] text-white"
+                        ? 'bg-[#00273b] text-white'
+                        : 'bg-[#2ECC71] text-white'
                     }`}
                   >
-                    {step > 1 ? <Check className="h-4.5 w-4.5" /> : "1"}
+                    {step > 1 ? <Check className="h-4.5 w-4.5" /> : '1'}
                   </div>
                   <span
                     className={`text-[10px] font-bold uppercase tracking-wider ${
-                      step >= 1 ? "text-[#00273b]" : "text-slate-400"
+                      step >= 1 ? 'text-[#00273b]' : 'text-slate-400'
                     }`}
                   >
                     Info
@@ -343,7 +349,7 @@ export default function RegisterWizard() {
                 </div>
                 <div
                   className={`h-0.5 flex-1 mx-2 rounded-full transition-all ${
-                    step > 1 ? "bg-[#2ECC71]" : "bg-slate-200"
+                    step > 1 ? 'bg-[#2ECC71]' : 'bg-slate-200'
                   }`}
                 />
 
@@ -351,17 +357,17 @@ export default function RegisterWizard() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       step > 2
-                        ? "bg-[#00273b] text-white"
+                        ? 'bg-[#00273b] text-white'
                         : step === 2
-                          ? "bg-[#2ECC71] text-white"
-                          : "border-2 border-slate-200 text-slate-400"
+                          ? 'bg-[#2ECC71] text-white'
+                          : 'border-2 border-slate-200 text-slate-400'
                     }`}
                   >
-                    {step > 2 ? <Check className="h-4.5 w-4.5" /> : "2"}
+                    {step > 2 ? <Check className="h-4.5 w-4.5" /> : '2'}
                   </div>
                   <span
                     className={`text-[10px] font-bold uppercase tracking-wider ${
-                      step >= 2 ? "text-[#00273b]" : "text-slate-400"
+                      step >= 2 ? 'text-[#00273b]' : 'text-slate-400'
                     }`}
                   >
                     Subdomain
@@ -369,7 +375,7 @@ export default function RegisterWizard() {
                 </div>
                 <div
                   className={`h-0.5 flex-1 mx-2 rounded-full transition-all ${
-                    step > 2 ? "bg-[#2ECC71]" : "bg-slate-200"
+                    step > 2 ? 'bg-[#2ECC71]' : 'bg-slate-200'
                   }`}
                 />
 
@@ -377,15 +383,15 @@ export default function RegisterWizard() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       step === 3
-                        ? "bg-[#2ECC71] text-white"
-                        : "border-2 border-slate-200 text-slate-400"
+                        ? 'bg-[#2ECC71] text-white'
+                        : 'border-2 border-slate-200 text-slate-400'
                     }`}
                   >
                     3
                   </div>
                   <span
                     className={`text-[10px] font-bold uppercase tracking-wider ${
-                      step === 3 ? "text-[#00273b]" : "text-slate-400"
+                      step === 3 ? 'text-[#00273b]' : 'text-slate-400'
                     }`}
                   >
                     Admin
@@ -570,7 +576,7 @@ export default function RegisterWizard() {
                             setSubdomain(
                               e.target.value
                                 .toLowerCase()
-                                .replace(/[^a-z0-9-]/g, ""),
+                                .replace(/[^a-z0-9-]/g, '')
                             )
                           }
                           className="flex-grow pl-4 pr-2 py-3 bg-transparent border-0 outline-none text-sm font-mono"
@@ -601,7 +607,7 @@ export default function RegisterWizard() {
                                 Address is available!
                               </p>
                               <p className="text-[10px] text-slate-500 mt-0.5">
-                                Live portal will be generated at:{" "}
+                                Live portal will be generated at:{' '}
                                 <span className="underline font-semibold text-teal-700">
                                   {subdomain}.medical.lk
                                 </span>
@@ -717,7 +723,7 @@ export default function RegisterWizard() {
                             setUsername(
                               e.target.value
                                 .toLowerCase()
-                                .replace(/[^a-z0-9._-]/g, ""),
+                                .replace(/[^a-z0-9._-]/g, '')
                             )
                           }
                           className="w-full pl-11 pr-4 py-3 bg-transparent border-0 outline-none text-sm focus:ring-0 font-mono"
@@ -733,7 +739,7 @@ export default function RegisterWizard() {
                       <div className="relative flex items-center border border-slate-200 rounded-xl bg-white focus-within:border-[#00273b] focus-within:ring-2 focus-within:ring-[#00273b]/10 transition-all">
                         <Lock className="absolute left-3.5 h-4.5 w-4.5 text-slate-400" />
                         <input
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           required
                           placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
                           value={password}
@@ -759,40 +765,40 @@ export default function RegisterWizard() {
                           <div className="flex gap-1 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
                             <div
                               className={`h-full flex-grow rounded-full transition-all ${
-                                hasMinLength ? "bg-[#2ECC71]" : "bg-slate-300"
+                                hasMinLength ? 'bg-[#2ECC71]' : 'bg-slate-300'
                               }`}
                             />
                             <div
                               className={`h-full flex-grow rounded-full transition-all ${
-                                hasNumSymbol ? "bg-[#2ECC71]" : "bg-slate-300"
+                                hasNumSymbol ? 'bg-[#2ECC71]' : 'bg-slate-300'
                               }`}
                             />
                             <div
                               className={`h-full flex-grow rounded-full transition-all ${
-                                hasUpperLower ? "bg-[#2ECC71]" : "bg-slate-300"
+                                hasUpperLower ? 'bg-[#2ECC71]' : 'bg-slate-300'
                               }`}
                             />
                           </div>
                           <span
-                            className={`text-[10px] font-bold block ${isStrong ? "text-[#006d37]" : "text-slate-400"}`}
+                            className={`text-[10px] font-bold block ${isStrong ? 'text-[#006d37]' : 'text-slate-400'}`}
                           >
                             {isStrong
-                              ? "Strong Password ✓"
-                              : "Password requires adjustments:"}
+                              ? 'Strong Password ✓'
+                              : 'Password requires adjustments:'}
                           </span>
                           <ul className="text-[10px] space-y-1 font-medium text-slate-400">
                             <li
-                              className={`flex items-center gap-1 ${hasMinLength ? "text-[#006d37]" : ""}`}
+                              className={`flex items-center gap-1 ${hasMinLength ? 'text-[#006d37]' : ''}`}
                             >
                               <Check className="h-3 w-3" /> 8+ characters
                             </li>
                             <li
-                              className={`flex items-center gap-1 ${hasNumSymbol ? "text-[#006d37]" : ""}`}
+                              className={`flex items-center gap-1 ${hasNumSymbol ? 'text-[#006d37]' : ''}`}
                             >
                               <Check className="h-3 w-3" /> Number & symbol
                             </li>
                             <li
-                              className={`flex items-center gap-1 ${hasUpperLower ? "text-[#006d37]" : ""}`}
+                              className={`flex items-center gap-1 ${hasUpperLower ? 'text-[#006d37]' : ''}`}
                             >
                               <Check className="h-3 w-3" /> Uppercase &
                               lowercase letter
@@ -810,7 +816,7 @@ export default function RegisterWizard() {
                       <div className="relative flex items-center border border-slate-200 rounded-xl bg-white focus-within:border-[#00273b] focus-within:ring-2 focus-within:ring-[#00273b]/10 transition-all">
                         <Lock className="absolute left-3.5 h-4.5 w-4.5 text-slate-400" />
                         <input
-                          type={showPassword ? "text" : "password"}
+                          type={showPassword ? 'text' : 'password'}
                           required
                           placeholder="Confirm password"
                           value={confirmPassword}
@@ -834,14 +840,14 @@ export default function RegisterWizard() {
                         )}
                       </button>
                       <span className="text-xs text-slate-500 leading-normal select-none">
-                        I agree to the{" "}
+                        I agree to the{' '}
                         <a
                           href="#"
                           className="font-bold text-[#00273b] hover:underline"
                         >
                           Terms of Service
-                        </a>{" "}
-                        and{" "}
+                        </a>{' '}
+                        and{' '}
                         <a
                           href="#"
                           className="font-bold text-[#00273b] hover:underline"
@@ -878,7 +884,7 @@ export default function RegisterWizard() {
                       >
                         {loading ? (
                           <>
-                            <Loader2 className="h-4 w-4 animate-spin" />{" "}
+                            <Loader2 className="h-4 w-4 animate-spin" />{' '}
                             Finalizing...
                           </>
                         ) : (
@@ -984,13 +990,13 @@ export default function RegisterWizard() {
                   </div>
 
                   <p className="text-[10px] text-slate-400 leading-normal">
-                    Need help setting up your POS? Visit our{" "}
+                    Need help setting up your POS? Visit our{' '}
                     <a
                       href="#"
                       className="font-bold text-[#00273b] hover:underline"
                     >
                       Onboarding Guide
-                    </a>{" "}
+                    </a>{' '}
                     or contact technical support.
                   </p>
                 </div>

@@ -2,22 +2,22 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Activity, 
-  Sparkles, 
-  Shield, 
-  Globe, 
-  BarChart3, 
-  CheckCircle, 
-  Heart, 
-  ArrowRight, 
-  Plus, 
-  Trash2, 
-  Printer, 
-  Check, 
-  Monitor, 
-  Search, 
-  Layers, 
+import {
+  Activity,
+  Sparkles,
+  Shield,
+  Globe,
+  BarChart3,
+  CheckCircle,
+  Heart,
+  ArrowRight,
+  Plus,
+  Trash2,
+  Printer,
+  Check,
+  Monitor,
+  Search,
+  Layers,
   Database,
   Cpu,
   Clock,
@@ -25,7 +25,7 @@ import {
   TrendingUp,
   Settings,
   Users,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
@@ -69,7 +69,9 @@ export default function LandingPage() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [printDuration, setPrintDuration] = useState<number | null>(null);
   const [pharmacyName, setPharmacyName] = useState('Lanka Care');
-  const [activeTab, setActiveTab] = useState<'pos' | 'website' | 'stock'>('pos');
+  const [activeTab, setActiveTab] = useState<'pos' | 'website' | 'stock'>(
+    'pos'
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Background particle animation
@@ -106,7 +108,8 @@ export default function LandingPage() {
         radius: Math.random() * 2 + 1,
         vx: (Math.random() - 0.5) * 0.3,
         vy: -Math.random() * 0.5 - 0.2, // Float upwards
-        color: i % 2 === 0 ? 'rgba(20, 184, 166, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+        color:
+          i % 2 === 0 ? 'rgba(20, 184, 166, 0.15)' : 'rgba(16, 185, 129, 0.15)',
       });
     }
 
@@ -191,7 +194,13 @@ export default function LandingPage() {
       gsap.fromTo(
         '.gsap-hero-cta',
         { opacity: 0, scale: 0.95 },
-        { opacity: 1, scale: 1, duration: 0.6, delay: 0.6, ease: 'back.out(1.7)' }
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.6,
+          delay: 0.6,
+          ease: 'back.out(1.7)',
+        }
       );
     },
     { scope: containerRef }
@@ -236,10 +245,10 @@ export default function LandingPage() {
   const triggerMockPrint = () => {
     if (items.length === 0) return;
     setIsPrinting(true);
-    
+
     // Simulate ultra-fast print thread execution time (typically 8-15ms with our Chrome Extension)
     const duration = parseFloat((Math.random() * 8 + 6).toFixed(2));
-    
+
     setTimeout(() => {
       setPrintDuration(duration);
       confetti({
@@ -257,16 +266,16 @@ export default function LandingPage() {
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="light-theme-root relative min-h-screen overflow-x-hidden selection-light"
     >
       {/* Background canvas particles */}
-      <canvas 
-        ref={canvasRef} 
-        className="absolute inset-0 pointer-events-none z-0" 
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-none z-0"
       />
-      
+
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md border-b border-slate-200/60 bg-white/75 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -280,10 +289,27 @@ export default function LandingPage() {
           </div>
 
           <nav className="hidden md:flex items-center gap-9 text-[15px] font-medium text-slate-600">
-            <a href="#demo" className="hover:text-teal-600 transition-colors">Interactive Demo</a>
-            <a href="#features" className="hover:text-teal-600 transition-colors">Features</a>
-            <a href="#simulator" className="hover:text-teal-600 transition-colors">Subdomain Simulator</a>
-            <a href="#pricing" className="hover:text-teal-600 transition-colors">Pricing</a>
+            <a href="#demo" className="hover:text-teal-600 transition-colors">
+              Interactive Demo
+            </a>
+            <a
+              href="#features"
+              className="hover:text-teal-600 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#simulator"
+              className="hover:text-teal-600 transition-colors"
+            >
+              Subdomain Simulator
+            </a>
+            <a
+              href="#pricing"
+              className="hover:text-teal-600 transition-colors"
+            >
+              Pricing
+            </a>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -296,14 +322,20 @@ export default function LandingPage() {
           </div>
 
           {/* Mobile menu button */}
-          <button 
+          <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <div className="w-6 h-5 flex flex-col justify-between items-end">
-              <span className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-6 translate-y-2 rotate-45' : 'w-6'}`} />
-              <span className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-0 opacity-0' : 'w-4'}`} />
-              <span className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-6 -translate-y-2.5 -rotate-45' : 'w-5'}`} />
+              <span
+                className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-6 translate-y-2 rotate-45' : 'w-6'}`}
+              />
+              <span
+                className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-0 opacity-0' : 'w-4'}`}
+              />
+              <span
+                className={`h-0.5 bg-current rounded-full transition-all duration-300 ${mobileMenuOpen ? 'w-6 -translate-y-2.5 -rotate-45' : 'w-5'}`}
+              />
             </div>
           </button>
         </div>
@@ -318,10 +350,34 @@ export default function LandingPage() {
               className="md:hidden border-t border-slate-200 bg-white/95 backdrop-blur-lg overflow-hidden"
             >
               <div className="px-6 py-6 flex flex-col gap-4 text-slate-700 font-medium">
-                <a href="#demo" onClick={() => setMobileMenuOpen(false)} className="hover:text-teal-600 py-1 transition-colors">Interactive Demo</a>
-                <a href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-teal-600 py-1 transition-colors">Features</a>
-                <a href="#simulator" onClick={() => setMobileMenuOpen(false)} className="hover:text-teal-600 py-1 transition-colors">Subdomain Simulator</a>
-                <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="hover:text-teal-600 py-1 transition-colors">Pricing</a>
+                <a
+                  href="#demo"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-teal-600 py-1 transition-colors"
+                >
+                  Interactive Demo
+                </a>
+                <a
+                  href="#features"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-teal-600 py-1 transition-colors"
+                >
+                  Features
+                </a>
+                <a
+                  href="#simulator"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-teal-600 py-1 transition-colors"
+                >
+                  Subdomain Simulator
+                </a>
+                <a
+                  href="#pricing"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="hover:text-teal-600 py-1 transition-colors"
+                >
+                  Pricing
+                </a>
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
@@ -338,22 +394,20 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 max-w-5xl mx-auto px-6 z-10">
         <div className="flex flex-col items-center text-center">
-          
           {/* Hero Content */}
           <div className="max-w-3xl w-full flex flex-col items-center">
-            
             <h1 className="gsap-hero-title font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 leading-[1.15]">
               Supercharge Your <br />
-              <span className="text-teal-600">
-                Pharmacy POS
-              </span> <br />
-              & Stock Management
+              <span className="text-teal-600">Pharmacy POS</span> <br />& Stock
+              Management
             </h1>
-            
+
             <p className="gsap-hero-subtitle max-w-xl text-slate-600 text-lg md:text-xl mb-10 leading-relaxed mx-auto">
-              Scan barcodes, track batch expirations, run bulk inventory operations, and issue instant silent thermal receipts via WebUSB extension in under 12ms.
+              Scan barcodes, track batch expirations, run bulk inventory
+              operations, and issue instant silent thermal receipts via WebUSB
+              extension in under 12ms.
             </p>
-            
+
             <div className="gsap-hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
               <Link
                 href="/register"
@@ -385,19 +439,23 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
       {/* Demo Anchor Section */}
-      <section id="demo" className="py-20 bg-slate-100/50 border-t border-b border-slate-200/50 relative z-10">
+      <section
+        id="demo"
+        className="py-20 bg-slate-100/50 border-t border-b border-slate-200/50 relative z-10"
+      >
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 max-w-2xl mx-auto">
             <h2 className="font-display text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">
               Real-time Interactive Demonstration
             </h2>
             <p className="text-slate-600">
-              Explore the core workflow components. Switch tabs below to see how our POS cashier screen, automatic subdomain website customization, and real-time inventory systems interact.
+              Explore the core workflow components. Switch tabs below to see how
+              our POS cashier screen, automatic subdomain website customization,
+              and real-time inventory systems interact.
             </p>
           </div>
 
@@ -438,9 +496,14 @@ export default function LandingPage() {
                     <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-600">
                       <BarChart3 className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900">Millisecond Barcode Checkout</h3>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Millisecond Barcode Checkout
+                    </h3>
                     <p className="text-slate-600 text-sm leading-relaxed">
-                      Cashiers search medicines instantly with NMRA catalog auto-fills. Invoices compute, deduct active stock, refresh databases, and trigger thermal receipts in concurrent threads to eliminate checkout lanes.
+                      Cashiers search medicines instantly with NMRA catalog
+                      auto-fills. Invoices compute, deduct active stock, refresh
+                      databases, and trigger thermal receipts in concurrent
+                      threads to eliminate checkout lanes.
                     </p>
                     <ul className="space-y-2 text-xs font-semibold text-slate-700">
                       <li className="flex items-center gap-2">
@@ -460,11 +523,19 @@ export default function LandingPage() {
                     </div>
                     <div className="space-y-1.5 text-emerald-400">
                       <div>[DEBUG] invoice mutation trigger...</div>
-                      <div className="text-slate-400">▸ patient verification: 0.1ms</div>
-                      <div className="text-slate-400">▸ batch lookup & check: 120.4ms</div>
-                      <div className="text-slate-400">▸ database commit: 89.2ms</div>
+                      <div className="text-slate-400">
+                        ▸ patient verification: 0.1ms
+                      </div>
+                      <div className="text-slate-400">
+                        ▸ batch lookup & check: 120.4ms
+                      </div>
+                      <div className="text-slate-400">
+                        ▸ database commit: 89.2ms
+                      </div>
                       <div>[SUCCESS] WebUSB printer event broadcast!</div>
-                      <div className="text-white font-bold">▸ receipt printed in 12.04ms</div>
+                      <div className="text-white font-bold">
+                        ▸ receipt printed in 12.04ms
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -482,12 +553,19 @@ export default function LandingPage() {
                     <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
                       <Globe className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900">Custom Dynamic Subdomain Pages</h3>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      Custom Dynamic Subdomain Pages
+                    </h3>
                     <p className="text-slate-600 text-sm leading-relaxed">
-                      SaaS automatically launches a public-facing website on your custom subdomain (e.g. `lanka-care.medical.lk`). Customize page content, colors, maps, logo uploads, and contacts directly from your dashboard.
+                      SaaS automatically launches a public-facing website on
+                      your custom subdomain (e.g. `lanka-care.medical.lk`).
+                      Customize page content, colors, maps, logo uploads, and
+                      contacts directly from your dashboard.
                     </p>
                     <div className="flex items-center gap-3">
-                      <label className="text-xs font-bold text-slate-500 uppercase">Interactive Preview:</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase">
+                        Interactive Preview:
+                      </label>
                       <input
                         type="text"
                         value={pharmacyName}
@@ -502,14 +580,19 @@ export default function LandingPage() {
                       <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                          {pharmacyName.toLowerCase().replace(/\s+/g, '-')}.medical.lk
+                          {pharmacyName.toLowerCase().replace(/\s+/g, '-')}
+                          .medical.lk
                         </span>
                       </div>
                       <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
                     </div>
                     <div className="text-center py-4 bg-slate-50 rounded-xl border border-dashed border-slate-100">
-                      <h4 className="font-display font-bold text-slate-800 text-base">{pharmacyName} Pharmacy</h4>
-                      <p className="text-xs text-slate-500 mt-1">Open 24/7 • Licensed Pharmacists</p>
+                      <h4 className="font-display font-bold text-slate-800 text-base">
+                        {pharmacyName} Pharmacy
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Open 24/7 • Licensed Pharmacists
+                      </p>
                       <div className="mt-4 inline-flex items-center gap-1 text-[10px] font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-full">
                         Locate on Google Maps
                       </div>
@@ -530,30 +613,49 @@ export default function LandingPage() {
                     <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600">
                       <Shield className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900">GRN Stock & Batch Expiration Warnings</h3>
+                    <h3 className="text-xl font-bold text-slate-900">
+                      GRN Stock & Batch Expiration Warnings
+                    </h3>
                     <p className="text-slate-600 text-sm leading-relaxed">
-                      Efficiently manage goods received notes (GRN). Define individual batch numbers, expiry dates, supplier rates, and selling limits. System triggers dashboard alarms 30/60/90 days before chemical expiration.
+                      Efficiently manage goods received notes (GRN). Define
+                      individual batch numbers, expiry dates, supplier rates,
+                      and selling limits. System triggers dashboard alarms
+                      30/60/90 days before chemical expiration.
                     </p>
                   </div>
                   <div className="md:col-span-5 bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xl space-y-3">
                     <div className="flex items-center justify-between text-xs font-bold text-slate-500 border-b border-slate-100 pb-2">
                       <span>EXPIRY WARNING ALERTS</span>
-                      <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full uppercase">3 Warnings</span>
+                      <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full uppercase">
+                        3 Warnings
+                      </span>
                     </div>
                     <div className="space-y-2">
                       <div className="p-2.5 rounded-lg bg-red-50/70 border border-red-100 flex justify-between items-center text-xs">
                         <div>
-                          <div className="font-bold text-red-900">Panadol Extra (Batch B02)</div>
-                          <div className="text-slate-500 text-[10px]">Expires in 12 days</div>
+                          <div className="font-bold text-red-900">
+                            Panadol Extra (Batch B02)
+                          </div>
+                          <div className="text-slate-500 text-[10px]">
+                            Expires in 12 days
+                          </div>
                         </div>
-                        <span className="text-red-700 font-bold font-mono">12d</span>
+                        <span className="text-red-700 font-bold font-mono">
+                          12d
+                        </span>
                       </div>
                       <div className="p-2.5 rounded-lg bg-orange-50/70 border border-orange-100 flex justify-between items-center text-xs">
                         <div>
-                          <div className="font-bold text-orange-900">Amoxil Capsule (Batch B99)</div>
-                          <div className="text-slate-500 text-[10px]">Expires in 34 days</div>
+                          <div className="font-bold text-orange-900">
+                            Amoxil Capsule (Batch B99)
+                          </div>
+                          <div className="text-slate-500 text-[10px]">
+                            Expires in 34 days
+                          </div>
                         </div>
-                        <span className="text-orange-700 font-bold font-mono">34d</span>
+                        <span className="text-orange-700 font-bold font-mono">
+                          34d
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -572,7 +674,8 @@ export default function LandingPage() {
               Designed For High-Volume Pharmacies
             </h2>
             <p className="text-slate-600">
-              Our cloud software takes the heavy lift of inventory, customer, and print operations so you can focus entirely on patient health.
+              Our cloud software takes the heavy lift of inventory, customer,
+              and print operations so you can focus entirely on patient health.
             </p>
           </div>
 
@@ -582,9 +685,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <BarChart3 className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Lightning Checkout</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Lightning Checkout
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Cashiers can process checkout events under 100ms. Scan barcode, deduct inventory, and issue bills dynamically.
+                Cashiers can process checkout events under 100ms. Scan barcode,
+                deduct inventory, and issue bills dynamically.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -594,9 +700,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Secure Stock GRN</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Secure Stock GRN
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Add stock batches, manage supplier credits, and track medicine expiry warnings smoothly from a central portal.
+                Add stock batches, manage supplier credits, and track medicine
+                expiry warnings smoothly from a central portal.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -606,9 +715,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Globe className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Custom Subdomains</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Custom Subdomains
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Get an instant web profile under your own address. Showcase locations, store hours, and pharmacy logos automatically.
+                Get an instant web profile under your own address. Showcase
+                locations, store hours, and pharmacy logos automatically.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -618,9 +730,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Database className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Neon Serverless DB</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Neon Serverless DB
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                High availability database clustering hosted on Neon PostgreSQL. Safely query large logs without lag or timeout.
+                High availability database clustering hosted on Neon PostgreSQL.
+                Safely query large logs without lag or timeout.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -630,9 +745,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Cpu className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">USB Printer Direct</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                USB Printer Direct
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Send thermal ESC/POS print batches silently with our lightweight Chrome Extension. Skip browser system dialogs completely.
+                Send thermal ESC/POS print batches silently with our lightweight
+                Chrome Extension. Skip browser system dialogs completely.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-purple-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -642,9 +760,12 @@ export default function LandingPage() {
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Clock className="h-6 w-6" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Sub-second Sync</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Sub-second Sync
+              </h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Local cached operations synchronize instantly once you commit back-end transactions. Zero loss of transaction history.
+                Local cached operations synchronize instantly once you commit
+                back-end transactions. Zero loss of transaction history.
               </p>
               <div className="absolute bottom-0 inset-x-0 h-1 bg-emerald-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
             </div>
@@ -653,17 +774,23 @@ export default function LandingPage() {
       </section>
 
       {/* Dynamic Subdomain Live Simulator Widget */}
-      <section id="simulator" className="py-20 bg-slate-100/50 border-t border-b border-slate-200/50 relative z-10 gsap-fade-in">
+      <section
+        id="simulator"
+        className="py-20 bg-slate-100/50 border-t border-b border-slate-200/50 relative z-10 gsap-fade-in"
+      >
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="font-display text-3xl font-extrabold text-slate-900 mb-4">
             Claim Your Free Pharmacy Subdomain
           </h2>
           <p className="text-slate-600 mb-10 max-w-xl mx-auto">
-            Input your store name. We dynamically register a clean public subdomain website showcasing locations, contacts, and stock lists.
+            Input your store name. We dynamically register a clean public
+            subdomain website showcasing locations, contacts, and stock lists.
           </p>
 
           <div className="max-w-md mx-auto p-3 bg-white border border-slate-200 rounded-2xl flex items-center shadow-lg">
-            <span className="pl-3 text-slate-400 font-bold text-sm">https://</span>
+            <span className="pl-3 text-slate-400 font-bold text-sm">
+              https://
+            </span>
             <input
               type="text"
               value={pharmacyName.toLowerCase().replace(/\s+/g, '-')}
@@ -671,11 +798,14 @@ export default function LandingPage() {
               className="flex-1 px-2 py-2 text-sm font-bold text-slate-800 placeholder-slate-300 focus:outline-none"
               placeholder="lanka-care"
             />
-            <span className="pr-3 text-teal-600 font-extrabold text-sm">.medical.lk</span>
+            <span className="pr-3 text-teal-600 font-extrabold text-sm">
+              .medical.lk
+            </span>
           </div>
 
           <div className="mt-8 text-xs font-bold text-slate-500 flex items-center justify-center gap-1">
-            <Check className="h-4 w-4 text-emerald-500" /> Auto-claims dynamic SSL certificate in production
+            <Check className="h-4 w-4 text-emerald-500" /> Auto-claims dynamic
+            SSL certificate in production
           </div>
         </div>
       </section>
@@ -688,10 +818,11 @@ export default function LandingPage() {
               Simple, Transparent Pricing
             </h2>
             <p className="text-slate-600 text-base max-w-xl mx-auto">
-              No upfront setup fees, no complex licensing constraints. Choose the plan that fits your pharmacy's scale.
+              No upfront setup fees, no complex licensing constraints. Choose
+              the plan that fits your pharmacy's scale.
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
             {/* Basic Plan Card */}
             <div className="p-10 rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-md relative overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
@@ -699,13 +830,21 @@ export default function LandingPage() {
                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-teal-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase">
                   Launch Trial
                 </div>
-                
-                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Basic Plan</h3>
-                <p className="text-xs text-slate-500 font-semibold mb-6">3-Month Free Trial • No credit card required</p>
-                
+
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">
+                  Basic Plan
+                </h3>
+                <p className="text-xs text-slate-500 font-semibold mb-6">
+                  3-Month Free Trial • No credit card required
+                </p>
+
                 <div className="flex items-baseline justify-center gap-1 my-8">
-                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">LKR 0</span>
-                  <span className="text-slate-500 text-sm font-semibold">/ 3 months</span>
+                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">
+                    LKR 0
+                  </span>
+                  <span className="text-slate-500 text-sm font-semibold">
+                    / 3 months
+                  </span>
                 </div>
 
                 {/* Trial Note & Post-Trial Pricing Container */}
@@ -718,16 +857,24 @@ export default function LandingPage() {
                   </p>
                   <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
                     <div className="flex flex-col items-center">
-                      <span className="text-sm font-bold text-slate-900">LKR 1,200</span>
-                      <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+                      <span className="text-sm font-bold text-slate-900">
+                        LKR 1,200
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400">
+                        Monthly Billing
+                      </span>
                     </div>
                     <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
                     <div className="flex flex-col items-center relative">
                       <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-teal-600 px-1.5 py-0.5 rounded-full shadow-sm">
                         Save LKR 2,400
                       </span>
-                      <span className="text-sm font-bold text-slate-900">LKR 12,000</span>
-                      <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 1,000/mo)</span>
+                      <span className="text-sm font-bold text-slate-900">
+                        LKR 12,000
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400">
+                        Annual Billing (LKR 1,000/mo)
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -774,13 +921,21 @@ export default function LandingPage() {
                 <div className="absolute top-0 right-0 px-4 py-1.5 bg-teal-600 text-white text-[10px] font-bold rounded-bl-xl tracking-wider uppercase">
                   Custom Domain
                 </div>
-                
-                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">Premium Plan</h3>
-                <p className="text-xs text-slate-500 font-semibold mb-6">Own custom domain & brand identity</p>
-                
+
+                <h3 className="text-2xl font-extrabold text-slate-900 mb-2">
+                  Premium Plan
+                </h3>
+                <p className="text-xs text-slate-500 font-semibold mb-6">
+                  Own custom domain & brand identity
+                </p>
+
                 <div className="flex items-baseline justify-center gap-1 my-8">
-                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">LKR 2,500</span>
-                  <span className="text-slate-500 text-sm font-semibold">/ month</span>
+                  <span className="text-5xl font-extrabold tracking-tight text-slate-900">
+                    LKR 2,500
+                  </span>
+                  <span className="text-slate-500 text-sm font-semibold">
+                    / month
+                  </span>
                 </div>
 
                 {/* Subscription Options Container */}
@@ -793,16 +948,24 @@ export default function LandingPage() {
                   </p>
                   <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-slate-800">
                     <div className="flex flex-col items-center">
-                      <span className="text-sm font-bold text-slate-900">LKR 2,500</span>
-                      <span className="text-[10px] font-semibold text-slate-400">Monthly Billing</span>
+                      <span className="text-sm font-bold text-slate-900">
+                        LKR 2,500
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400">
+                        Monthly Billing
+                      </span>
                     </div>
                     <div className="hidden sm:block border-r border-slate-200 h-8 self-center" />
                     <div className="flex flex-col items-center relative">
                       <span className="absolute -top-3.5 -right-6 text-[8px] font-extrabold text-white bg-teal-600 px-1.5 py-0.5 rounded-full shadow-sm">
                         Save LKR 5,000
                       </span>
-                      <span className="text-sm font-bold text-slate-900">LKR 25,000</span>
-                      <span className="text-[10px] font-semibold text-slate-400">Annual Billing (LKR 2,083/mo)</span>
+                      <span className="text-sm font-bold text-slate-900">
+                        LKR 25,000
+                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400">
+                        Annual Billing (LKR 2,083/mo)
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -810,23 +973,33 @@ export default function LandingPage() {
                 <ul className="text-left space-y-4 mb-10 text-sm font-medium text-slate-700">
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
-                    <span className="font-semibold text-slate-950">Own custom domain (e.g. yourname.lk)</span>
+                    <span className="font-semibold text-slate-950">
+                      Own custom domain (e.g. yourname.lk)
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
-                    <span className="font-semibold text-slate-950">Daily automated secure database backups</span>
+                    <span className="font-semibold text-slate-950">
+                      Daily automated secure database backups
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
-                    <span className="font-semibold text-slate-950">3 premium corporate email accounts</span>
+                    <span className="font-semibold text-slate-950">
+                      3 premium corporate email accounts
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-teal-600 shrink-0" />
-                    <span className="font-semibold text-slate-950">Unlimited public website design templates</span>
+                    <span className="font-semibold text-slate-950">
+                      Unlimited public website design templates
+                    </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-slate-400 shrink-0" />
-                    <span className="text-slate-500">Includes all Basic Plan features</span>
+                    <span className="text-slate-500">
+                      Includes all Basic Plan features
+                    </span>
                   </li>
                 </ul>
               </div>
@@ -850,32 +1023,41 @@ export default function LandingPage() {
               <div className="w-8 h-8 rounded-lg bg-teal-600 flex items-center justify-center">
                 <Activity className="h-4.5 w-4.5 text-white" />
               </div>
-              <span className="font-bold text-slate-800 text-base">medical.lk</span>
+              <span className="font-bold text-slate-800 text-base">
+                medical.lk
+              </span>
             </div>
-            
+
             <div className="flex items-center gap-2 text-sm font-semibold text-slate-500">
               <span>Developed By</span>
-              <a 
-                href="https://www.quantumblaze.lk" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.quantumblaze.lk"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-teal-600 hover:text-teal-700 font-extrabold flex items-center gap-0.5 hover:underline transition-all"
               >
                 Quantum Blaze
               </a>
             </div>
           </div>
-          
+
           <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-medium">
             <p className="flex items-center gap-1">
-              Made with <Heart className="h-3 w-3 text-red-500 fill-red-500" /> in Sri Lanka. All rights reserved. &copy; 2026.
+              Made with <Heart className="h-3 w-3 text-red-500 fill-red-500" />{' '}
+              in Sri Lanka. All rights reserved. &copy; 2026.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-slate-500">
-              <a href="mailto:contact@quantumblaze.lk" className="hover:text-teal-600 transition-colors">
+              <a
+                href="mailto:contact@quantumblaze.lk"
+                className="hover:text-teal-600 transition-colors"
+              >
                 Email: contact@quantumblaze.lk
               </a>
               <span className="hidden md:inline text-slate-300">|</span>
-              <a href="tel:+94788056838" className="hover:text-teal-600 transition-colors">
+              <a
+                href="tel:+94788056838"
+                className="hover:text-teal-600 transition-colors"
+              >
                 Contact: +94 78 805 6838
               </a>
             </div>

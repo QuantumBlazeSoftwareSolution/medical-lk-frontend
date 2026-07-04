@@ -21,7 +21,9 @@ export default function LeafletMap({ address, mapLink }: LeafletMapProps) {
       // 1. Try to parse from mapLink if it contains lat,lon
       if (mapLink) {
         // Match standard query parameters like q=lat,lon or query=lat,lon
-        const qMatch = mapLink.match(/[?&](q|query|ll)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+        const qMatch = mapLink.match(
+          /[?&](q|query|ll)=(-?\d+\.\d+),(-?\d+\.\d+)/
+        );
         if (qMatch) {
           const lat = parseFloat(qMatch[2]);
           const lon = parseFloat(qMatch[3]);
@@ -103,13 +105,15 @@ export default function LeafletMap({ address, mapLink }: LeafletMapProps) {
       }).setView(coordinates, 15);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       }).addTo(map);
 
       // Custom marker icon to prevent missing asset reference errors in production
       const customIcon = L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        shadowUrl:
+          'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [-15, -20],
@@ -155,7 +159,10 @@ export default function LeafletMap({ address, mapLink }: LeafletMapProps) {
 
   return (
     <div className="w-full h-full min-h-[192px] relative z-10">
-      <div ref={mapContainerRef} className="w-full h-full absolute inset-0 z-10" />
+      <div
+        ref={mapContainerRef}
+        className="w-full h-full absolute inset-0 z-10"
+      />
     </div>
   );
 }

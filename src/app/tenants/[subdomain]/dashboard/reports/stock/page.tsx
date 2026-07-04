@@ -2,10 +2,19 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Package, Search, Filter, Download, 
-  Coins, Layers, AlertTriangle, FileText,
-  Loader2, BadgeAlert, CheckCircle, Flame
+import {
+  Package,
+  Search,
+  Filter,
+  Download,
+  Coins,
+  Layers,
+  AlertTriangle,
+  FileText,
+  Loader2,
+  BadgeAlert,
+  CheckCircle,
+  Flame,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -26,8 +35,10 @@ export default function StockReport() {
       style: 'currency',
       currency: 'LKR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(val).replace('LKR', 'LKR ');
+      maximumFractionDigits: 0,
+    })
+      .format(val)
+      .replace('LKR', 'LKR ');
   };
 
   // Dynamic category list from fetched data
@@ -45,15 +56,15 @@ export default function StockReport() {
   const filteredBatches = useMemo(() => {
     return batches.filter((b: any) => {
       // Search term
-      const matchesSearch = 
+      const matchesSearch =
         b.medicine_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         b.batch_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (b.generic_name && b.generic_name.toLowerCase().includes(searchTerm.toLowerCase()));
+        (b.generic_name &&
+          b.generic_name.toLowerCase().includes(searchTerm.toLowerCase()));
 
       // Category filter
-      const matchesCategory = 
-        categoryFilter === 'all' || 
-        b.category === categoryFilter;
+      const matchesCategory =
+        categoryFilter === 'all' || b.category === categoryFilter;
 
       // Stock status filter
       let matchesStatus = true;
@@ -77,14 +88,15 @@ export default function StockReport() {
 
   // Aggregate KPI summaries
   const summaries = useMemo(() => {
-    let totalSKUs = new Set(filteredBatches.map((b: any) => b.medicine_id)).size;
+    let totalSKUs = new Set(filteredBatches.map((b: any) => b.medicine_id))
+      .size;
     let totalQty = 0;
     let lowStockCount = 0;
     let totalValuation = 0;
 
     filteredBatches.forEach((b: any) => {
       totalQty += b.quantity_remaining;
-      totalValuation += (b.quantity_remaining * b.purchase_price);
+      totalValuation += b.quantity_remaining * b.purchase_price;
 
       const isOut = b.quantity_remaining === 0;
       const isLow = !isOut && b.quantity_remaining <= (b.min_stock_level ?? 10);
@@ -97,7 +109,7 @@ export default function StockReport() {
       totalSKUs,
       totalQty,
       lowStockCount,
-      totalValuation
+      totalValuation,
     };
   }, [filteredBatches]);
 
@@ -109,22 +121,25 @@ export default function StockReport() {
     return (
       <div className="h-96 flex flex-col items-center justify-center text-[#42474d] gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-[#0f3d57]" />
-        <span className="text-sm font-medium">Generating Stock Valuation Report...</span>
+        <span className="text-sm font-medium">
+          Generating Stock Valuation Report...
+        </span>
       </div>
     );
   }
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 select-none font-sans print:p-0 print:bg-white">
-      
       {/* Header - Hidden on Print */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
         <div>
           <h1 className="font-display text-2xl font-bold text-[#191c1e] flex items-center gap-2">
-            <Package className="text-[#0f3d57] h-6 w-6" /> Stock Valuation Report
+            <Package className="text-[#0f3d57] h-6 w-6" /> Stock Valuation
+            Report
           </h1>
           <p className="text-sm text-[#42474d] mt-1">
-            Real-time telemetry on inventory counts, pharmaceutical values, and stock warnings.
+            Real-time telemetry on inventory counts, pharmaceutical values, and
+            stock warnings.
           </p>
         </div>
         <button
@@ -139,15 +154,28 @@ export default function StockReport() {
       <div className="hidden print:block border-b border-[#0f3d57] pb-4 mb-6">
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="text-2xl font-bold text-[#0f3d57]">Medical.lk Pharmacy</h1>
-            <p className="text-xs text-[#42474d] mt-1">Stock Sheet & Inventory Valuation Report</p>
+            <h1 className="text-2xl font-bold text-[#0f3d57]">
+              Medical.lk Pharmacy
+            </h1>
+            <p className="text-xs text-[#42474d] mt-1">
+              Stock Sheet & Inventory Valuation Report
+            </p>
             <p className="text-xs text-[#42474d]">
-              Generated on: {new Date().toLocaleDateString('en-LK')} {new Date().toLocaleTimeString('en-LK')}
+              Generated on: {new Date().toLocaleDateString('en-LK')}{' '}
+              {new Date().toLocaleTimeString('en-LK')}
             </p>
           </div>
           <div className="text-right text-xs text-[#42474d]">
-            <p>Category: {categoryFilter === 'all' ? 'All Categories' : categoryFilter}</p>
-            <p>Filter Status: {stockStatusFilter === 'all' ? 'All Batches' : stockStatusFilter.replace('_', ' ')}</p>
+            <p>
+              Category:{' '}
+              {categoryFilter === 'all' ? 'All Categories' : categoryFilter}
+            </p>
+            <p>
+              Filter Status:{' '}
+              {stockStatusFilter === 'all'
+                ? 'All Batches'
+                : stockStatusFilter.replace('_', ' ')}
+            </p>
             <p>Total Records: {filteredBatches.length}</p>
           </div>
         </div>
@@ -158,7 +186,9 @@ export default function StockReport() {
         {/* Total Unique SKUs */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Total SKUs</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Total SKUs
+            </p>
             <Layers className="text-[#0f3d57] h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-[#191c1e] mb-1 font-display print:text-lg">
@@ -170,7 +200,9 @@ export default function StockReport() {
         {/* Total Quantity */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Total Stock Qty</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Total Stock Qty
+            </p>
             <Package className="text-teal-600 h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-[#191c1e] mb-1 font-display print:text-lg">
@@ -182,10 +214,14 @@ export default function StockReport() {
         {/* Low Stock count */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Low Stock Items</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Low Stock Items
+            </p>
             <AlertTriangle className="text-amber-500 h-5 w-5 print:hidden" />
           </div>
-          <h3 className={`text-2xl font-bold mb-1 font-display print:text-lg ${summaries.lowStockCount > 0 ? 'text-amber-600' : 'text-[#191c1e]'}`}>
+          <h3
+            className={`text-2xl font-bold mb-1 font-display print:text-lg ${summaries.lowStockCount > 0 ? 'text-amber-600' : 'text-[#191c1e]'}`}
+          >
             {summaries.lowStockCount}
           </h3>
           <span className="text-xs text-[#42474d]">Under minimum limit</span>
@@ -194,13 +230,17 @@ export default function StockReport() {
         {/* Total Stock Valuation */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Stock Valuation</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Stock Valuation
+            </p>
             <Coins className="text-emerald-600 h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-emerald-600 mb-1 font-display print:text-lg">
             {formatLKR(summaries.totalValuation)}
           </h3>
-          <span className="text-xs text-[#42474d]">Valued at purchase cost</span>
+          <span className="text-xs text-[#42474d]">
+            Valued at purchase cost
+          </span>
         </div>
       </div>
 
@@ -208,9 +248,11 @@ export default function StockReport() {
       <div className="bg-white border border-[#eceef1] rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:hidden flex flex-col gap-4">
         <div className="flex items-center gap-2 border-b border-[#f2f4f7] pb-3">
           <Filter className="h-4 w-4 text-[#0f3d57]" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f3d57]">Filters</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f3d57]">
+            Filters
+          </h4>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
           {/* Search Box */}
           <div className="relative md:col-span-2">
@@ -232,9 +274,13 @@ export default function StockReport() {
               className="w-full px-3 py-2 border border-[#eceef1] rounded-lg text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0f3d57] capitalize"
             >
               <option value="all">All Categories</option>
-              {categories.filter(c => c !== 'all').map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
+              {categories
+                .filter((c) => c !== 'all')
+                .map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -285,7 +331,9 @@ export default function StockReport() {
                   <th className="p-4 font-medium">Category</th>
                   <th className="p-4 font-medium">Batch No.</th>
                   <th className="p-4 font-medium">Expiry Date</th>
-                  <th className="p-4 font-medium text-right">Remaining Stock</th>
+                  <th className="p-4 font-medium text-right">
+                    Remaining Stock
+                  </th>
                   <th className="p-4 font-medium text-right">Purchase Price</th>
                   <th className="p-4 font-medium text-right">Selling Price</th>
                   <th className="p-4 font-medium text-right">Valuation</th>
@@ -295,47 +343,79 @@ export default function StockReport() {
               <tbody className="text-sm divide-y divide-[#eceef1] text-[#191c1e]">
                 {filteredBatches.map((b: any) => {
                   const isOut = b.quantity_remaining === 0;
-                  const isLow = !isOut && b.quantity_remaining <= (b.min_stock_level ?? 10);
+                  const isLow =
+                    !isOut && b.quantity_remaining <= (b.min_stock_level ?? 10);
                   const isExpired = b.is_expired;
 
                   const valuation = b.quantity_remaining * b.purchase_price;
-                  const expiryStr = b.expiry_date 
+                  const expiryStr = b.expiry_date
                     ? new Date(b.expiry_date).toLocaleDateString('en-LK', {
                         year: 'numeric',
                         month: 'short',
-                        day: 'numeric'
+                        day: 'numeric',
                       })
                     : 'N/A';
 
                   return (
-                    <tr key={b.id} className="hover:bg-[#f2f4f7]/30 transition-colors print:hover:bg-transparent">
+                    <tr
+                      key={b.id}
+                      className="hover:bg-[#f2f4f7]/30 transition-colors print:hover:bg-transparent"
+                    >
                       <td className="p-4">
                         <div className="font-semibold">{b.medicine_name}</div>
-                        {b.barcode && <div className="text-[10px] text-slate-400 font-mono print:hidden">{b.barcode}</div>}
+                        {b.barcode && (
+                          <div className="text-[10px] text-slate-400 font-mono print:hidden">
+                            {b.barcode}
+                          </div>
+                        )}
                       </td>
-                      <td className="p-4 text-slate-500">{b.generic_name || '—'}</td>
-                      <td className="p-4 capitalize text-xs">{b.category || 'General'}</td>
-                      <td className="p-4 font-mono font-medium text-slate-700">{b.batch_number}</td>
-                      <td className={`p-4 text-xs font-mono whitespace-nowrap ${isExpired ? 'text-red-600 font-bold' : 'text-slate-500'}`}>
+                      <td className="p-4 text-slate-500">
+                        {b.generic_name || '—'}
+                      </td>
+                      <td className="p-4 capitalize text-xs">
+                        {b.category || 'General'}
+                      </td>
+                      <td className="p-4 font-mono font-medium text-slate-700">
+                        {b.batch_number}
+                      </td>
+                      <td
+                        className={`p-4 text-xs font-mono whitespace-nowrap ${isExpired ? 'text-red-600 font-bold' : 'text-slate-500'}`}
+                      >
                         {expiryStr}
                       </td>
-                      <td className={`p-4 text-right font-mono font-semibold ${isOut ? 'text-red-600' : isLow ? 'text-amber-600' : 'text-[#191c1e]'}`}>
+                      <td
+                        className={`p-4 text-right font-mono font-semibold ${isOut ? 'text-red-600' : isLow ? 'text-amber-600' : 'text-[#191c1e]'}`}
+                      >
                         {b.quantity_remaining} {b.unit || 'Tablet'}
                       </td>
-                      <td className="p-4 text-right font-mono text-slate-500">{formatLKR(b.purchase_price)}</td>
-                      <td className="p-4 text-right font-mono text-slate-500">{formatLKR(b.selling_price)}</td>
-                      <td className="p-4 font-semibold text-right font-mono">{formatLKR(valuation)}</td>
+                      <td className="p-4 text-right font-mono text-slate-500">
+                        {formatLKR(b.purchase_price)}
+                      </td>
+                      <td className="p-4 text-right font-mono text-slate-500">
+                        {formatLKR(b.selling_price)}
+                      </td>
+                      <td className="p-4 font-semibold text-right font-mono">
+                        {formatLKR(valuation)}
+                      </td>
                       <td className="p-4 text-center">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider print:bg-transparent print:p-0 print:text-black ${
-                          isExpired 
-                            ? 'bg-red-100 text-red-800'
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider print:bg-transparent print:p-0 print:text-black ${
+                            isExpired
+                              ? 'bg-red-100 text-red-800'
+                              : isOut
+                                ? 'bg-red-50 text-red-700 border border-red-200'
+                                : isLow
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-emerald-100 text-emerald-800'
+                          }`}
+                        >
+                          {isExpired
+                            ? 'Expired'
                             : isOut
-                              ? 'bg-red-50 text-red-700 border border-red-200'
+                              ? 'Out of Stock'
                               : isLow
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-emerald-100 text-emerald-800'
-                        }`}>
-                          {isExpired ? 'Expired' : isOut ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}
+                                ? 'Low Stock'
+                                : 'In Stock'}
                         </span>
                       </td>
                     </tr>
@@ -355,11 +435,15 @@ export default function StockReport() {
             color: black !important;
           }
           /* Hide sidebar and navigation layout elements */
-          aside, nav, header, aside + div > div:first-child {
+          aside,
+          nav,
+          header,
+          aside + div > div:first-child {
             display: none !important;
           }
           /* Ensure content takes full page width */
-          main, div[class*="max-w-"] {
+          main,
+          div[class*='max-w-'] {
             max-width: 100% !important;
             width: 100% !important;
             padding: 0 !important;
@@ -371,7 +455,6 @@ export default function StockReport() {
           }
         }
       `}</style>
-
     </div>
   );
 }

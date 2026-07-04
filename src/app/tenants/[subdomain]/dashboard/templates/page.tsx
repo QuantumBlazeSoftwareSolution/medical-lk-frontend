@@ -3,9 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { 
-  Layout, Globe, ShieldCheck, CheckCircle2, 
-  HelpCircle, Check, Loader2, Sparkles, Eye, ArrowRight
+import {
+  Layout,
+  Globe,
+  ShieldCheck,
+  CheckCircle2,
+  HelpCircle,
+  Check,
+  Loader2,
+  Sparkles,
+  Eye,
+  ArrowRight,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -14,35 +22,53 @@ const TEMPLATE_CARDS = [
     id: 'template-001',
     name: 'Template 001',
     codename: 'Classic Teal',
-    description: 'Clean, professional, and highly readable clinical layout. Tailored for traditional pharmacies prioritizing trust, clear hours, and local mapping structure.',
-    features: ['Trust Badges', 'Opening Hours Highlight', 'Interactive Map', 'Fully Responsive'],
+    description:
+      'Clean, professional, and highly readable clinical layout. Tailored for traditional pharmacies prioritizing trust, clear hours, and local mapping structure.',
+    features: [
+      'Trust Badges',
+      'Opening Hours Highlight',
+      'Interactive Map',
+      'Fully Responsive',
+    ],
     color: 'from-teal-600 to-emerald-600',
     textColors: 'text-teal-700',
     bgLight: 'bg-teal-50/50',
-    borderColor: 'border-teal-200'
+    borderColor: 'border-teal-200',
   },
   {
     id: 'template-002',
     name: 'Template 002',
     codename: 'ProHealth Mint',
-    description: 'Patient-centric modern portal displaying categorized public inventory. Ideal for active pharmacies looking to showcase medicine availability to patients beforehand.',
-    features: ['Real-time Public Inventory Search', 'Category Filter Badges', 'Structured Grid Layout', 'WhatsApp Refills integration'],
+    description:
+      'Patient-centric modern portal displaying categorized public inventory. Ideal for active pharmacies looking to showcase medicine availability to patients beforehand.',
+    features: [
+      'Real-time Public Inventory Search',
+      'Category Filter Badges',
+      'Structured Grid Layout',
+      'WhatsApp Refills integration',
+    ],
     color: 'from-emerald-500 to-teal-500',
     textColors: 'text-emerald-700',
     bgLight: 'bg-emerald-50/50',
-    borderColor: 'border-emerald-200'
+    borderColor: 'border-emerald-200',
   },
   {
     id: 'template-003',
     name: 'Template 003',
     codename: 'Genex Premium',
-    description: 'Future-focused immersive design utilizing premium iOS 26 liquid glass effects. Features scroll-driven headers adapting between light and dark sections and testimonials.',
-    features: ['Liquid Glassmorphism Header', 'Scroll Adaptive Colors', 'High-Fidelity Visual Elements', 'Customer Review Carousel'],
+    description:
+      'Future-focused immersive design utilizing premium iOS 26 liquid glass effects. Features scroll-driven headers adapting between light and dark sections and testimonials.',
+    features: [
+      'Liquid Glassmorphism Header',
+      'Scroll Adaptive Colors',
+      'High-Fidelity Visual Elements',
+      'Customer Review Carousel',
+    ],
     color: 'from-cyan-500 to-teal-500',
     textColors: 'text-cyan-700',
     bgLight: 'bg-cyan-50/50',
-    borderColor: 'border-cyan-200'
-  }
+    borderColor: 'border-cyan-200',
+  },
 ];
 
 export default function WebsiteTemplatesPage() {
@@ -88,8 +114,10 @@ export default function WebsiteTemplatesPage() {
       setTimeout(() => setSuccess(false), 5000);
     },
     onError: (err: any) => {
-      setErrorMessage(err.message || 'Failed to update website template selection.');
-    }
+      setErrorMessage(
+        err.message || 'Failed to update website template selection.'
+      );
+    },
   });
 
   const handleConfirmTemplate = () => {
@@ -115,13 +143,18 @@ export default function WebsiteTemplatesPage() {
             <Layout className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">Website Templates</h1>
-            <p className="text-xs text-[#42474d]">Choose the primary visual theme and feature set for your pharmacy's public website.</p>
+            <h1 className="text-xl font-bold tracking-tight text-[#00273b] font-display">
+              Website Templates
+            </h1>
+            <p className="text-xs text-[#42474d]">
+              Choose the primary visual theme and feature set for your
+              pharmacy's public website.
+            </p>
           </div>
         </div>
-        
-        <a 
-          href={`http://${subdomain}.localhost:3000`} 
+
+        <a
+          href={`http://${subdomain}.localhost:3000`}
           target="_blank"
           rel="noreferrer"
           className="self-start sm:self-auto px-4 py-2 border border-[#0f3d57] text-[#0f3d57] font-semibold hover:bg-[#0f3d57]/5 rounded-xl transition-all text-xs inline-flex items-center gap-1.5"
@@ -134,7 +167,10 @@ export default function WebsiteTemplatesPage() {
       {success && (
         <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center gap-2.5 text-xs font-semibold animate-fade-in shadow-sm">
           <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 shrink-0" />
-          <span>Website template updated successfully! Your public page has been updated.</span>
+          <span>
+            Website template updated successfully! Your public page has been
+            updated.
+          </span>
         </div>
       )}
 
@@ -149,32 +185,40 @@ export default function WebsiteTemplatesPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {TEMPLATE_CARDS.map((card) => {
           const isSelected = selectedId === card.id;
-          const isCurrentlyActive = tenant?.template_id?.toLowerCase() === card.id ||
-            (card.id === 'template-001' && tenant?.template_id?.toLowerCase() === 'default') ||
-            (card.id === 'template-002' && tenant?.template_id?.toLowerCase() === 'prohealth') ||
-            (card.id === 'template-003' && tenant?.template_id?.toLowerCase() === 'genex');
+          const isCurrentlyActive =
+            tenant?.template_id?.toLowerCase() === card.id ||
+            (card.id === 'template-001' &&
+              tenant?.template_id?.toLowerCase() === 'default') ||
+            (card.id === 'template-002' &&
+              tenant?.template_id?.toLowerCase() === 'prohealth') ||
+            (card.id === 'template-003' &&
+              tenant?.template_id?.toLowerCase() === 'genex');
 
           return (
-            <div 
+            <div
               key={card.id}
               onClick={() => setSelectedId(card.id)}
               className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer relative flex flex-col ${
-                isSelected 
-                  ? 'border-[#0f3d57] ring-4 ring-[#0f3d57]/5 shadow-md scale-[1.01]' 
+                isSelected
+                  ? 'border-[#0f3d57] ring-4 ring-[#0f3d57]/5 shadow-md scale-[1.01]'
                   : 'border-[#eceef1] hover:border-[#cbd5e1] hover:shadow-sm'
               }`}
             >
               {/* Header Gradient Strip */}
               <div className={`h-2.5 bg-gradient-to-r ${card.color}`} />
-              
+
               {/* Card Body */}
               <div className="p-6 flex-grow flex flex-col">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="font-display font-bold text-sm text-[#00273b]">{card.name}</h3>
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{card.codename}</span>
+                    <h3 className="font-display font-bold text-sm text-[#00273b]">
+                      {card.name}
+                    </h3>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      {card.codename}
+                    </span>
                   </div>
-                  
+
                   <div className="flex flex-col items-end gap-1.5 shrink-0">
                     {isCurrentlyActive && (
                       <span className="bg-emerald-50 text-emerald-700 text-[9px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wide">
@@ -194,11 +238,15 @@ export default function WebsiteTemplatesPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-[#42474d] leading-relaxed mb-5">{card.description}</p>
+                <p className="text-xs text-[#42474d] leading-relaxed mb-5">
+                  {card.description}
+                </p>
 
                 {/* Key Features list */}
                 <div className="mt-auto">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">Key Features</div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">
+                    Key Features
+                  </div>
                   <ul className="space-y-1.5 text-xs text-slate-600">
                     {card.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-2">
@@ -211,17 +259,21 @@ export default function WebsiteTemplatesPage() {
               </div>
 
               {/* Bottom selection footer */}
-              <div className={`px-6 py-4 border-t border-slate-100 flex items-center justify-between transition-colors ${
-                isSelected ? card.bgLight : 'bg-slate-50/50'
-              }`}>
+              <div
+                className={`px-6 py-4 border-t border-slate-100 flex items-center justify-between transition-colors ${
+                  isSelected ? card.bgLight : 'bg-slate-50/50'
+                }`}
+              >
                 <span className="text-xs font-semibold text-slate-500">
                   {isSelected ? 'Selected' : 'Click to select'}
                 </span>
-                <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
-                  isSelected 
-                    ? 'bg-[#0f3d57] border-[#0f3d57] text-white shadow-sm' 
-                    : 'border-slate-300 bg-white'
-                }`}>
+                <div
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+                    isSelected
+                      ? 'bg-[#0f3d57] border-[#0f3d57] text-white shadow-sm'
+                      : 'border-slate-300 bg-white'
+                  }`}
+                >
                   {isSelected && <Check size={12} strokeWidth={3} />}
                 </div>
               </div>
@@ -237,15 +289,23 @@ export default function WebsiteTemplatesPage() {
             <Sparkles size={18} />
           </div>
           <div>
-            <h4 className="font-display font-bold text-xs text-[#00273b]">Confirm your template choice</h4>
-            <p className="text-[10px] text-[#72787e]">Confirming will update your pharmacy website instantly to the chosen layout.</p>
+            <h4 className="font-display font-bold text-xs text-[#00273b]">
+              Confirm your template choice
+            </h4>
+            <p className="text-[10px] text-[#72787e]">
+              Confirming will update your pharmacy website instantly to the
+              chosen layout.
+            </p>
           </div>
         </div>
 
         <button
           type="button"
           onClick={handleConfirmTemplate}
-          disabled={selectTemplateMutation.isPending || tenant?.template_id?.toLowerCase() === selectedId}
+          disabled={
+            selectTemplateMutation.isPending ||
+            tenant?.template_id?.toLowerCase() === selectedId
+          }
           className="w-full sm:w-auto px-6 py-2.5 bg-[#0f3d57] hover:bg-[#0b2b3e] disabled:bg-slate-200 disabled:text-slate-400 text-white font-semibold text-xs rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
           {selectTemplateMutation.isPending ? (

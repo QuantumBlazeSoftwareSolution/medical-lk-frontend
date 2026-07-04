@@ -2,9 +2,18 @@
 
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { 
-  Users, Plus, Search, Loader2, AlertCircle, 
-  ShieldAlert, ShieldCheck, Heart, Phone, Mail, Check 
+import {
+  Users,
+  Plus,
+  Search,
+  Loader2,
+  AlertCircle,
+  ShieldAlert,
+  ShieldCheck,
+  Heart,
+  Phone,
+  Mail,
+  Check,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -20,22 +29,27 @@ export default function PatientsDirectory() {
   const [formError, setFormError] = useState('');
 
   // 1. Fetch patients (uses search query if typed, else lists all)
-  const { data: patients = [], isLoading, refetch } = useQuery<any[]>({
+  const {
+    data: patients = [],
+    isLoading,
+    refetch,
+  } = useQuery<any[]>({
     queryKey: ['patients-list', searchQuery],
     queryFn: () => {
-      const endpoint = searchQuery.trim() 
+      const endpoint = searchQuery.trim()
         ? `/api/patients/search?query=${encodeURIComponent(searchQuery.trim())}`
         : '/api/patients';
       return apiFetch(endpoint);
-    }
+    },
   });
 
   // 2. Create patient mutation
   const createPatientMutation = useMutation({
-    mutationFn: (payload: any) => apiFetch('/api/patients', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    mutationFn: (payload: any) =>
+      apiFetch('/api/patients', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     onSuccess: () => {
       refetch();
       setShowAddPatient(false);
@@ -46,7 +60,7 @@ export default function PatientsDirectory() {
     },
     onError: (err: any) => {
       setFormError(err.message || 'Failed to register patient profile.');
-    }
+    },
   });
 
   const handlePatientSubmit = (e: React.FormEvent) => {
@@ -62,7 +76,7 @@ export default function PatientsDirectory() {
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim() || null,
-      medical_history: history.trim() || null
+      medical_history: history.trim() || null,
     });
   };
 
@@ -72,13 +86,14 @@ export default function PatientsDirectory() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-xl font-bold tracking-tight text-[#00273b] flex items-center gap-3">
-            Patients Directory 
+            Patients Directory
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 shadow-sm">
               <ShieldCheck className="h-3.5 w-3.5" /> AES-256 Encrypted
             </span>
           </h1>
           <p className="text-xs text-[#42474d] mt-1">
-            Store patient records securely. Medical histories and details are encrypted at rest.
+            Store patient records securely. Medical histories and details are
+            encrypted at rest.
           </p>
         </div>
         <button
@@ -109,28 +124,36 @@ export default function PatientsDirectory() {
         {isLoading ? (
           <div className="flex-1 flex flex-col items-center justify-center text-[#72787e] gap-2">
             <Loader2 className="h-6 w-6 animate-spin text-[#0f3d57]" />
-            <span className="text-xs">Decrypting patient directory records...</span>
+            <span className="text-xs">
+              Decrypting patient directory records...
+            </span>
           </div>
         ) : patients.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-[#72787e] gap-3 text-center max-w-sm mx-auto py-12">
             <div className="p-4 bg-[#0f3d57]/5 rounded-2xl text-[#0f3d57]">
               <Users className="h-8 w-8" />
             </div>
-            <span className="font-display font-bold text-sm text-[#00273b]">No patients registered</span>
+            <span className="font-display font-bold text-sm text-[#00273b]">
+              No patients registered
+            </span>
             <span className="text-xs text-[#72787e] leading-relaxed">
-              {searchQuery ? "No matches found. Try searching by correct full name or phone number." : "Add recurring patients to keep track of their medication cycles and histories."}
+              {searchQuery
+                ? 'No matches found. Try searching by correct full name or phone number.'
+                : 'Add recurring patients to keep track of their medication cycles and histories.'}
             </span>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-6">
             {patients.map((pat) => (
-              <div 
+              <div
                 key={pat.id}
                 className="p-6 rounded-2xl bg-white border border-[#eceef1] hover:border-[#0f3d57]/30 hover:shadow-md transition-all relative flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between gap-4 border-b border-[#eceef1] pb-3 mb-4">
-                    <h3 className="font-display font-bold text-sm text-[#00273b]">{pat.name}</h3>
+                    <h3 className="font-display font-bold text-sm text-[#00273b]">
+                      {pat.name}
+                    </h3>
                     <span className="text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-0.5">
                       <ShieldCheck size={10} /> Secure
                     </span>
@@ -174,8 +197,12 @@ export default function PatientsDirectory() {
                 <Users className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#00273b] font-display">Register Patient Profile</h3>
-                <p className="text-[10px] text-[#72787e]">Create a new secure, encrypted record</p>
+                <h3 className="text-base font-bold text-[#00273b] font-display">
+                  Register Patient Profile
+                </h3>
+                <p className="text-[10px] text-[#72787e]">
+                  Create a new secure, encrypted record
+                </p>
               </div>
             </div>
 

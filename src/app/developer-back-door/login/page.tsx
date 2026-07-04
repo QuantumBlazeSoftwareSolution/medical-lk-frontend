@@ -16,7 +16,7 @@ export default function DeveloperBackDoorLogin() {
   const handleCredentialsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (email === 'vihangaheshan37@gmail.com' && password === 'Test@123') {
       setLoading(true);
       setTimeout(() => {
@@ -31,7 +31,7 @@ export default function DeveloperBackDoorLogin() {
   const handleOtpSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (otp === '200237') {
       setLoading(true);
       setTimeout(() => {
@@ -57,8 +57,12 @@ export default function DeveloperBackDoorLogin() {
           <div className="w-14 h-14 rounded-2xl bg-teal-900/30 border border-teal-800 flex items-center justify-center text-teal-400 mb-4">
             <Lock className="h-6 w-6 animate-pulse" />
           </div>
-          <h1 className="text-2xl font-black text-slate-100 tracking-tight">Developer Backdoor</h1>
-          <p className="text-xs text-slate-500 font-semibold mt-1">Platform Administrative Gateway</p>
+          <h1 className="text-2xl font-black text-slate-100 tracking-tight">
+            Developer Backdoor
+          </h1>
+          <p className="text-xs text-slate-500 font-semibold mt-1">
+            Platform Administrative Gateway
+          </p>
         </div>
 
         {error && (
@@ -71,10 +75,12 @@ export default function DeveloperBackDoorLogin() {
         {step === 1 ? (
           <form onSubmit={handleCredentialsSubmit} className="space-y-5">
             <div className="space-y-1.5 text-left">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Dev Email</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Dev Email
+              </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
-                <input 
+                <input
                   type="email"
                   required
                   placeholder="vihangaheshan37@gmail.com"
@@ -86,10 +92,12 @@ export default function DeveloperBackDoorLogin() {
             </div>
 
             <div className="space-y-1.5 text-left">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Master Password</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Master Password
+              </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
-                <input 
+                <input
                   type="password"
                   required
                   placeholder="••••••••"
@@ -123,13 +131,16 @@ export default function DeveloperBackDoorLogin() {
                 Credentials Passed
               </div>
               <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
-                A verification prompt is active. Enter the 6-digit developer bypass OTP code.
+                A verification prompt is active. Enter the 6-digit developer
+                bypass OTP code.
               </p>
             </div>
 
             <div className="space-y-1.5 text-left">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">6-Digit OTP Bypass Code</label>
-              <input 
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                6-Digit OTP Bypass Code
+              </label>
+              <input
                 type="text"
                 required
                 maxLength={6}
@@ -147,8 +158,8 @@ export default function DeveloperBackDoorLogin() {
             >
               {loading ? <LoaderIcon /> : 'Access Platform Dashboard'}
             </button>
-            
-            <button 
+
+            <button
               type="button"
               onClick={() => setStep(1)}
               className="w-full text-center text-xs text-slate-500 hover:text-slate-300 font-semibold cursor-pointer underline"
@@ -160,7 +171,8 @@ export default function DeveloperBackDoorLogin() {
       </div>
 
       <p className="text-[10px] text-slate-600 mt-8 font-mono">
-        &copy; {new Date().getFullYear()} Medical.lk SaaS Platform admin gateway. Authorized developer access only.
+        &copy; {new Date().getFullYear()} Medical.lk SaaS Platform admin
+        gateway. Authorized developer access only.
       </p>
     </div>
   );
@@ -168,9 +180,25 @@ export default function DeveloperBackDoorLogin() {
 
 function LoaderIcon() {
   return (
-    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    <svg
+      className="animate-spin h-5 w-5 text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      ></circle>
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      ></path>
     </svg>
   );
 }

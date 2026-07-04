@@ -37,9 +37,12 @@ export async function generateMetadata({
     }
 
     const companyName = tenant.website_title || tenant.name || 'Medical.lk';
-    const description = tenant.website_description || `${companyName} pharmacy portal`;
+    const description =
+      tenant.website_description || `${companyName} pharmacy portal`;
     const faviconUrl = tenant.favicon_url;
-    const keywords = tenant.seo_keywords ? tenant.seo_keywords.split(',').map((k: string) => k.trim()) : undefined;
+    const keywords = tenant.seo_keywords
+      ? tenant.seo_keywords.split(',').map((k: string) => k.trim())
+      : undefined;
 
     if (faviconUrl) {
       return {

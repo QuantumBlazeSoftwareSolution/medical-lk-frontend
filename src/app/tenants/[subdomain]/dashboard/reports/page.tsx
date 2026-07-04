@@ -12,4 +12,3 @@ export default function ReportsRedirect() {
 
   return null;
 }
-

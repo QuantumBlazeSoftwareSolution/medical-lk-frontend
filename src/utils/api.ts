@@ -19,7 +19,8 @@ export function getSubdomain(): string {
 }
 
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token =
+    typeof window !== 'undefined' ? localStorage.getItem('token') : null;
   const subdomain = getSubdomain();
 
   const headers = new Headers(options.headers || {});
@@ -29,18 +30,21 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   if (subdomain) {
     headers.set('X-Tenant-Subdomain', subdomain);
   }
-  
+
   // Only set Content-Type to application/json if we are not sending multipart
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
     headers.set('Content-Type', 'application/json');
   }
 
   const method = options.method || 'GET';
-  const startTime = typeof window !== 'undefined' ? window.performance.now() : 0;
+  const startTime =
+    typeof window !== 'undefined' ? window.performance.now() : 0;
   const timestamp = new Date().toISOString();
-  
+
   if (typeof window !== 'undefined') {
-    console.log(`🚀 [API START] ${method} ${endpoint} | Triggered at: ${timestamp}`);
+    console.log(
+      `🚀 [API START] ${method} ${endpoint} | Triggered at: ${timestamp}`
+    );
   }
 
   try {
@@ -50,27 +54,39 @@ export async function apiFetch(endpoint: string, options: RequestInit = {}) {
       headers,
     });
 
-    const endTime = typeof window !== 'undefined' ? window.performance.now() : 0;
+    const endTime =
+      typeof window !== 'undefined' ? window.performance.now() : 0;
     const duration = (endTime - startTime).toFixed(2);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       if (typeof window !== 'undefined') {
-        console.error(`❌ [API ERROR] ${method} ${endpoint} | Status: ${response.status} | Duration: ${duration}ms | Detail:`, errorData.detail);
+        console.error(
+          `❌ [API ERROR] ${method} ${endpoint} | Status: ${response.status} | Duration: ${duration}ms | Detail:`,
+          errorData.detail
+        );
       }
-      throw new Error(errorData.detail || 'An error occurred during the request.');
+      throw new Error(
+        errorData.detail || 'An error occurred during the request.'
+      );
     }
 
     const data = await response.json();
     if (typeof window !== 'undefined') {
-      console.log(`✅ [API SUCCESS] ${method} ${endpoint} | Status: ${response.status} | Duration: ${duration}ms`);
+      console.log(
+        `✅ [API SUCCESS] ${method} ${endpoint} | Status: ${response.status} | Duration: ${duration}ms`
+      );
     }
     return data;
   } catch (err: any) {
-    const endTime = typeof window !== 'undefined' ? window.performance.now() : 0;
+    const endTime =
+      typeof window !== 'undefined' ? window.performance.now() : 0;
     const duration = (endTime - startTime).toFixed(2);
     if (typeof window !== 'undefined' && !err.message.includes('Status:')) {
-      console.error(`💥 [API NETWORK FAIL] ${method} ${endpoint} | Duration: ${duration}ms | Error:`, err.message);
+      console.error(
+        `💥 [API NETWORK FAIL] ${method} ${endpoint} | Duration: ${duration}ms | Error:`,
+        err.message
+      );
     }
     throw err;
   }

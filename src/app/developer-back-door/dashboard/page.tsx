@@ -2,51 +2,97 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Users, Layout, Package, Settings, DollarSign, Activity, 
-  CheckCircle, XCircle, Plus, Search, Building, Clock, 
-  ArrowRight, Lock, RefreshCw, Database, Server, LogOut, ChevronRight
+import {
+  Users,
+  Layout,
+  Package,
+  Settings,
+  DollarSign,
+  Activity,
+  CheckCircle,
+  XCircle,
+  Plus,
+  Search,
+  Building,
+  Clock,
+  ArrowRight,
+  Lock,
+  RefreshCw,
+  Database,
+  Server,
+  LogOut,
+  ChevronRight,
 } from 'lucide-react';
-import { Switch } from "@/components/ui/switch";
+import { Switch } from '@/components/ui/switch';
 import Template001 from '@/app/tenants/[subdomain]/templates/Template001';
 import Template002 from '@/app/tenants/[subdomain]/templates/Template002';
 import Template003 from '@/app/tenants/[subdomain]/templates/Template003';
 
 const mockPreviewTenant = {
-  name: "Lanka Care Pharmacy",
-  brand_color_primary: "#0f766e",
-  brand_color_secondary: "#14b8a6",
-  website_title: "Lanka Care Pharmacy | Colombo",
-  website_description: "Your trusted local healthcare partner in Colombo. Sourcing authentic NMRA registered medicines.",
-  contact_email: "info@lankacare.medical.lk",
-  contact_phone: "+94 11 234 5678",
-  contact_address: "123, Main Street, Colombo 03, Sri Lanka",
+  name: 'Lanka Care Pharmacy',
+  brand_color_primary: '#0f766e',
+  brand_color_secondary: '#14b8a6',
+  website_title: 'Lanka Care Pharmacy | Colombo',
+  website_description:
+    'Your trusted local healthcare partner in Colombo. Sourcing authentic NMRA registered medicines.',
+  contact_email: 'info@lankacare.medical.lk',
+  contact_phone: '+94 11 234 5678',
+  contact_address: '123, Main Street, Colombo 03, Sri Lanka',
   logo_height: 40,
-  headings_font: "poppins",
-  body_font: "inter",
-  hero_headline: "Your Health, Our Priority",
-  hero_subheadline: "Order online, search available medicines, and consult our licensed pharmacists 24/7.",
-  hero_button_text: "Refill Now",
-  hero_bg_image: "",
-  opening_hours: JSON.stringify({ MondayOpen: "08:00 AM", MondayClose: "09:00 PM", SundayOpen: "Closed" }),
-  display_nmra_number: "NMRA-PH-8921",
-  display_br_number: "PV-8910-12",
-  display_slmc_number: "SLMC-PH-3721",
+  headings_font: 'poppins',
+  body_font: 'inter',
+  hero_headline: 'Your Health, Our Priority',
+  hero_subheadline:
+    'Order online, search available medicines, and consult our licensed pharmacists 24/7.',
+  hero_button_text: 'Refill Now',
+  hero_bg_image: '',
+  opening_hours: JSON.stringify({
+    MondayOpen: '08:00 AM',
+    MondayClose: '09:00 PM',
+    SundayOpen: 'Closed',
+  }),
+  display_nmra_number: 'NMRA-PH-8921',
+  display_br_number: 'PV-8910-12',
+  display_slmc_number: 'SLMC-PH-3721',
   services_json: JSON.stringify([
-    { title: "Prescription Dispensing", description: "Accurate dispensing of medicines with standard safety verification by clinical pharmacists.", icon: "Check" },
-    { title: "OTC Supplements", description: "Wide range of OTC health supplements, skincare, and daily hygiene necessities.", icon: "Sparkles" },
-    { title: "General Wellness", description: "Nutrition consultations, dietary planning, and custom vitamin suggestions.", icon: "Clock" }
+    {
+      title: 'Prescription Dispensing',
+      description:
+        'Accurate dispensing of medicines with standard safety verification by clinical pharmacists.',
+      icon: 'Check',
+    },
+    {
+      title: 'OTC Supplements',
+      description:
+        'Wide range of OTC health supplements, skincare, and daily hygiene necessities.',
+      icon: 'Sparkles',
+    },
+    {
+      title: 'General Wellness',
+      description:
+        'Nutrition consultations, dietary planning, and custom vitamin suggestions.',
+      icon: 'Clock',
+    },
   ]),
-  stats_json: JSON.stringify({ experience: "15+", patients: "99%", products: "15,000+", staff: "6+" }),
-  certificates_json: JSON.stringify([])
+  stats_json: JSON.stringify({
+    experience: '15+',
+    patients: '99%',
+    products: '15,000+',
+    staff: '6+',
+  }),
+  certificates_json: JSON.stringify([]),
 };
 
 export default function DeveloperBackDoorDashboard() {
   const router = useRouter();
   const [authenticated, setAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'pharmacies' | 'templates' | 'medicines' | 'diagnostics'>('overview');
-  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
-  
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'pharmacies' | 'templates' | 'medicines' | 'diagnostics'
+  >('overview');
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(
+    null
+  );
+
   // Data States
   const [overview, setOverview] = useState<any>({
     total_tenants: 0,
@@ -56,22 +102,22 @@ export default function DeveloperBackDoorDashboard() {
     total_invoices_processed: 0,
     total_sales_value: 0.0,
     subscription_revenue: 0,
-    system_status: "Healthy",
-    api_latency: "14ms",
-    db_connection: "Neon PostgreSQL",
-    backup_status: "Successful"
+    system_status: 'Healthy',
+    api_latency: '14ms',
+    db_connection: 'Neon PostgreSQL',
+    backup_status: 'Successful',
   });
   const [tenants, setTenants] = useState<any[]>([]);
   const [medicines, setMedicines] = useState<any[]>([]);
   const [dbTemplates, setDbTemplates] = useState<any[]>([]);
-  
+
   // Loaders & Interactivity
   const [loadingOverview, setLoadingOverview] = useState(false);
   const [loadingTenants, setLoadingTenants] = useState(false);
   const [loadingMedicines, setLoadingMedicines] = useState(false);
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  
+
   // Modals / Forms
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPharmacyName, setNewPharmacyName] = useState('');
@@ -80,7 +126,7 @@ export default function DeveloperBackDoorDashboard() {
   const [newPharmacyNmra, setNewPharmacyNmra] = useState('');
   const [newPharmacyBr, setNewPharmacyBr] = useState('');
   const [formError, setFormError] = useState('');
-  
+
   // Search
   const [tenantSearch, setTenantSearch] = useState('');
   const [medSearch, setMedSearch] = useState('');
@@ -185,7 +231,7 @@ export default function DeveloperBackDoorDashboard() {
       const res = await fetch(`${API_BASE}/api/admin/tenants/${id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: !currentStatus })
+        body: JSON.stringify({ is_active: !currentStatus }),
       });
       if (res.ok) {
         fetchTenants();
@@ -203,16 +249,22 @@ export default function DeveloperBackDoorDashboard() {
     let nextTemplate = 'template-001';
     if (currentTemplate === 'template-001' || currentTemplate === 'default') {
       nextTemplate = 'template-002';
-    } else if (currentTemplate === 'template-002' || currentTemplate === 'prohealth') {
+    } else if (
+      currentTemplate === 'template-002' ||
+      currentTemplate === 'prohealth'
+    ) {
       nextTemplate = 'template-003';
-    } else if (currentTemplate === 'template-003' || currentTemplate === 'genex') {
+    } else if (
+      currentTemplate === 'template-003' ||
+      currentTemplate === 'genex'
+    ) {
       nextTemplate = 'template-001';
     }
     try {
       const res = await fetch(`${API_BASE}/api/admin/tenants/${id}/template`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ template_id: nextTemplate })
+        body: JSON.stringify({ template_id: nextTemplate }),
       });
       if (res.ok) {
         fetchTenants();
@@ -225,20 +277,20 @@ export default function DeveloperBackDoorDashboard() {
   };
 
   const toggleTemplateActive = async (id: string, currentStatus: boolean) => {
-    const confirmMessage = currentStatus 
+    const confirmMessage = currentStatus
       ? `Are you sure you want to deactivate ${id}? This will prevent pharmacies from using this layout.`
       : `Are you sure you want to activate ${id} so it is available for pharmacies to choose?`;
-      
+
     if (!window.confirm(confirmMessage)) {
       return;
     }
-    
+
     setActionLoading(`template-active-${id}`);
     try {
       const res = await fetch(`${API_BASE}/api/admin/templates/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ is_active: !currentStatus })
+        body: JSON.stringify({ is_active: !currentStatus }),
       });
       if (res.ok) {
         fetchTemplates();
@@ -250,13 +302,17 @@ export default function DeveloperBackDoorDashboard() {
     }
   };
 
-  const updateTemplatePricing = async (id: string, monthly: number, annual: number) => {
+  const updateTemplatePricing = async (
+    id: string,
+    monthly: number,
+    annual: number
+  ) => {
     setActionLoading(`template-pricing-${id}`);
     try {
       const res = await fetch(`${API_BASE}/api/admin/templates/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cost_monthly: monthly, cost_annual: annual })
+        body: JSON.stringify({ cost_monthly: monthly, cost_annual: annual }),
       });
       if (res.ok) {
         fetchTemplates();
@@ -274,7 +330,7 @@ export default function DeveloperBackDoorDashboard() {
       const res = await fetch(`${API_BASE}/api/admin/tenants/${id}/plan`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trial_days_extension: 30 })
+        body: JSON.stringify({ trial_days_extension: 30 }),
       });
       if (res.ok) {
         fetchTenants();
@@ -303,8 +359,8 @@ export default function DeveloperBackDoorDashboard() {
           subdomain: newPharmacySubdomain.toLowerCase(),
           city: newPharmacyCity || 'Colombo',
           display_nmra_number: newPharmacyNmra || 'NMRA-PH-MOCK',
-          display_br_number: newPharmacyBr || 'BR-MOCK-123'
-        })
+          display_br_number: newPharmacyBr || 'BR-MOCK-123',
+        }),
       });
 
       if (res.ok) {
@@ -326,16 +382,19 @@ export default function DeveloperBackDoorDashboard() {
   };
 
   // Filter lists
-  const filteredTenants = tenants.filter(t => 
-    t.name.toLowerCase().includes(tenantSearch.toLowerCase()) ||
-    t.subdomain.toLowerCase().includes(tenantSearch.toLowerCase()) ||
-    (t.city && t.city.toLowerCase().includes(tenantSearch.toLowerCase()))
+  const filteredTenants = tenants.filter(
+    (t) =>
+      t.name.toLowerCase().includes(tenantSearch.toLowerCase()) ||
+      t.subdomain.toLowerCase().includes(tenantSearch.toLowerCase()) ||
+      (t.city && t.city.toLowerCase().includes(tenantSearch.toLowerCase()))
   );
 
-  const filteredMedicines = medicines.filter(m => 
-    m.name.toLowerCase().includes(medSearch.toLowerCase()) ||
-    (m.generic_name && m.generic_name.toLowerCase().includes(medSearch.toLowerCase())) ||
-    m.category.toLowerCase().includes(medSearch.toLowerCase())
+  const filteredMedicines = medicines.filter(
+    (m) =>
+      m.name.toLowerCase().includes(medSearch.toLowerCase()) ||
+      (m.generic_name &&
+        m.generic_name.toLowerCase().includes(medSearch.toLowerCase())) ||
+      m.category.toLowerCase().includes(medSearch.toLowerCase())
   );
 
   // Template usage statistics count
@@ -343,7 +402,7 @@ export default function DeveloperBackDoorDashboard() {
     let t001 = 0;
     let t002 = 0;
     let t003 = 0;
-    tenants.forEach(t => {
+    tenants.forEach((t) => {
       const tid = (t.template_id || '').toLowerCase();
       if (tid === 'template-002' || tid === 'prohealth') t002++;
       else if (tid === 'template-003' || tid === 'genex') t003++;
@@ -362,7 +421,6 @@ export default function DeveloperBackDoorDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row font-sans selection:bg-teal-600 selection:text-white">
-      
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
         {/* Branding header */}
@@ -372,11 +430,15 @@ export default function DeveloperBackDoorDashboard() {
               M
             </div>
             <div>
-              <h2 className="font-extrabold text-sm text-slate-100 tracking-tight">Medical.lk Admin</h2>
-              <p className="text-[10px] text-slate-500 font-bold">Landlord Panel v1.0</p>
+              <h2 className="font-extrabold text-sm text-slate-100 tracking-tight">
+                Medical.lk Admin
+              </h2>
+              <p className="text-[10px] text-slate-500 font-bold">
+                Landlord Panel v1.0
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             title="Log Out"
             className="text-slate-500 hover:text-slate-300 transition-colors p-1"
@@ -394,7 +456,7 @@ export default function DeveloperBackDoorDashboard() {
             <Activity size={16} />
             System Overview
           </button>
-          
+
           <button
             onClick={() => handleTabChange('pharmacies')}
             className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left ${activeTab === 'pharmacies' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'}`}
@@ -448,22 +510,28 @@ export default function DeveloperBackDoorDashboard() {
 
       {/* Main Content Area */}
       <main className="flex-1 p-6 md:p-10 overflow-y-auto max-w-7xl mx-auto w-full">
-        
         {/* TAB 1: SYSTEM OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-8 text-left">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-100">System Overview</h1>
-              <p className="text-xs text-slate-500 mt-1 font-semibold">Key multi-tenant platform metrics and performance telemetry.</p>
+              <h1 className="text-2xl font-black tracking-tight text-slate-100">
+                System Overview
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
+                Key multi-tenant platform metrics and performance telemetry.
+              </p>
             </div>
 
             {/* Overview statistics grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
                 <div>
-                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Registered Pharmacies</div>
-                  <div className="text-3xl font-black text-slate-100">{overview.total_tenants}</div>
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
+                    Registered Pharmacies
+                  </div>
+                  <div className="text-3xl font-black text-slate-100">
+                    {overview.total_tenants}
+                  </div>
                   <div className="text-[10px] text-emerald-500 font-bold mt-1.5 flex items-center gap-1">
                     <span>{overview.active_tenants} Active tenants</span>
                   </div>
@@ -475,9 +543,15 @@ export default function DeveloperBackDoorDashboard() {
 
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
                 <div>
-                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Global Medicines</div>
-                  <div className="text-3xl font-black text-slate-100">{overview.total_medicines}</div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-1.5">Across all locations</div>
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
+                    Global Medicines
+                  </div>
+                  <div className="text-3xl font-black text-slate-100">
+                    {overview.total_medicines}
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-mono mt-1.5">
+                    Across all locations
+                  </div>
                 </div>
                 <div className="p-3 bg-teal-900/20 border border-teal-800/40 text-teal-400 rounded-xl">
                   <Package size={20} />
@@ -486,9 +560,15 @@ export default function DeveloperBackDoorDashboard() {
 
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
                 <div>
-                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Monthly Subscription Rev</div>
-                  <div className="text-3xl font-black text-slate-100">LKR {overview.subscription_revenue?.toLocaleString()}</div>
-                  <div className="text-[10px] text-teal-400 font-bold mt-1.5">Estimate from active plans</div>
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
+                    Monthly Subscription Rev
+                  </div>
+                  <div className="text-3xl font-black text-slate-100">
+                    LKR {overview.subscription_revenue?.toLocaleString()}
+                  </div>
+                  <div className="text-[10px] text-teal-400 font-bold mt-1.5">
+                    Estimate from active plans
+                  </div>
                 </div>
                 <div className="p-3 bg-emerald-900/20 border border-emerald-800/40 text-emerald-400 rounded-xl">
                   <DollarSign size={20} />
@@ -497,64 +577,100 @@ export default function DeveloperBackDoorDashboard() {
 
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center justify-between shadow-sm">
                 <div>
-                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Business Sales Volume</div>
-                  <div className="text-3xl font-black text-slate-100">LKR {overview.total_sales_value?.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
-                  <div className="text-[10px] text-slate-500 font-mono mt-1.5">{overview.total_invoices_processed} invoices logged</div>
+                  <div className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">
+                    Business Sales Volume
+                  </div>
+                  <div className="text-3xl font-black text-slate-100">
+                    LKR{' '}
+                    {overview.total_sales_value?.toLocaleString(undefined, {
+                      maximumFractionDigits: 0,
+                    })}
+                  </div>
+                  <div className="text-[10px] text-slate-500 font-mono mt-1.5">
+                    {overview.total_invoices_processed} invoices logged
+                  </div>
                 </div>
                 <div className="p-3 bg-emerald-900/20 border border-emerald-800/40 text-emerald-400 rounded-xl">
                   <Activity size={20} />
                 </div>
               </div>
-
             </div>
 
             {/* Platform Telemetry Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
               <div className="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Backdoor Admin System Quick-Links</h3>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
+                  Backdoor Admin System Quick-Links
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button 
+                  <button
                     onClick={() => handleTabChange('pharmacies')}
                     className="p-4 bg-slate-950 border border-slate-800 hover:border-teal-700 rounded-xl text-left space-y-2 group transition-all"
                   >
                     <Building className="h-5 w-5 text-teal-400" />
-                    <h4 className="font-bold text-xs text-slate-200 group-hover:text-teal-400">Manage Tenant Subdomains</h4>
-                    <p className="text-[10px] text-slate-500 leading-relaxed">Toggle active states, swap layout templates, and extend billing trial days.</p>
+                    <h4 className="font-bold text-xs text-slate-200 group-hover:text-teal-400">
+                      Manage Tenant Subdomains
+                    </h4>
+                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                      Toggle active states, swap layout templates, and extend
+                      billing trial days.
+                    </p>
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleTabChange('templates')}
                     className="p-4 bg-slate-950 border border-slate-800 hover:border-teal-700 rounded-xl text-left space-y-2 group transition-all"
                   >
                     <Layout className="h-5 w-5 text-teal-400" />
-                    <h4 className="font-bold text-xs text-slate-200 group-hover:text-teal-400">Themes &amp; Website Design</h4>
-                    <p className="text-[10px] text-slate-500 leading-relaxed">Verify active template distribution counts and manage layouts globally.</p>
+                    <h4 className="font-bold text-xs text-slate-200 group-hover:text-teal-400">
+                      Themes &amp; Website Design
+                    </h4>
+                    <p className="text-[10px] text-slate-500 leading-relaxed">
+                      Verify active template distribution counts and manage
+                      layouts globally.
+                    </p>
                   </button>
                 </div>
               </div>
 
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Database Status</h3>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
+                  Database Status
+                </h3>
                 <div className="space-y-3.5 text-xs">
                   <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                    <span className="text-slate-500 font-bold">SQL dialect</span>
-                    <span className="font-mono text-slate-300">PostgreSQL (Neon)</span>
+                    <span className="text-slate-500 font-bold">
+                      SQL dialect
+                    </span>
+                    <span className="font-mono text-slate-300">
+                      PostgreSQL (Neon)
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                    <span className="text-slate-500 font-bold">Backup status</span>
-                    <span className="text-emerald-400 font-bold">Active &amp; Daily</span>
+                    <span className="text-slate-500 font-bold">
+                      Backup status
+                    </span>
+                    <span className="text-emerald-400 font-bold">
+                      Active &amp; Daily
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-1 border-b border-slate-800/80">
-                    <span className="text-slate-500 font-bold">Backdoor mode</span>
-                    <span className="text-yellow-500 font-bold">Bypass Auth enabled</span>
+                    <span className="text-slate-500 font-bold">
+                      Backdoor mode
+                    </span>
+                    <span className="text-yellow-500 font-bold">
+                      Bypass Auth enabled
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-1">
-                    <span className="text-slate-500 font-bold">Last Sync Run</span>
-                    <span className="font-mono text-slate-300">Today 12:00 PM</span>
+                    <span className="text-slate-500 font-bold">
+                      Last Sync Run
+                    </span>
+                    <span className="font-mono text-slate-300">
+                      Today 12:00 PM
+                    </span>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
@@ -564,10 +680,15 @@ export default function DeveloperBackDoorDashboard() {
           <div className="space-y-6 text-left">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h1 className="text-2xl font-black tracking-tight text-slate-100">Pharmacy Registry</h1>
-                <p className="text-xs text-slate-500 mt-1 font-semibold">Verify configurations, toggle suspension states, or modify active templates.</p>
+                <h1 className="text-2xl font-black tracking-tight text-slate-100">
+                  Pharmacy Registry
+                </h1>
+                <p className="text-xs text-slate-500 mt-1 font-semibold">
+                  Verify configurations, toggle suspension states, or modify
+                  active templates.
+                </p>
               </div>
-              <button 
+              <button
                 onClick={() => setShowCreateModal(true)}
                 className="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-md flex items-center gap-1.5 active:scale-95 transition-all cursor-pointer"
               >
@@ -579,7 +700,7 @@ export default function DeveloperBackDoorDashboard() {
             {/* Filter and Search controls */}
             <div className="relative">
               <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
-              <input 
+              <input
                 type="text"
                 placeholder="Search registered pharmacies by name, subdomain, or city..."
                 value={tenantSearch}
@@ -593,12 +714,16 @@ export default function DeveloperBackDoorDashboard() {
               {loadingTenants ? (
                 <div className="py-20 flex flex-col items-center justify-center gap-3">
                   <RefreshCw className="h-6 w-6 animate-spin text-teal-400" />
-                  <span className="text-xs text-slate-500 font-semibold">Fetching tenant list...</span>
+                  <span className="text-xs text-slate-500 font-semibold">
+                    Fetching tenant list...
+                  </span>
                 </div>
               ) : filteredTenants.length === 0 ? (
                 <div className="py-16 text-center text-slate-500 space-y-1">
                   <Building className="h-8 w-8 mx-auto text-slate-600 mb-2" />
-                  <p className="text-xs font-bold">No pharmacies found matching search</p>
+                  <p className="text-xs font-bold">
+                    No pharmacies found matching search
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -607,23 +732,31 @@ export default function DeveloperBackDoorDashboard() {
                       <tr className="bg-slate-950/40 border-b border-slate-800 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
                         <th className="py-4.5 px-6">Brand / Subdomain</th>
                         <th className="py-4.5 px-4 text-center">Status</th>
-                        <th className="py-4.5 px-4 text-center">Active Template</th>
+                        <th className="py-4.5 px-4 text-center">
+                          Active Template
+                        </th>
                         <th className="py-4.5 px-4">Trial Ends</th>
                         <th className="py-4.5 px-6 text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/80">
                       {filteredTenants.map((t) => (
-                        <tr key={t.id} className="hover:bg-slate-800/20 transition-colors">
-                          
+                        <tr
+                          key={t.id}
+                          className="hover:bg-slate-800/20 transition-colors"
+                        >
                           {/* Name & subdomain */}
                           <td className="py-4 px-6 text-left">
-                            <div className="font-bold text-slate-200">{t.name}</div>
+                            <div className="font-bold text-slate-200">
+                              {t.name}
+                            </div>
                             <div className="text-[10px] text-teal-500 font-mono mt-0.5">
                               {t.subdomain}.medical.lk
                             </div>
                             <div className="text-[9px] text-slate-500 font-semibold mt-1">
-                              Registered: {new Date(t.created_at).toLocaleDateString()} &bull; {t.city || 'Colombo'}
+                              Registered:{' '}
+                              {new Date(t.created_at).toLocaleDateString()}{' '}
+                              &bull; {t.city || 'Colombo'}
                             </div>
                           </td>
 
@@ -657,20 +790,30 @@ export default function DeveloperBackDoorDashboard() {
                             <div className="flex justify-center gap-2">
                               {/* Toggle active state */}
                               <button
-                                onClick={() => toggleTenantStatus(t.id, t.is_active)}
+                                onClick={() =>
+                                  toggleTenantStatus(t.id, t.is_active)
+                                }
                                 disabled={actionLoading === `status-${t.id}`}
                                 className="px-2.5 py-1.5 rounded-lg border text-[10px] font-bold uppercase transition-all bg-slate-950 hover:bg-slate-800 border-slate-800 hover:border-slate-700 disabled:opacity-50 text-slate-300 cursor-pointer"
                               >
-                                {actionLoading === `status-${t.id}` ? '...' : t.is_active ? 'Suspend' : 'Activate'}
+                                {actionLoading === `status-${t.id}`
+                                  ? '...'
+                                  : t.is_active
+                                    ? 'Suspend'
+                                    : 'Activate'}
                               </button>
 
                               {/* Swap Template ID */}
                               <button
-                                onClick={() => switchTenantTemplate(t.id, t.template_id)}
+                                onClick={() =>
+                                  switchTenantTemplate(t.id, t.template_id)
+                                }
                                 disabled={actionLoading === `template-${t.id}`}
                                 className="px-2.5 py-1.5 rounded-lg border text-[10px] font-bold uppercase transition-all bg-slate-950 hover:bg-slate-800 border-slate-800 hover:border-slate-700 disabled:opacity-50 text-slate-300 cursor-pointer"
                               >
-                                {actionLoading === `template-${t.id}` ? '...' : 'Swap Template'}
+                                {actionLoading === `template-${t.id}`
+                                  ? '...'
+                                  : 'Swap Template'}
                               </button>
 
                               {/* Extend Plan +30 days */}
@@ -679,11 +822,12 @@ export default function DeveloperBackDoorDashboard() {
                                 disabled={actionLoading === `plan-${t.id}`}
                                 className="px-2.5 py-1.5 rounded-lg border text-[10px] font-bold uppercase transition-all bg-teal-900/20 hover:bg-teal-950 text-teal-400 border-teal-800/40 hover:border-teal-700 disabled:opacity-50 cursor-pointer"
                               >
-                                {actionLoading === `plan-${t.id}` ? '...' : '+30 Days'}
+                                {actionLoading === `plan-${t.id}`
+                                  ? '...'
+                                  : '+30 Days'}
                               </button>
                             </div>
                           </td>
-
                         </tr>
                       ))}
                     </tbody>
@@ -698,8 +842,13 @@ export default function DeveloperBackDoorDashboard() {
         {activeTab === 'templates' && (
           <div className="space-y-8 text-left">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-100">Templates &amp; Themes</h1>
-              <p className="text-xs text-slate-500 mt-1 font-semibold">Distribution mapping and layout metrics of public pharmacy websites.</p>
+              <h1 className="text-2xl font-black tracking-tight text-slate-100">
+                Templates &amp; Themes
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
+                Distribution mapping and layout metrics of public pharmacy
+                websites.
+              </p>
             </div>
 
             {/* Template Distribution Summary Grid */}
@@ -708,77 +857,123 @@ export default function DeveloperBackDoorDashboard() {
                 const isT001 = template.id === 'template-001';
                 const isT002 = template.id === 'template-002';
                 const isT003 = template.id === 'template-003';
-                
-                const activeCount = isT001 ? templateStats.template001
-                  : isT002 ? templateStats.template002
-                  : isT003 ? templateStats.template003
-                  : 0;
 
-                const bgGlow = isT001 ? 'bg-slate-900 border-slate-800'
-                  : isT002 ? 'bg-slate-900 border-teal-900/40'
-                  : 'bg-slate-900 border-cyan-900/40';
+                const activeCount = isT001
+                  ? templateStats.template001
+                  : isT002
+                    ? templateStats.template002
+                    : isT003
+                      ? templateStats.template003
+                      : 0;
 
-                const textBadge = isT001 ? 'text-slate-400 border-slate-800 bg-slate-950/60'
-                  : isT002 ? 'text-teal-400 border-teal-800/40 bg-teal-900/10'
-                  : 'text-cyan-400 border-cyan-800/40 bg-cyan-900/10';
+                const bgGlow = isT001
+                  ? 'bg-slate-900 border-slate-800'
+                  : isT002
+                    ? 'bg-slate-900 border-teal-900/40'
+                    : 'bg-slate-900 border-cyan-900/40';
 
-                const statCountText = isT001 ? 'text-slate-100'
-                  : isT002 ? 'text-teal-400'
-                  : 'text-cyan-400';
+                const textBadge = isT001
+                  ? 'text-slate-400 border-slate-800 bg-slate-950/60'
+                  : isT002
+                    ? 'text-teal-400 border-teal-800/40 bg-teal-900/10'
+                    : 'text-cyan-400 border-cyan-800/40 bg-cyan-900/10';
+
+                const statCountText = isT001
+                  ? 'text-slate-100'
+                  : isT002
+                    ? 'text-teal-400'
+                    : 'text-cyan-400';
 
                 return (
-                  <div key={template.id} className={`${bgGlow} border rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xl`}>
+                  <div
+                    key={template.id}
+                    className={`${bgGlow} border rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xl`}
+                  >
                     <div className="space-y-4">
-                      
                       {/* Name & Codename */}
                       <div className="flex justify-between items-start">
                         <div>
-                          <h3 className="font-extrabold text-sm text-slate-200">{template.name}</h3>
-                          <p className="text-[10px] text-slate-500 mt-0.5">{template.codename}</p>
+                          <h3 className="font-extrabold text-sm text-slate-200">
+                            {template.name}
+                          </h3>
+                          <p className="text-[10px] text-slate-500 mt-0.5">
+                            {template.codename}
+                          </p>
                         </div>
-                        <span className={`px-2.5 py-1 font-mono text-xs font-bold rounded-lg uppercase ${textBadge}`}>
+                        <span
+                          className={`px-2.5 py-1 font-mono text-xs font-bold rounded-lg uppercase ${textBadge}`}
+                        >
                           ID: {template.id}
                         </span>
                       </div>
 
                       {/* Description */}
                       <p className="text-[11px] text-slate-400 leading-relaxed min-h-[48px]">
-                        {template.description || 'Custom template layout for pharmacy frontends.'}
+                        {template.description ||
+                          'Custom template layout for pharmacy frontends.'}
                       </p>
 
                       {/* File Path */}
                       <div className="bg-slate-950/80 p-2.5 rounded-lg border border-slate-800/50">
-                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-wide">Component Path:</span>
-                        <code className="text-[10px] text-slate-300 font-mono break-all">{template.file_path}</code>
+                        <span className="block text-[8px] font-bold text-slate-500 uppercase tracking-wide">
+                          Component Path:
+                        </span>
+                        <code className="text-[10px] text-slate-300 font-mono break-all">
+                          {template.file_path}
+                        </code>
                       </div>
 
                       {/* Active Count */}
                       <div className="flex justify-between items-baseline pt-2">
-                        <span className="text-[10px] text-slate-400 font-bold uppercase">Active distribution:</span>
-                        <span className={`text-3xl font-black ${statCountText}`}>{activeCount} pharmacies</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase">
+                          Active distribution:
+                        </span>
+                        <span
+                          className={`text-3xl font-black ${statCountText}`}
+                        >
+                          {activeCount} pharmacies
+                        </span>
                       </div>
 
                       <hr className="border-slate-850" />
 
                       {/* pricing controls */}
                       <div className="space-y-3">
-                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wide">Subscription Fees (LKR)</span>
+                        <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+                          Subscription Fees (LKR)
+                        </span>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">Monthly</label>
+                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">
+                              Monthly
+                            </label>
                             <input
                               type="number"
                               defaultValue={template.cost_monthly}
-                              onBlur={(e) => updateTemplatePricing(template.id, parseFloat(e.target.value) || 0.0, template.cost_annual)}
+                              onBlur={(e) =>
+                                updateTemplatePricing(
+                                  template.id,
+                                  parseFloat(e.target.value) || 0.0,
+                                  template.cost_annual
+                                )
+                              }
                               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-200 text-xs focus:outline-none focus:border-teal-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">Annual</label>
+                            <label className="block text-[8px] text-slate-500 font-bold uppercase mb-1">
+                              Annual
+                            </label>
                             <input
                               type="number"
                               defaultValue={template.cost_annual}
-                              onBlur={(e) => updateTemplatePricing(template.id, template.cost_monthly, parseFloat(e.target.value) || 0.0)}
+                              onBlur={(e) =>
+                                updateTemplatePricing(
+                                  template.id,
+                                  template.cost_monthly,
+                                  parseFloat(e.target.value) || 0.0
+                                )
+                              }
                               className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 font-mono text-slate-200 text-xs focus:outline-none focus:border-teal-500"
                             />
                           </div>
@@ -790,25 +985,37 @@ export default function DeveloperBackDoorDashboard() {
                       {/* Activation toggling */}
                       <div className="flex justify-between items-center bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/40">
                         <div>
-                          <span className="block text-[10px] font-bold text-slate-300">Layout Availability</span>
-                          <span className="text-[9px] text-slate-500">Enable/disable for pharmacy selection</span>
+                          <span className="block text-[10px] font-bold text-slate-300">
+                            Layout Availability
+                          </span>
+                          <span className="text-[9px] text-slate-500">
+                            Enable/disable for pharmacy selection
+                          </span>
                         </div>
-                        <Switch 
+                        <Switch
                           checked={template.is_active}
-                          onCheckedChange={() => toggleTemplateActive(template.id, template.is_active)}
-                          disabled={actionLoading === `template-active-${template.id}`}
+                          onCheckedChange={() =>
+                            toggleTemplateActive(
+                              template.id,
+                              template.is_active
+                            )
+                          }
+                          disabled={
+                            actionLoading === `template-active-${template.id}`
+                          }
                         />
                       </div>
-
                     </div>
 
                     <div className="pt-2">
-                      <button 
+                      <button
                         onClick={() => setPreviewTemplateId(template.id)}
                         className={`w-full py-2.5 text-slate-200 border rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer text-center ${
-                          isT001 ? 'bg-slate-950 hover:bg-slate-850 border-slate-800'
-                            : isT002 ? 'bg-teal-900/35 hover:bg-teal-900/50 border-teal-800/40 text-teal-300'
-                            : 'bg-cyan-900/35 hover:bg-cyan-900/50 border-cyan-800/40 text-cyan-300'
+                          isT001
+                            ? 'bg-slate-950 hover:bg-slate-850 border-slate-800'
+                            : isT002
+                              ? 'bg-teal-900/35 hover:bg-teal-900/50 border-teal-800/40 text-teal-300'
+                              : 'bg-cyan-900/35 hover:bg-cyan-900/50 border-cyan-800/40 text-cyan-300'
                         }`}
                       >
                         View Layout Design
@@ -825,14 +1032,18 @@ export default function DeveloperBackDoorDashboard() {
         {activeTab === 'medicines' && (
           <div className="space-y-6 text-left">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-100">Global Medicine Catalog</h1>
-              <p className="text-xs text-slate-500 mt-1 font-semibold">Aggregated inventory analysis from all tenant databases.</p>
+              <h1 className="text-2xl font-black tracking-tight text-slate-100">
+                Global Medicine Catalog
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
+                Aggregated inventory analysis from all tenant databases.
+              </p>
             </div>
 
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
-              <input 
+              <input
                 type="text"
                 placeholder="Search global medicines catalog by brand/generic name..."
                 value={medSearch}
@@ -846,12 +1057,16 @@ export default function DeveloperBackDoorDashboard() {
               {loadingMedicines ? (
                 <div className="py-20 flex flex-col items-center justify-center gap-3">
                   <RefreshCw className="h-6 w-6 animate-spin text-teal-400" />
-                  <span className="text-xs text-slate-500 font-semibold">Running global aggregate search...</span>
+                  <span className="text-xs text-slate-500 font-semibold">
+                    Running global aggregate search...
+                  </span>
                 </div>
               ) : filteredMedicines.length === 0 ? (
                 <div className="py-16 text-center text-slate-500 space-y-1">
                   <Package className="h-8 w-8 mx-auto text-slate-600 mb-2" />
-                  <p className="text-xs font-bold">No registered medicines catalogued yet</p>
+                  <p className="text-xs font-bold">
+                    No registered medicines catalogued yet
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -862,24 +1077,42 @@ export default function DeveloperBackDoorDashboard() {
                         <th className="py-4.5 px-4">Generic Formula</th>
                         <th className="py-4.5 px-4">Category</th>
                         <th className="py-4.5 px-4 text-right">UOM</th>
-                        <th className="py-4.5 px-4 text-center">Tenants Carrying</th>
-                        <th className="py-4.5 px-6 text-right">Max Selling Price</th>
+                        <th className="py-4.5 px-4 text-center">
+                          Tenants Carrying
+                        </th>
+                        <th className="py-4.5 px-6 text-right">
+                          Max Selling Price
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/80">
                       {filteredMedicines.map((med, idx) => (
-                        <tr key={idx} className="hover:bg-slate-800/20 transition-colors">
-                          <td className="py-4 px-6 text-slate-200 font-bold">{med.name}</td>
-                          <td className="py-4 px-4 font-mono text-slate-400">{med.generic_name || 'N/A'}</td>
+                        <tr
+                          key={idx}
+                          className="hover:bg-slate-800/20 transition-colors"
+                        >
+                          <td className="py-4 px-6 text-slate-200 font-bold">
+                            {med.name}
+                          </td>
+                          <td className="py-4 px-4 font-mono text-slate-400">
+                            {med.generic_name || 'N/A'}
+                          </td>
                           <td className="py-4 px-4">
                             <span className="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[10px] text-slate-400 font-semibold">
                               {med.category}
                             </span>
                           </td>
-                          <td className="py-4 px-4 text-right text-slate-500">{med.uom}</td>
-                          <td className="py-4 px-4 text-center font-bold text-teal-400">{med.tenants_count}</td>
+                          <td className="py-4 px-4 text-right text-slate-500">
+                            {med.uom}
+                          </td>
+                          <td className="py-4 px-4 text-center font-bold text-teal-400">
+                            {med.tenants_count}
+                          </td>
                           <td className="py-4 px-6 text-right font-mono text-slate-200 font-bold">
-                            LKR {med.highest_price?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            LKR{' '}
+                            {med.highest_price?.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                            })}
                           </td>
                         </tr>
                       ))}
@@ -895,31 +1128,43 @@ export default function DeveloperBackDoorDashboard() {
         {activeTab === 'diagnostics' && (
           <div className="space-y-8 text-left">
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-100">Diagnostics &amp; System Telemetry</h1>
-              <p className="text-xs text-slate-500 mt-1 font-semibold">Real-time health statistics of the pharmacyhub backend infrastructure.</p>
+              <h1 className="text-2xl font-black tracking-tight text-slate-100">
+                Diagnostics &amp; System Telemetry
+              </h1>
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
+                Real-time health statistics of the pharmacyhub backend
+                infrastructure.
+              </p>
             </div>
 
             {/* Diagnostic Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
               {/* Server Info Card */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-2.5 text-teal-400">
                   <Server size={18} />
-                  <h3 className="font-bold text-xs uppercase tracking-wider">FastAPI Server</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-wider">
+                    FastAPI Server
+                  </h3>
                 </div>
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Framework</span>
-                    <span className="font-mono text-slate-300">FastAPI 0.110.0</span>
+                    <span className="font-mono text-slate-300">
+                      FastAPI 0.110.0
+                    </span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Python Version</span>
-                    <span className="font-mono text-slate-300">Python 3.12.x</span>
+                    <span className="font-mono text-slate-300">
+                      Python 3.12.x
+                    </span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-500">API Health Status</span>
-                    <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px]">Healthy</span>
+                    <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px]">
+                      Healthy
+                    </span>
                   </div>
                 </div>
               </div>
@@ -928,20 +1173,30 @@ export default function DeveloperBackDoorDashboard() {
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-2.5 text-teal-400">
                   <Database size={18} />
-                  <h3 className="font-bold text-xs uppercase tracking-wider">Database Telemetry</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-wider">
+                    Database Telemetry
+                  </h3>
                 </div>
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Provider</span>
-                    <span className="font-mono text-slate-300">Neon Postgres</span>
+                    <span className="font-mono text-slate-300">
+                      Neon Postgres
+                    </span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Region</span>
-                    <span className="text-slate-400">AWS us-east-1 (N. Virginia)</span>
+                    <span className="text-slate-400">
+                      AWS us-east-1 (N. Virginia)
+                    </span>
                   </div>
                   <div className="flex justify-between py-1">
-                    <span className="text-slate-500">Pool Connection Status</span>
-                    <span className="text-emerald-400 font-bold">20/20 active connections</span>
+                    <span className="text-slate-500">
+                      Pool Connection Status
+                    </span>
+                    <span className="text-emerald-400 font-bold">
+                      20/20 active connections
+                    </span>
                   </div>
                 </div>
               </div>
@@ -950,36 +1205,44 @@ export default function DeveloperBackDoorDashboard() {
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-2.5 text-teal-400">
                   <Clock size={18} />
-                  <h3 className="font-bold text-xs uppercase tracking-wider">Automated Backups</h3>
+                  <h3 className="font-bold text-xs uppercase tracking-wider">
+                    Automated Backups
+                  </h3>
                 </div>
                 <div className="space-y-3 text-xs">
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Daily database dump</span>
-                    <span className="text-emerald-400 font-semibold">Configured</span>
+                    <span className="text-emerald-400 font-semibold">
+                      Configured
+                    </span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-slate-800/80">
                     <span className="text-slate-500">Storage target</span>
-                    <span className="font-mono text-slate-300">AWS S3 (Private Bucket)</span>
+                    <span className="font-mono text-slate-300">
+                      AWS S3 (Private Bucket)
+                    </span>
                   </div>
                   <div className="flex justify-between py-1">
                     <span className="text-slate-500">Last run timing</span>
-                    <span className="font-mono text-slate-300">Today 03:00 AM</span>
+                    <span className="font-mono text-slate-300">
+                      Today 03:00 AM
+                    </span>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
-
       </main>
 
       {/* CREATE PHARMACY MODAL */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl relative text-left">
-            <h3 className="font-extrabold text-sm md:text-base uppercase tracking-wider text-teal-400 mb-4">Register New Pharmacy</h3>
-            
+            <h3 className="font-extrabold text-sm md:text-base uppercase tracking-wider text-teal-400 mb-4">
+              Register New Pharmacy
+            </h3>
+
             {formError && (
               <div className="mb-4 p-3 bg-red-950/40 border border-red-900/60 text-red-400 text-xs rounded-lg">
                 {formError}
@@ -988,8 +1251,10 @@ export default function DeveloperBackDoorDashboard() {
 
             <form onSubmit={handleCreateTenant} className="space-y-4">
               <div className="space-y-1 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pharmacy Brand Name</label>
-                <input 
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Pharmacy Brand Name
+                </label>
+                <input
                   type="text"
                   required
                   placeholder="e.g. Lanka Care Pharmacy"
@@ -1000,9 +1265,11 @@ export default function DeveloperBackDoorDashboard() {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Subdomain Prefix (lowercase)</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Subdomain Prefix (lowercase)
+                </label>
                 <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden shadow-inner pr-3.5">
-                  <input 
+                  <input
                     type="text"
                     required
                     placeholder="e.g. lanka-care"
@@ -1010,13 +1277,17 @@ export default function DeveloperBackDoorDashboard() {
                     onChange={(e) => setNewPharmacySubdomain(e.target.value)}
                     className="w-full px-3.5 py-2.5 bg-transparent border-0 text-xs text-slate-100 focus:outline-none focus:ring-0"
                   />
-                  <span className="text-[10px] text-slate-500 font-semibold font-mono">.medical.lk</span>
+                  <span className="text-[10px] text-slate-500 font-semibold font-mono">
+                    .medical.lk
+                  </span>
                 </div>
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">City Location</label>
-                <input 
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  City Location
+                </label>
+                <input
                   type="text"
                   placeholder="e.g. Colombo"
                   value={newPharmacyCity}
@@ -1026,8 +1297,10 @@ export default function DeveloperBackDoorDashboard() {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">NMRA Reg Number</label>
-                <input 
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  NMRA Reg Number
+                </label>
+                <input
                   type="text"
                   placeholder="e.g. NMRA-PH-8921"
                   value={newPharmacyNmra}
@@ -1037,8 +1310,10 @@ export default function DeveloperBackDoorDashboard() {
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">BR Number</label>
-                <input 
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  BR Number
+                </label>
+                <input
                   type="text"
                   placeholder="e.g. PV-8910-12"
                   value={newPharmacyBr}
@@ -1077,11 +1352,17 @@ export default function DeveloperBackDoorDashboard() {
                 Preview Mode
               </div>
               <h4 className="font-extrabold text-xs text-slate-100 mt-2">
-                {previewTemplateId === 'template-002' ? 'Template002' : previewTemplateId === 'template-003' ? 'Template003' : 'Template001'}
+                {previewTemplateId === 'template-002'
+                  ? 'Template002'
+                  : previewTemplateId === 'template-003'
+                    ? 'Template003'
+                    : 'Template001'}
               </h4>
-              <p className="text-[9px] text-slate-500 font-semibold mt-0.5">Live Interactive Preview</p>
+              <p className="text-[9px] text-slate-500 font-semibold mt-0.5">
+                Live Interactive Preview
+              </p>
             </div>
-            
+
             <button
               onClick={() => setPreviewTemplateId(null)}
               className="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl active:scale-95 transition-all cursor-pointer text-center"
@@ -1093,16 +1374,24 @@ export default function DeveloperBackDoorDashboard() {
           {/* Main preview frame */}
           <div className="w-full min-h-screen">
             {previewTemplateId === 'template-002' ? (
-              <Template002 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+              <Template002
+                tenant={mockPreviewTenant}
+                subdomain={tenants[0]?.subdomain || 'lanka-care'}
+              />
             ) : previewTemplateId === 'template-003' ? (
-              <Template003 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+              <Template003
+                tenant={mockPreviewTenant}
+                subdomain={tenants[0]?.subdomain || 'lanka-care'}
+              />
             ) : (
-              <Template001 tenant={mockPreviewTenant} subdomain={tenants[0]?.subdomain || 'lanka-care'} />
+              <Template001
+                tenant={mockPreviewTenant}
+                subdomain={tenants[0]?.subdomain || 'lanka-care'}
+              />
             )}
           </div>
         </div>
       )}
-
     </div>
   );
 }

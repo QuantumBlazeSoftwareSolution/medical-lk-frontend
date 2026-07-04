@@ -2,10 +2,18 @@
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  Receipt, Search, Filter, Download, 
-  TrendingUp, Coins, Calendar, Loader2, 
-  Percent, FileText, ArrowUpDown
+import {
+  Receipt,
+  Search,
+  Filter,
+  Download,
+  TrendingUp,
+  Coins,
+  Calendar,
+  Loader2,
+  Percent,
+  FileText,
+  ArrowUpDown,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -29,8 +37,10 @@ export default function SalesReport() {
       style: 'currency',
       currency: 'LKR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(val).replace('LKR', 'LKR ');
+      maximumFractionDigits: 0,
+    })
+      .format(val)
+      .replace('LKR', 'LKR ');
   };
 
   // Filter and sort invoices
@@ -38,14 +48,18 @@ export default function SalesReport() {
     return invoices
       .filter((inv: any) => {
         // Search filter (Invoice number or Patient name)
-        const matchesSearch = 
+        const matchesSearch =
           inv.invoice_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (inv.patient_name && inv.patient_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (!inv.patient_name && 'walk-in customer'.includes(searchTerm.toLowerCase()));
+          (inv.patient_name &&
+            inv.patient_name
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())) ||
+          (!inv.patient_name &&
+            'walk-in customer'.includes(searchTerm.toLowerCase()));
 
         // Payment method filter
-        const matchesPayment = 
-          paymentMethod === 'all' || 
+        const matchesPayment =
+          paymentMethod === 'all' ||
           inv.payment_method.toLowerCase() === paymentMethod.toLowerCase();
 
         // Date filter
@@ -54,7 +68,7 @@ export default function SalesReport() {
           const invDate = new Date(inv.created_at);
           // Set invoice date to start of day for comparison
           const invDateStr = invDate.toISOString().split('T')[0];
-          
+
           if (startDate && invDateStr < startDate) {
             matchesDate = false;
           }
@@ -67,10 +81,14 @@ export default function SalesReport() {
       })
       .sort((a: any, b: any) => {
         if (sortBy === 'date-desc') {
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return (
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
         }
         if (sortBy === 'date-asc') {
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          return (
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          );
         }
         if (sortBy === 'amount-desc') {
           return b.net_amount - a.net_amount;
@@ -84,19 +102,25 @@ export default function SalesReport() {
 
   // Aggregate KPI metrics based on filtered invoices
   const kpis = useMemo(() => {
-    const netSales = filteredInvoices.reduce((acc: number, curr: any) => acc + (curr.net_amount || 0), 0);
+    const netSales = filteredInvoices.reduce(
+      (acc: number, curr: any) => acc + (curr.net_amount || 0),
+      0
+    );
     const totalCost = filteredInvoices.reduce((acc: number, curr: any) => {
-      const cost = curr.total_cost ?? (curr.net_amount - curr.net_profit);
+      const cost = curr.total_cost ?? curr.net_amount - curr.net_profit;
       return acc + (cost || 0);
     }, 0);
-    const totalProfit = filteredInvoices.reduce((acc: number, curr: any) => acc + (curr.net_profit || 0), 0);
+    const totalProfit = filteredInvoices.reduce(
+      (acc: number, curr: any) => acc + (curr.net_profit || 0),
+      0
+    );
     const profitMargin = netSales > 0 ? (totalProfit / netSales) * 100 : 0;
 
     return {
       netSales,
       totalCost,
       totalProfit,
-      profitMargin
+      profitMargin,
     };
   }, [filteredInvoices]);
 
@@ -115,7 +139,6 @@ export default function SalesReport() {
 
   return (
     <div className="max-w-[1200px] mx-auto space-y-6 select-none font-sans print:p-0 print:bg-white">
-      
       {/* Header - Hidden on Print */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
         <div>
@@ -123,7 +146,8 @@ export default function SalesReport() {
             <Receipt className="text-[#0f3d57] h-6 w-6" /> Sales Report
           </h1>
           <p className="text-sm text-[#42474d] mt-1">
-            Perform deep-dives into billing transactions, profit margins, and payment distributions.
+            Perform deep-dives into billing transactions, profit margins, and
+            payment distributions.
           </p>
         </div>
         <button
@@ -138,15 +162,22 @@ export default function SalesReport() {
       <div className="hidden print:block border-b border-[#0f3d57] pb-4 mb-6">
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="text-2xl font-bold text-[#0f3d57]">Medical.lk Pharmacy</h1>
-            <p className="text-xs text-[#42474d] mt-1">Sales Valuation & Invoice Summary Report</p>
+            <h1 className="text-2xl font-bold text-[#0f3d57]">
+              Medical.lk Pharmacy
+            </h1>
+            <p className="text-xs text-[#42474d] mt-1">
+              Sales Valuation & Invoice Summary Report
+            </p>
             <p className="text-xs text-[#42474d]">
-              Generated on: {new Date().toLocaleDateString('en-LK')} {new Date().toLocaleTimeString('en-LK')}
+              Generated on: {new Date().toLocaleDateString('en-LK')}{' '}
+              {new Date().toLocaleTimeString('en-LK')}
             </p>
           </div>
           <div className="text-right text-xs text-[#42474d]">
             {startDate || endDate ? (
-              <p>Period: {startDate || 'Beginning'} to {endDate || 'Today'}</p>
+              <p>
+                Period: {startDate || 'Beginning'} to {endDate || 'Today'}
+              </p>
             ) : (
               <p>Period: All Transactions</p>
             )}
@@ -160,7 +191,9 @@ export default function SalesReport() {
         {/* Net Sales */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2 print:mb-1">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Net Sales</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Net Sales
+            </p>
             <TrendingUp className="text-[#006d37] h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-[#191c1e] mb-1 font-display print:text-lg">
@@ -172,7 +205,9 @@ export default function SalesReport() {
         {/* Total Cost */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2 print:mb-1">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Total Cost</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Total Cost
+            </p>
             <Coins className="text-amber-600 h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-[#191c1e] mb-1 font-display print:text-lg">
@@ -184,7 +219,9 @@ export default function SalesReport() {
         {/* Total Profit */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2 print:mb-1">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Total Profit</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Total Profit
+            </p>
             <TrendingUp className="text-emerald-600 h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-emerald-600 mb-1 font-display print:text-lg">
@@ -196,7 +233,9 @@ export default function SalesReport() {
         {/* Profit Margin */}
         <div className="bg-white border border-[#eceef1] rounded-xl p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-slate-300 print:shadow-none">
           <div className="flex justify-between items-start mb-2 print:mb-1">
-            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">Profit Margin</p>
+            <p className="text-xs font-semibold text-[#42474d] uppercase tracking-wider">
+              Profit Margin
+            </p>
             <Percent className="text-blue-600 h-5 w-5 print:hidden" />
           </div>
           <h3 className="text-2xl font-bold text-blue-600 mb-1 font-display print:text-lg">
@@ -210,11 +249,12 @@ export default function SalesReport() {
       <div className="bg-white border border-[#eceef1] rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:hidden flex flex-col gap-4">
         <div className="flex items-center gap-2 border-b border-[#f2f4f7] pb-3">
           <Filter className="h-4 w-4 text-[#0f3d57]" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f3d57]">Filters & Sorting</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#0f3d57]">
+            Filters & Sorting
+          </h4>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          
           {/* Search Box */}
           <div className="relative md:col-span-2">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -275,7 +315,9 @@ export default function SalesReport() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2 border-t border-[#f2f4f7]">
           {/* Start Date */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#42474d] shrink-0 font-medium w-16">Start Date:</span>
+            <span className="text-xs text-[#42474d] shrink-0 font-medium w-16">
+              Start Date:
+            </span>
             <input
               type="date"
               value={startDate}
@@ -286,7 +328,9 @@ export default function SalesReport() {
 
           {/* End Date */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[#42474d] shrink-0 font-medium w-16">End Date:</span>
+            <span className="text-xs text-[#42474d] shrink-0 font-medium w-16">
+              End Date:
+            </span>
             <input
               type="date"
               value={endDate}
@@ -299,7 +343,6 @@ export default function SalesReport() {
 
       {/* Main Table */}
       <div className="bg-white border border-[#eceef1] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.02)] print:border-none print:shadow-none">
-        
         {filteredInvoices.length === 0 ? (
           <div className="h-64 flex flex-col items-center justify-center text-[#42474d] text-sm gap-2">
             <FileText className="h-8 w-8 text-slate-300" />
@@ -322,32 +365,54 @@ export default function SalesReport() {
               </thead>
               <tbody className="text-sm divide-y divide-[#eceef1] text-[#191c1e]">
                 {filteredInvoices.map((inv: any) => {
-                  const dateStr = inv.created_at 
+                  const dateStr = inv.created_at
                     ? new Date(inv.created_at).toLocaleString('en-LK', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',
-                        minute: '2-digit'
+                        minute: '2-digit',
                       })
                     : 'N/A';
-                  
-                  const cost = inv.total_cost ?? (inv.net_amount - inv.net_profit);
+
+                  const cost =
+                    inv.total_cost ?? inv.net_amount - inv.net_profit;
 
                   return (
-                    <tr key={inv.id} className="hover:bg-[#f2f4f7]/30 transition-colors print:hover:bg-transparent">
-                      <td className="p-4 text-xs font-mono text-slate-500 whitespace-nowrap">{dateStr}</td>
-                      <td className="p-4 font-medium text-[#0f3d57] font-mono">{inv.invoice_number}</td>
-                      <td className="p-4">{inv.patient_name || <span className="text-slate-400 italic">Walk-in Customer</span>}</td>
+                    <tr
+                      key={inv.id}
+                      className="hover:bg-[#f2f4f7]/30 transition-colors print:hover:bg-transparent"
+                    >
+                      <td className="p-4 text-xs font-mono text-slate-500 whitespace-nowrap">
+                        {dateStr}
+                      </td>
+                      <td className="p-4 font-medium text-[#0f3d57] font-mono">
+                        {inv.invoice_number}
+                      </td>
+                      <td className="p-4">
+                        {inv.patient_name || (
+                          <span className="text-slate-400 italic">
+                            Walk-in Customer
+                          </span>
+                        )}
+                      </td>
                       <td className="p-4">
                         <span className="capitalize px-2 py-0.5 rounded-full text-xs bg-slate-100 font-medium text-slate-700 print:bg-transparent print:p-0">
                           {inv.payment_method}
                         </span>
                       </td>
-                      <td className="p-4 text-[#42474d] text-right font-mono">{formatLKR(inv.total_amount)}</td>
-                      <td className="p-4 font-semibold text-right font-mono">{formatLKR(inv.net_amount)}</td>
-                      <td className="p-4 text-[#42474d] text-right font-mono">{formatLKR(cost)}</td>
-                      <td className="p-4 font-semibold text-right text-emerald-600 font-mono">{formatLKR(inv.net_profit)}</td>
+                      <td className="p-4 text-[#42474d] text-right font-mono">
+                        {formatLKR(inv.total_amount)}
+                      </td>
+                      <td className="p-4 font-semibold text-right font-mono">
+                        {formatLKR(inv.net_amount)}
+                      </td>
+                      <td className="p-4 text-[#42474d] text-right font-mono">
+                        {formatLKR(cost)}
+                      </td>
+                      <td className="p-4 font-semibold text-right text-emerald-600 font-mono">
+                        {formatLKR(inv.net_profit)}
+                      </td>
                     </tr>
                   );
                 })}
@@ -365,11 +430,15 @@ export default function SalesReport() {
             color: black !important;
           }
           /* Hide sidebar and navigation layout elements */
-          aside, nav, header, aside + div > div:first-child {
+          aside,
+          nav,
+          header,
+          aside + div > div:first-child {
             display: none !important;
           }
           /* Ensure content takes full page width */
-          main, div[class*="max-w-"] {
+          main,
+          div[class*='max-w-'] {
             max-width: 100% !important;
             width: 100% !important;
             padding: 0 !important;
@@ -388,7 +457,6 @@ export default function SalesReport() {
           }
         }
       `}</style>
-
     </div>
   );
 }

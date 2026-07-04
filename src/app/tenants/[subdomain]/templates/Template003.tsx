@@ -2,11 +2,31 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import nextDynamic from 'next/dynamic';
-import { 
-  MapPin, Mail, Phone, Loader2, Activity, Heart, Clock, 
-  Globe, Calendar, CheckCircle, ShieldCheck, Sparkles, 
-  MessageSquare, Menu, Search, ChevronRight, Check, Info,
-  BookOpen, Star, HelpCircle, User, ShoppingCart, ArrowRight
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Loader2,
+  Activity,
+  Heart,
+  Clock,
+  Globe,
+  Calendar,
+  CheckCircle,
+  ShieldCheck,
+  Sparkles,
+  MessageSquare,
+  Menu,
+  Search,
+  ChevronRight,
+  Check,
+  Info,
+  BookOpen,
+  Star,
+  HelpCircle,
+  User,
+  ShoppingCart,
+  ArrowRight,
 } from 'lucide-react';
 import { getFontFamily } from '@/utils/fontConfig';
 
@@ -17,7 +37,7 @@ const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
       <Loader2 className="h-5 w-5 animate-spin text-[#06b6d4]" />
       <span>Loading map...</span>
     </div>
-  )
+  ),
 });
 
 interface Template003Props {
@@ -31,7 +51,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
   const [isScrolledPastHero, setIsScrolledPastHero] = useState(false);
   const heroSectionRef = useRef<HTMLElement>(null);
-  
+
   // Inventory state
   const [searchQuery, setSearchQuery] = useState('');
   const [batches, setBatches] = useState<any[]>([]);
@@ -74,17 +94,20 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
     const fetchInventory = async () => {
       setLoadingInventory(true);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/inventory/public/batches`, {
-          headers: {
-            'X-Tenant-Subdomain': subdomain
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/inventory/public/batches`,
+          {
+            headers: {
+              'X-Tenant-Subdomain': subdomain,
+            },
           }
-        });
+        );
         if (response.ok) {
           const data = await response.json();
           setBatches(data);
         }
       } catch (err) {
-        console.error("Failed to fetch inventory:", err);
+        console.error('Failed to fetch inventory:', err);
       } finally {
         setLoadingInventory(false);
       }
@@ -112,8 +135,12 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
     return (
       <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center text-slate-400 gap-4 font-sans p-6 text-center">
         <Activity className="h-10 w-10 text-cyan-500 animate-pulse" />
-        <h2 className="text-lg font-bold text-cyan-500">Pharmacy Website Not Found</h2>
-        <p className="text-xs max-w-sm">Please verify the URL or ensure the pharmacy trial is active.</p>
+        <h2 className="text-lg font-bold text-cyan-500">
+          Pharmacy Website Not Found
+        </h2>
+        <p className="text-xs max-w-sm">
+          Please verify the URL or ensure the pharmacy trial is active.
+        </p>
       </div>
     );
   }
@@ -121,17 +148,21 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   // Resolve branding colors (Default to Slate-900 / Cyan-500 for GeneX scientific look)
   const primaryColor = tenant.brand_color_primary || '#0f172a'; // Slate-900
   const secondaryColor = tenant.brand_color_secondary || '#06b6d4'; // Cyan-500
-  
+
   const logoHeight = tenant.logo_height || 40;
   const headingsFont = tenant.headings_font || 'space-grotesk';
   const bodyFont = tenant.body_font || 'inter';
-  
+
   const heroHeadline = tenant.hero_headline || `Institute of Longevity`;
-  const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Developing personalized longevity strategies based on your genetic code and evidence-based medicine.';
+  const heroSubheadline =
+    tenant.hero_subheadline ||
+    tenant.website_description ||
+    'Developing personalized longevity strategies based on your genetic code and evidence-based medicine.';
   const heroButtonText = tenant.hero_button_text || 'Start your program';
-  const heroBgImage = (!tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')) 
-    ? '/templates/hero-003.png' 
-    : tenant.hero_bg_image;
+  const heroBgImage =
+    !tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')
+      ? '/templates/hero-003.png'
+      : tenant.hero_bg_image;
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
@@ -182,7 +213,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   // Group batches by unique medicine name
   const uniqueMedicines = useMemo(() => {
     const map = new Map<string, any>();
-    batches.forEach(b => {
+    batches.forEach((b) => {
       const key = b.medicine_name.toLowerCase();
       if (!map.has(key)) {
         map.set(key, {
@@ -192,7 +223,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
           category: b.category || 'General',
           unit: b.unit || 'Tablet',
           price: b.selling_price,
-          quantity: b.quantity_remaining
+          quantity: b.quantity_remaining,
         });
       } else {
         const existing = map.get(key);
@@ -206,17 +237,20 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   }, [batches]);
 
   const filteredMedicines = useMemo(() => {
-    return uniqueMedicines.filter(m => {
-      const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            (m.generic_name && m.generic_name.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = selectedCategory === 'All' || m.category === selectedCategory;
+    return uniqueMedicines.filter((m) => {
+      const matchesSearch =
+        m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (m.generic_name &&
+          m.generic_name.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory =
+        selectedCategory === 'All' || m.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [uniqueMedicines, searchQuery, selectedCategory]);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
-    uniqueMedicines.forEach(m => {
+    uniqueMedicines.forEach((m) => {
       if (m.category) set.add(m.category);
     });
     return ['All', ...Array.from(set)];
@@ -226,7 +260,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
   const headingStyle = {
     fontFamily: getFontFamily(headingsFont),
   };
-  
+
   const bodyStyle = {
     fontFamily: getFontFamily(bodyFont),
   };
@@ -235,149 +269,224 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
     if (tenant.map_link) {
       window.open(tenant.map_link, '_blank');
     } else if (tenant.contact_address) {
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant.contact_address)}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant.contact_address)}`,
+        '_blank'
+      );
     }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-[#f8f9fa] text-slate-800 flex flex-col font-sans selection:bg-cyan-500 selection:text-white"
       style={bodyStyle}
     >
       <title>{tenant.website_title || tenant.name}</title>
 
       {/* 1. Header Navigation — iOS 26 Liquid Glass */}
-      <header className="sticky top-0 z-50 transition-all duration-300 bg-transparent pt-[20px] px-[20px]" style={{ marginBottom: '-76px' }}>
-        <div 
+      <header
+        className="sticky top-0 z-50 transition-all duration-300 bg-transparent pt-[20px] px-[20px]"
+        style={{ marginBottom: '-76px' }}
+      >
+        <div
           className="flex justify-between items-center w-full px-5 md:px-6 max-w-7xl mx-auto h-14 rounded-full transition-all duration-500 relative overflow-hidden"
-          style={isScrolledPastHero ? {
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.65) 70%, rgba(255,255,255,0.72) 100%)',
-            backdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
-            WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
-            border: '0.5px solid rgba(0, 0, 0, 0.08)',
-            boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -0.5px 0 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
-          } : {
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.12) 100%)',
-            backdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
-            WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
-            border: '0.5px solid rgba(255, 255, 255, 0.28)',
-            boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.35), inset 0 -0.5px 0 0 rgba(255,255,255,0.08), inset 0 0 16px 0 rgba(255,255,255,0.04), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
-          }}
+          style={
+            isScrolledPastHero
+              ? {
+                  background:
+                    'linear-gradient(135deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.65) 70%, rgba(255,255,255,0.72) 100%)',
+                  backdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
+                  WebkitBackdropFilter:
+                    'blur(50px) saturate(200%) brightness(1.05)',
+                  border: '0.5px solid rgba(0, 0, 0, 0.08)',
+                  boxShadow:
+                    'inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -0.5px 0 0 rgba(0,0,0,0.03), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
+                }
+              : {
+                  background:
+                    'linear-gradient(135deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.08) 70%, rgba(255,255,255,0.12) 100%)',
+                  backdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
+                  WebkitBackdropFilter:
+                    'blur(50px) saturate(200%) brightness(1.15)',
+                  border: '0.5px solid rgba(255, 255, 255, 0.28)',
+                  boxShadow:
+                    'inset 0 1px 0 0 rgba(255,255,255,0.35), inset 0 -0.5px 0 0 rgba(255,255,255,0.08), inset 0 0 16px 0 rgba(255,255,255,0.04), 0 8px 40px rgba(0,0,0,0.06), 0 1.5px 6px rgba(0,0,0,0.04)',
+                }
+          }
         >
           {/* Liquid specular highlight shimmer */}
-          <div 
+          <div
             className="absolute inset-0 rounded-full pointer-events-none transition-opacity duration-500"
             style={{
-              background: isScrolledPastHero 
+              background: isScrolledPastHero
                 ? 'linear-gradient(105deg, rgba(255,255,255,0.5) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.2) 100%)'
                 : 'linear-gradient(105deg, rgba(255,255,255,0.12) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.06) 100%)',
             }}
           />
-          
+
           {/* Logo brand */}
           <div className="flex items-center gap-2 relative z-10">
-            <div 
+            <div
               className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-xs transition-all duration-500 ${isScrolledPastHero ? 'text-slate-800' : 'text-white'}`}
-              style={isScrolledPastHero ? {
-                background: 'rgba(0,0,0,0.06)',
-                border: '0.5px solid rgba(0,0,0,0.1)',
-                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
-              } : {
-                background: 'rgba(255,255,255,0.12)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '0.5px solid rgba(255,255,255,0.22)',
-                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
-              }}
+              style={
+                isScrolledPastHero
+                  ? {
+                      background: 'rgba(0,0,0,0.06)',
+                      border: '0.5px solid rgba(0,0,0,0.1)',
+                      boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
+                    }
+                  : {
+                      background: 'rgba(255,255,255,0.12)',
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      border: '0.5px solid rgba(255,255,255,0.22)',
+                      boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
+                    }
+              }
             >
               G
             </div>
-            <span 
+            <span
               className={`font-extrabold text-sm tracking-tight font-display transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-800' : 'text-white/90'}`}
               style={headingStyle}
             >
-              Gene<span className={`font-extrabold transition-colors duration-500 ${isScrolledPastHero ? 'text-cyan-600' : 'text-cyan-400'}`}>X</span>
+              Gene
+              <span
+                className={`font-extrabold transition-colors duration-500 ${isScrolledPastHero ? 'text-cyan-600' : 'text-cyan-400'}`}
+              >
+                X
+              </span>
             </span>
           </div>
 
           {/* Navigation Links */}
-          <div className={`hidden lg:flex items-center gap-6 text-[11px] font-semibold normal-case tracking-normal relative z-10 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-500' : 'text-white/55'}`}>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#">About</a>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#what-we-do">Research Institute</a>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#what-we-do">Medical Center</a>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#">Blog</a>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#stock">Store</a>
-            <a className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`} href="#details">Contacts</a>
+          <div
+            className={`hidden lg:flex items-center gap-6 text-[11px] font-semibold normal-case tracking-normal relative z-10 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-500' : 'text-white/55'}`}
+          >
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#"
+            >
+              About
+            </a>
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#what-we-do"
+            >
+              Research Institute
+            </a>
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#what-we-do"
+            >
+              Medical Center
+            </a>
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#"
+            >
+              Blog
+            </a>
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#stock"
+            >
+              Store
+            </a>
+            <a
+              className={`transition-colors duration-200 ${isScrolledPastHero ? 'hover:text-slate-900' : 'hover:text-white/95'}`}
+              href="#details"
+            >
+              Contacts
+            </a>
           </div>
 
           {/* Right Action Widgets */}
           <div className="flex items-center gap-3 relative z-10">
             <div className="hidden sm:flex items-center gap-2.5">
-              <button className={`text-[11px] font-bold flex items-center gap-0.5 mr-1 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-400 hover:text-slate-700' : 'text-white/45 hover:text-white/90'}`}>
+              <button
+                className={`text-[11px] font-bold flex items-center gap-0.5 mr-1 transition-colors duration-500 ${isScrolledPastHero ? 'text-slate-400 hover:text-slate-700' : 'text-white/45 hover:text-white/90'}`}
+              >
                 <span>EN</span>
                 <span className="text-[7px] opacity-60">▼</span>
               </button>
-              <div 
+              <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-800' : 'text-white/55 hover:text-white/90'}`}
-                style={isScrolledPastHero ? {
-                  background: 'rgba(0,0,0,0.04)',
-                  border: '0.5px solid rgba(0,0,0,0.08)',
-                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
-                } : {
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '0.5px solid rgba(255,255,255,0.18)',
-                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
-                }}
+                style={
+                  isScrolledPastHero
+                    ? {
+                        background: 'rgba(0,0,0,0.04)',
+                        border: '0.5px solid rgba(0,0,0,0.08)',
+                        boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
+                      }
+                    : {
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '0.5px solid rgba(255,255,255,0.18)',
+                        boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
+                      }
+                }
               >
                 <User className="h-3.5 w-3.5" />
               </div>
-              <div 
+              <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-500 cursor-pointer ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-800' : 'text-white/55 hover:text-white/90'}`}
-                style={isScrolledPastHero ? {
-                  background: 'rgba(0,0,0,0.04)',
-                  border: '0.5px solid rgba(0,0,0,0.08)',
-                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
-                } : {
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '0.5px solid rgba(255,255,255,0.18)',
-                  boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
-                }}
+                style={
+                  isScrolledPastHero
+                    ? {
+                        background: 'rgba(0,0,0,0.04)',
+                        border: '0.5px solid rgba(0,0,0,0.08)',
+                        boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.5)',
+                      }
+                    : {
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '0.5px solid rgba(255,255,255,0.18)',
+                        boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.2)',
+                      }
+                }
               >
                 <ShoppingCart className="h-3.5 w-3.5" />
               </div>
             </div>
 
-            <a 
+            <a
               href="#stock"
               className={`pl-4 pr-1.5 py-1 rounded-full text-[11px] font-bold tracking-normal transition-all duration-500 active:scale-95 flex items-center gap-2 ${isScrolledPastHero ? 'text-slate-700' : 'text-white/85'}`}
-              style={isScrolledPastHero ? {
-                background: 'rgba(0,0,0,0.06)',
-                border: '0.5px solid rgba(0,0,0,0.1)',
-                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
-              } : {
-                background: 'rgba(255,255,255,0.1)',
-                border: '0.5px solid rgba(255,255,255,0.2)',
-                boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
-              }}
+              style={
+                isScrolledPastHero
+                  ? {
+                      background: 'rgba(0,0,0,0.06)',
+                      border: '0.5px solid rgba(0,0,0,0.1)',
+                      boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.6)',
+                    }
+                  : {
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '0.5px solid rgba(255,255,255,0.2)',
+                      boxShadow: 'inset 0 0.5px 0 0 rgba(255,255,255,0.25)',
+                    }
+              }
             >
               <span>{heroButtonText || 'Start your program'}</span>
-              <div 
+              <div
                 className={`w-5 h-5 rounded-full flex items-center justify-center transition-all duration-500 ${isScrolledPastHero ? 'text-slate-700' : 'text-white/90'}`}
-                style={isScrolledPastHero ? {
-                  background: 'rgba(0,0,0,0.08)',
-                  border: '0.5px solid rgba(0,0,0,0.1)',
-                } : {
-                  background: 'rgba(255,255,255,0.15)',
-                  border: '0.5px solid rgba(255,255,255,0.22)',
-                }}
+                style={
+                  isScrolledPastHero
+                    ? {
+                        background: 'rgba(0,0,0,0.08)',
+                        border: '0.5px solid rgba(0,0,0,0.1)',
+                      }
+                    : {
+                        background: 'rgba(255,255,255,0.15)',
+                        border: '0.5px solid rgba(255,255,255,0.22)',
+                      }
+                }
               >
                 <ArrowRight className="h-3 w-3" />
               </div>
             </a>
 
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-              aria-label="Toggle Menu" 
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
               className={`p-1.5 lg:hidden focus:outline-none rounded-full transition-all duration-500 ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900 hover:bg-black/5' : 'text-white/55 hover:text-white hover:bg-white/10'}`}
             >
               <Menu size={18} />
@@ -387,43 +496,94 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
 
         {/* Mobile Dropdown — Liquid Glass */}
         {mobileMenuOpen && (
-          <div 
+          <div
             className="lg:hidden mt-2 mx-auto max-w-7xl px-6 py-4 space-y-3 rounded-2xl text-left relative overflow-hidden"
-            style={isScrolledPastHero ? {
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.72) 100%)',
-              backdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
-              WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.05)',
-              border: '0.5px solid rgba(0,0,0,0.08)',
-              boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.8), 0 8px 40px rgba(0,0,0,0.06)',
-            } : {
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.08) 100%)',
-              backdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
-              WebkitBackdropFilter: 'blur(50px) saturate(200%) brightness(1.15)',
-              border: '0.5px solid rgba(255, 255, 255, 0.22)',
-              boxShadow: 'inset 0 1px 0 0 rgba(255,255,255,0.3), inset 0 0 16px 0 rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.08)',
-            }}
+            style={
+              isScrolledPastHero
+                ? {
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.72) 100%)',
+                    backdropFilter:
+                      'blur(50px) saturate(200%) brightness(1.05)',
+                    WebkitBackdropFilter:
+                      'blur(50px) saturate(200%) brightness(1.05)',
+                    border: '0.5px solid rgba(0,0,0,0.08)',
+                    boxShadow:
+                      'inset 0 1px 0 0 rgba(255,255,255,0.8), 0 8px 40px rgba(0,0,0,0.06)',
+                  }
+                : {
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.08) 100%)',
+                    backdropFilter:
+                      'blur(50px) saturate(200%) brightness(1.15)',
+                    WebkitBackdropFilter:
+                      'blur(50px) saturate(200%) brightness(1.15)',
+                    border: '0.5px solid rgba(255, 255, 255, 0.22)',
+                    boxShadow:
+                      'inset 0 1px 0 0 rgba(255,255,255,0.3), inset 0 0 16px 0 rgba(255,255,255,0.03), 0 8px 40px rgba(0,0,0,0.08)',
+                  }
+            }
           >
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#" onClick={() => setMobileMenuOpen(false)}>About</a>
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Research Institute</a>
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#what-we-do" onClick={() => setMobileMenuOpen(false)}>Medical Center</a>
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#" onClick={() => setMobileMenuOpen(false)}>Blog</a>
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#stock" onClick={() => setMobileMenuOpen(false)}>Store</a>
-            <a className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`} href="#details" onClick={() => setMobileMenuOpen(false)}>Contacts</a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About
+            </a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#what-we-do"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Research Institute
+            </a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#what-we-do"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Medical Center
+            </a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Blog
+            </a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#stock"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Store
+            </a>
+            <a
+              className={`block text-xs font-semibold py-1 transition-colors ${isScrolledPastHero ? 'text-slate-500 hover:text-slate-900' : 'text-white/60 hover:text-white'}`}
+              href="#details"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Contacts
+            </a>
           </div>
         )}
       </header>
 
       <main>
-        
         {/* 2. Longevity Hero Section */}
-        <section ref={heroSectionRef} className="relative flex items-center bg-slate-950 text-white overflow-hidden rounded-[20px] m-[10px] shadow-xl" style={{ minHeight: 'calc(100vh - 20px)' }}>
+        <section
+          ref={heroSectionRef}
+          className="relative flex items-center bg-slate-950 text-white overflow-hidden rounded-[20px] m-[10px] shadow-xl"
+          style={{ minHeight: 'calc(100vh - 20px)' }}
+        >
           {/* Scientific backdrop image with dark blue tint */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-10" />
-            <img 
-              src={heroBgImage} 
-              alt="DNA Backdrop" 
-              className="object-cover w-full h-full opacity-40 filter saturate-50" 
+            <img
+              src={heroBgImage}
+              alt="DNA Backdrop"
+              className="object-cover w-full h-full opacity-40 filter saturate-50"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/templates/hero-003.png';
               }}
@@ -432,14 +592,13 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
 
           <div className="relative z-20 w-full max-w-7xl mx-auto px-6 md:px-10 pt-28 pb-20 text-left">
             <div className="max-w-2xl space-y-8">
-              
-              <h1 
+              <h1
                 className="text-4xl md:text-6xl font-black leading-tight tracking-tight text-white font-display"
                 style={headingStyle}
               >
                 {heroHeadline}
               </h1>
-              
+
               <p className="text-sm md:text-base opacity-85 leading-relaxed max-w-xl text-slate-300">
                 {heroSubheadline}
               </p>
@@ -455,12 +614,14 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
 
               {/* Location indicator box */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-10 border-t border-slate-800/80 gap-4 text-xs text-slate-400">
-                <div 
+                <div
                   onClick={handleGetDirections}
                   className="flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
                 >
                   <MapPin size={16} className="text-cyan-400" />
-                  <span>{tenant.contact_address || 'Innovation Dr, San Diego, CA'}</span>
+                  <span>
+                    {tenant.contact_address || 'Innovation Dr, San Diego, CA'}
+                  </span>
                 </div>
                 <div className="flex gap-4">
                   <span className="hover:text-white cursor-pointer">In</span>
@@ -468,7 +629,6 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                   <span className="hover:text-white cursor-pointer">Yt</span>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -477,17 +637,21 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
         <section id="what-we-do" className="py-20 md:py-28 bg-[#f8f9fa] px-6">
           <div className="max-w-7xl mx-auto space-y-12">
             <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tight" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-900 uppercase tracking-tight"
+                style={headingStyle}
+              >
                 What {tenant.name.split(' ')[0]} Does
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              
               {/* Card 1: Research Institute */}
               <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-6 relative overflow-hidden group">
                 <div className="space-y-4 text-left">
-                  <h3 className="text-xl font-bold text-slate-900">Research Institute</h3>
+                  <h3 className="text-xl font-bold text-slate-900">
+                    Research Institute
+                  </h3>
                   <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4 leading-relaxed font-semibold">
                     <li>Genetic &amp; lab testing (genetics, biochemistry)</li>
                     <li>Advanced prevention &amp; treatment methods</li>
@@ -496,15 +660,15 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                   </ul>
                 </div>
                 <div className="flex items-center justify-between pt-4">
-                  <a 
+                  <a
                     href="#stock"
                     className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold uppercase tracking-wider transition-all text-center inline-block"
                   >
                     More about the Institute
                   </a>
-                  <img 
-                    src="https://images.unsplash.com/photo-1579310964728-44f860182b10?auto=format&fit=crop&w=150&q=80" 
-                    alt="Microscope" 
+                  <img
+                    src="https://images.unsplash.com/photo-1579310964728-44f860182b10?auto=format&fit=crop&w=150&q=80"
+                    alt="Microscope"
                     className="w-16 h-16 object-contain opacity-80"
                   />
                 </div>
@@ -513,11 +677,15 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               {/* Card 2: Medical Center */}
               <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-6 relative overflow-hidden group">
                 <div className="space-y-4 text-left">
-                  <h3 className="text-xl font-bold text-slate-900">Medical Center</h3>
+                  <h3 className="text-xl font-bold text-slate-900">
+                    Medical Center
+                  </h3>
                   <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4 leading-relaxed font-semibold">
                     <li>Personalized longevity &amp; health strategies</li>
                     <li>Preventive care &amp; early biological diagnostics</li>
-                    <li>Licensed pharmacist monitoring &amp; consultation support</li>
+                    <li>
+                      Licensed pharmacist monitoring &amp; consultation support
+                    </li>
                     <li>In-store testing: BMI, blood pressure, lipid panel</li>
                   </ul>
                 </div>
@@ -528,14 +696,13 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                   >
                     Go to the Medical Center
                   </a>
-                  <img 
-                    src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=150&q=80" 
-                    alt="Clinical DNA" 
+                  <img
+                    src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=150&q=80"
+                    alt="Clinical DNA"
                     className="w-16 h-16 object-contain opacity-80"
                   />
                 </div>
               </div>
-
             </div>
           </div>
         </section>
@@ -543,139 +710,198 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
         {/* 4. "Proven Efficiency in Numbers" Stats Grid */}
         <section className="py-20 md:py-28 bg-white px-6">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center text-left">
-            
             {/* Left intro text & image column */}
             <div className="lg:col-span-5 space-y-6">
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-900 leading-tight"
+                style={headingStyle}
+              >
                 Proven Efficiency in Numbers
               </h2>
               <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                We operate with data, not assumptions. Every step we take is based on years of research and international scientific standards.
+                We operate with data, not assumptions. Every step we take is
+                based on years of research and international scientific
+                standards.
               </p>
-              <img 
-                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80" 
-                alt="Clinic Showcase" 
-                className="rounded-2xl w-full object-cover aspect-[4/3] border border-slate-100" 
+              <img
+                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+                alt="Clinic Showcase"
+                className="rounded-2xl w-full object-cover aspect-[4/3] border border-slate-100"
               />
             </div>
 
             {/* Right Masonry Stats Cards */}
             <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              
               <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-6 space-y-2">
-                <div className="text-3xl font-black text-slate-900">{statPatients}</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Patients Treated</div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">Unique longevity strategies developed.</p>
+                <div className="text-3xl font-black text-slate-900">
+                  {statPatients}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Patients Treated
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Unique longevity strategies developed.
+                </p>
               </div>
 
               <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-6 space-y-2">
-                <div className="text-3xl font-black text-slate-900">{statExperience}</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Research Experience</div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">Of research in biogerontology and prevention.</p>
+                <div className="text-3xl font-black text-slate-900">
+                  {statExperience}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Research Experience
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Of research in biogerontology and prevention.
+                </p>
               </div>
 
               <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-6 space-y-2">
-                <div className="text-3xl font-black text-slate-900">{statPartners}</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Global Partners</div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">Global partner universities and R&D centers.</p>
+                <div className="text-3xl font-black text-slate-900">
+                  {statPartners}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Global Partners
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Global partner universities and R&D centers.
+                </p>
               </div>
 
               <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-6 space-y-2">
-                <div className="text-3xl font-black text-slate-900">{statPublications}</div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Scientific Papers</div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">Scientific publications in international journals.</p>
+                <div className="text-3xl font-black text-slate-900">
+                  {statPublications}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  Scientific Papers
+                </div>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  Scientific publications in international journals.
+                </p>
               </div>
-
             </div>
-
           </div>
         </section>
 
         {/* 5. "Your Personalized Strategy" Pillars Grid */}
         <section className="py-20 md:py-28 bg-[#f8f9fa] px-6">
           <div className="max-w-7xl mx-auto space-y-12 text-left">
-            
             <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-900"
+                style={headingStyle}
+              >
                 Your Personalized Strategy
               </h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              
               {/* Left pillars */}
               <div className="lg:col-span-4 space-y-6">
-                
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Personalized Longevity Strategy</h4>
-                  <p className="text-[11px] text-slate-500">A rigorous health assessment mapped to genetics and real-time biometric indicators.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Personalized Longevity Strategy
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    A rigorous health assessment mapped to genetics and
+                    real-time biometric indicators.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Evidence-Based Scientific Approach</h4>
-                  <p className="text-[11px] text-slate-500">A multidisciplinary team of MD researchers and scientists guiding each formulation.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Evidence-Based Scientific Approach
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    A multidisciplinary team of MD researchers and scientists
+                    guiding each formulation.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Prevention Over Treatment</h4>
-                  <p className="text-[11px] text-slate-500">Early-risk detection and proactive wellness counseling to prevent chronic illnesses.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Prevention Over Treatment
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Early-risk detection and proactive wellness counseling to
+                    prevent chronic illnesses.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Holistic Quality of Life</h4>
-                  <p className="text-[11px] text-slate-500">Focus on peak energy levels, mental clarity, and sleep cycle optimization.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Holistic Quality of Life
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Focus on peak energy levels, mental clarity, and sleep cycle
+                    optimization.
+                  </p>
                 </div>
-
               </div>
 
               {/* Center landscape photo */}
               <div className="lg:col-span-4 flex justify-center">
-                <img 
-                  src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=500&q=80" 
-                  alt="Doctor consultation" 
+                <img
+                  src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=500&q=80"
+                  alt="Doctor consultation"
                   className="rounded-3xl shadow-md object-cover aspect-[3/4] max-h-[380px] border border-slate-200"
                 />
               </div>
 
               {/* Right pillars */}
               <div className="lg:col-span-4 space-y-6">
-                
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Advanced Labs &amp; Infrastructure</h4>
-                  <p className="text-[11px] text-slate-500">Equipped with state-of-the-art diagnostic testing and biological analytics.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Advanced Labs &amp; Infrastructure
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Equipped with state-of-the-art diagnostic testing and
+                    biological analytics.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Innovative Treatment Protocols</h4>
-                  <p className="text-[11px] text-slate-500">Implementation of pioneering clinical solutions approved by scientific boards.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Innovative Treatment Protocols
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Implementation of pioneering clinical solutions approved by
+                    scientific boards.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Long-term Health Stewardship</h4>
-                  <p className="text-[11px] text-slate-500">Continuous monitoring, testing checks, and dynamic medication tracking.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Long-term Health Stewardship
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Continuous monitoring, testing checks, and dynamic
+                    medication tracking.
+                  </p>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="font-bold text-xs text-slate-900">Excellence in Care &amp; Discretion</h4>
-                  <p className="text-[11px] text-slate-500">A custom client experience delivered with complete security and safety standards.</p>
+                  <h4 className="font-bold text-xs text-slate-900">
+                    Excellence in Care &amp; Discretion
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    A custom client experience delivered with complete security
+                    and safety standards.
+                  </p>
                 </div>
-
               </div>
-
             </div>
-
           </div>
         </section>
 
         {/* 6. Research Spotlight Highlight Banner */}
         <section className="py-20 md:py-28 bg-white px-6">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center text-left">
-            
             {/* Left Scientist photo */}
             <div>
-              <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80" 
-                alt="Scientist" 
+              <img
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"
+                alt="Scientist"
                 className="rounded-3xl object-cover aspect-[4/3] border border-slate-200 shadow-sm"
               />
             </div>
@@ -685,11 +911,17 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               <span className="inline-block px-3 py-1 bg-cyan-100 border border-cyan-200 text-cyan-800 text-[10px] font-extrabold uppercase rounded-full tracking-wider">
                 Research spotlight
               </span>
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-900"
+                style={headingStyle}
+              >
                 Healthy Aging &amp; Epigenetics
               </h2>
               <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                Our scientific spotlight focuses on identifying epigenetic markers that influence how human cells regenerate. By analyzing cellular biological age, we aim to deliver customized clinical formulas that optimize energy and slow physical decline.
+                Our scientific spotlight focuses on identifying epigenetic
+                markers that influence how human cells regenerate. By analyzing
+                cellular biological age, we aim to deliver customized clinical
+                formulas that optimize energy and slow physical decline.
               </p>
               <div className="pt-2">
                 <a
@@ -700,23 +932,28 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                 </a>
               </div>
             </div>
-
           </div>
         </section>
 
         {/* 7. Real-time Public Stock Registry Lookup (GeneX styled) */}
-        <section id="stock" className="py-20 md:py-28 bg-[#0f172a] text-white px-6">
+        <section
+          id="stock"
+          className="py-20 md:py-28 bg-[#0f172a] text-white px-6"
+        >
           <div className="max-w-7xl mx-auto text-left space-y-8">
-            
             <div className="text-center md:text-left space-y-2">
               <span className="inline-block px-3 py-1 bg-cyan-900/40 border border-cyan-800 text-cyan-400 text-[10px] font-extrabold uppercase rounded-full tracking-wider">
                 Registry Lookup
               </span>
-              <h2 className="text-2xl md:text-3xl font-black text-slate-100" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-100"
+                style={headingStyle}
+              >
                 Check In-Stock Medicines
               </h2>
               <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
-                Query our active clinical storage registry instantly. Verify pricing, packaging, and real-time inventory levels.
+                Query our active clinical storage registry instantly. Verify
+                pricing, packaging, and real-time inventory levels.
               </p>
             </div>
 
@@ -724,7 +961,7 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
               <div className="md:col-span-8 relative">
                 <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-slate-500" />
-                <input 
+                <input
                   type="text"
                   placeholder="Enter formula or brand name (e.g. Lipitor)..."
                   value={searchQuery}
@@ -734,15 +971,19 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               </div>
 
               <div className="md:col-span-4">
-                <select 
+                <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 px-4 text-xs text-slate-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 shadow-inner"
                 >
                   <option value="All">All Categories</option>
-                  {categories.filter(c => c !== 'All').map(c => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
+                  {categories
+                    .filter((c) => c !== 'All')
+                    .map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -752,12 +993,16 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               {loadingInventory ? (
                 <div className="py-20 flex flex-col items-center justify-center gap-3">
                   <Loader2 className="h-6 w-6 animate-spin text-cyan-500" />
-                  <span className="text-xs text-slate-400 font-semibold">Running telemetry query...</span>
+                  <span className="text-xs text-slate-400 font-semibold">
+                    Running telemetry query...
+                  </span>
                 </div>
               ) : filteredMedicines.length === 0 ? (
                 <div className="py-16 text-center text-slate-500 space-y-2">
                   <Info className="h-6 w-6 mx-auto text-slate-600 mb-1" />
-                  <p className="text-xs font-semibold">No registered medicines found matching search query</p>
+                  <p className="text-xs font-semibold">
+                    No registered medicines found matching search query
+                  </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -768,16 +1013,25 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                         <th className="py-4 px-4">Category</th>
                         <th className="py-4 px-4 text-right">UOM</th>
                         <th className="py-4 px-4 text-right">Price (LKR)</th>
-                        <th className="py-4 px-6 text-center">Registry Status</th>
+                        <th className="py-4 px-6 text-center">
+                          Registry Status
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60">
                       {filteredMedicines.map((med, idx) => (
-                        <tr key={idx} className="hover:bg-slate-800/10 transition-colors">
+                        <tr
+                          key={idx}
+                          className="hover:bg-slate-800/10 transition-colors"
+                        >
                           <td className="py-4 px-6">
-                            <div className="font-bold text-slate-200">{med.name}</div>
+                            <div className="font-bold text-slate-200">
+                              {med.name}
+                            </div>
                             {med.generic_name && (
-                              <div className="text-[10px] text-slate-500 font-mono mt-0.5">{med.generic_name}</div>
+                              <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                                {med.generic_name}
+                              </div>
                             )}
                           </td>
                           <td className="py-4 px-4">
@@ -785,9 +1039,14 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                               {med.category}
                             </span>
                           </td>
-                          <td className="py-4 px-4 text-right text-slate-400 font-mono">{med.unit}</td>
+                          <td className="py-4 px-4 text-right text-slate-400 font-mono">
+                            {med.unit}
+                          </td>
                           <td className="py-4 px-4 text-right font-bold text-slate-200 font-mono">
-                            {med.price.toLocaleString('en-LK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {med.price.toLocaleString('en-LK', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
                           </td>
                           <td className="py-4 px-6 text-center">
                             {med.quantity > 0 ? (
@@ -807,58 +1066,86 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                 </div>
               )}
             </div>
-
           </div>
         </section>
 
         {/* 8. Hours & Location (Interactive Map Integration) */}
-        <section id="details" className="py-20 bg-white px-6 border-t border-slate-100">
+        <section
+          id="details"
+          className="py-20 bg-white px-6 border-t border-slate-100"
+        >
           <div className="max-w-7xl mx-auto text-left space-y-12">
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900" style={headingStyle}>
+              <h2
+                className="text-2xl md:text-3xl font-black text-slate-900"
+                style={headingStyle}
+              >
                 Store Visits &amp; Timings
               </h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              
               {/* Hours Card */}
               <div className="lg:col-span-5 bg-slate-50 border border-slate-200/50 rounded-2xl p-6 space-y-4">
-                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">Store Hours</h3>
-                
+                <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
+                  Store Hours
+                </h3>
+
                 <div className="flex justify-between items-center py-2 border-b border-slate-200/40">
-                  <span className="font-bold text-xs text-slate-700">Monday - Friday</span>
-                  <span className="text-xs text-slate-600 font-mono">{mondayOpen} - {mondayClose}</span>
+                  <span className="font-bold text-xs text-slate-700">
+                    Monday - Friday
+                  </span>
+                  <span className="text-xs text-slate-600 font-mono">
+                    {mondayOpen} - {mondayClose}
+                  </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center py-2 border-b border-slate-200/40 bg-slate-100/50 -mx-6 px-6">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-slate-900">Today</span>
+                    <span className="font-bold text-xs text-slate-900">
+                      Today
+                    </span>
                     {isOpenNow ? (
-                      <span className="bg-emerald-100 text-emerald-800 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">Open</span>
+                      <span className="bg-emerald-100 text-emerald-800 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Open
+                      </span>
                     ) : (
-                      <span className="bg-rose-100 text-rose-800 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">Closed</span>
+                      <span className="bg-rose-100 text-rose-800 font-extrabold text-[8px] px-2 py-0.5 rounded-full uppercase tracking-wider">
+                        Closed
+                      </span>
                     )}
                   </div>
-                  <span className="text-xs font-bold text-cyan-600 font-mono">{mondayOpen} - {mondayClose}</span>
+                  <span className="text-xs font-bold text-cyan-600 font-mono">
+                    {mondayOpen} - {mondayClose}
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-slate-200/40">
-                  <span className="font-bold text-xs text-slate-700">Saturday</span>
-                  <span className="text-xs text-slate-600 font-mono">09:00 AM - 07:00 PM</span>
+                  <span className="font-bold text-xs text-slate-700">
+                    Saturday
+                  </span>
+                  <span className="text-xs text-slate-600 font-mono">
+                    09:00 AM - 07:00 PM
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2">
-                  <span className="font-bold text-xs text-slate-700">Sunday</span>
-                  <span className="text-xs text-slate-600 font-mono italic">{sundayOpen}</span>
+                  <span className="font-bold text-xs text-slate-700">
+                    Sunday
+                  </span>
+                  <span className="text-xs text-slate-600 font-mono italic">
+                    {sundayOpen}
+                  </span>
                 </div>
 
                 {autoCloseHolidays && (
                   <div className="pt-4 border-t border-slate-200/40 text-[10px] text-slate-500 flex gap-2 items-start leading-relaxed">
                     <Info size={13} className="shrink-0 mt-0.5 text-cyan-600" />
                     <span>
-                      Closed on Sri Lankan public and religious holidays 
-                      {exceptions.length > 0 && ` (${exceptions.map(e => e.name).join(', ')})`}.
+                      Closed on Sri Lankan public and religious holidays
+                      {exceptions.length > 0 &&
+                        ` (${exceptions.map((e) => e.name).join(', ')})`}
+                      .
                     </span>
                   </div>
                 )}
@@ -867,14 +1154,21 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
               {/* Map */}
               <div className="lg:col-span-7 bg-slate-50 border border-slate-200/50 rounded-2xl overflow-hidden shadow-sm">
                 <div className="w-full h-56 border-b border-slate-200/40">
-                  <LeafletMap address={tenant.contact_address || 'Colombo, Sri Lanka'} mapLink={tenant.map_link} />
+                  <LeafletMap
+                    address={tenant.contact_address || 'Colombo, Sri Lanka'}
+                    mapLink={tenant.map_link}
+                  />
                 </div>
                 <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="text-left">
-                    <p className="font-bold text-xs text-slate-900">{tenant.contact_address || 'No address configured.'}</p>
-                    <p className="text-[10px] text-slate-500 mt-1">Colombo, Sri Lanka</p>
+                    <p className="font-bold text-xs text-slate-900">
+                      {tenant.contact_address || 'No address configured.'}
+                    </p>
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Colombo, Sri Lanka
+                    </p>
                   </div>
-                  <button 
+                  <button
                     onClick={handleGetDirections}
                     className="px-4.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
                   >
@@ -883,59 +1177,95 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
-
       </main>
 
       {/* Footer */}
       <footer className="w-full bg-slate-950 text-slate-500 py-16 px-6 md:px-10 border-t border-slate-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 text-left">
-          
           <div className="md:col-span-6 space-y-4">
-            <h2 className="text-white text-lg font-bold font-display" style={headingStyle}>
-              GeneX<span className="text-cyan-500">.</span>{tenant.name.split(' ')[0]}
+            <h2
+              className="text-white text-lg font-bold font-display"
+              style={headingStyle}
+            >
+              GeneX<span className="text-cyan-500">.</span>
+              {tenant.name.split(' ')[0]}
             </h2>
             <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-              Premium scientific clinical pharmacy and longevity therapy diagnostics.
+              Premium scientific clinical pharmacy and longevity therapy
+              diagnostics.
             </p>
-            
+
             {/* Compliance */}
-            {(tenant.display_nmra_number || tenant.display_br_number || tenant.display_slmc_number) && (
+            {(tenant.display_nmra_number ||
+              tenant.display_br_number ||
+              tenant.display_slmc_number) && (
               <div className="text-[10px] text-slate-600 space-y-1 font-mono pt-1 leading-relaxed border-t border-slate-900/60 pt-4">
-                {tenant.display_nmra_number && <div>NMRA License: {tenant.display_nmra_number}</div>}
-                {tenant.display_br_number && <div>BR Number: {tenant.display_br_number}</div>}
-                {tenant.display_slmc_number && <div>SLMC Pharmacist License: {tenant.display_slmc_number}</div>}
+                {tenant.display_nmra_number && (
+                  <div>NMRA License: {tenant.display_nmra_number}</div>
+                )}
+                {tenant.display_br_number && (
+                  <div>BR Number: {tenant.display_br_number}</div>
+                )}
+                {tenant.display_slmc_number && (
+                  <div>
+                    SLMC Pharmacist License: {tenant.display_slmc_number}
+                  </div>
+                )}
               </div>
             )}
 
             <div className="text-[10px] text-slate-600 pt-2">
-              &copy; {new Date().getFullYear()} {tenant.name}. Powered by <a href="https://quantumblaze.lk" target="_blank" rel="noopener noreferrer" className="font-semibold text-slate-400 hover:text-white hover:underline">Quantum Blaze</a>.
+              &copy; {new Date().getFullYear()} {tenant.name}. Powered by{' '}
+              <a
+                href="https://quantumblaze.lk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-slate-400 hover:text-white hover:underline"
+              >
+                Quantum Blaze
+              </a>
+              .
             </div>
           </div>
 
           <div className="md:col-span-3 flex flex-col gap-2.5 text-xs text-slate-500">
-            <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[10px]">Institute Care</h4>
-            <a className="hover:text-white" href="#stock">In-Stock Registry</a>
-            <a className="hover:text-white" href="#">Longevity Programs</a>
-            <a className="hover:text-white" href="#">Genetic Sequencing</a>
+            <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[10px]">
+              Institute Care
+            </h4>
+            <a className="hover:text-white" href="#stock">
+              In-Stock Registry
+            </a>
+            <a className="hover:text-white" href="#">
+              Longevity Programs
+            </a>
+            <a className="hover:text-white" href="#">
+              Genetic Sequencing
+            </a>
           </div>
 
           <div className="md:col-span-3 flex flex-col gap-2.5 text-xs text-slate-500">
-            <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[10px]">Legal compliance</h4>
-            <a className="hover:text-white" href="#">Privacy Policy</a>
-            <a className="hover:text-white" href="#">SaaS Terms</a>
-            <a className="hover:text-white" href="#">NMRA Quality Control</a>
+            <h4 className="font-bold text-white mb-1 uppercase tracking-wider text-[10px]">
+              Legal compliance
+            </h4>
+            <a className="hover:text-white" href="#">
+              Privacy Policy
+            </a>
+            <a className="hover:text-white" href="#">
+              SaaS Terms
+            </a>
+            <a className="hover:text-white" href="#">
+              NMRA Quality Control
+            </a>
           </div>
-
         </div>
       </footer>
 
       {/* Floating Action Button (WhatsApp) */}
       {tenant.contact_phone && (
-        <a 
+        <a
           href={`https://wa.me/${tenant.contact_phone.replace(/[^0-9]/g, '')}`}
           target="_blank"
           rel="noreferrer"
@@ -955,9 +1285,11 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
             <div className="flex justify-between items-center mb-4 border-b border-slate-200 pb-3">
               <div className="flex items-center gap-2 text-cyan-600">
                 <ShieldCheck size={22} />
-                <h3 className="font-bold text-sm md:text-base uppercase tracking-wider font-display">Verified Credentials</h3>
+                <h3 className="font-bold text-sm md:text-base uppercase tracking-wider font-display">
+                  Verified Credentials
+                </h3>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={() => setShowCertificatesModal(false)}
                 className="text-slate-400 hover:text-slate-900 text-2xl font-bold p-1 cursor-pointer"
@@ -968,9 +1300,24 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
 
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
               <div className="space-y-1.5 text-xs font-mono border-b border-slate-100 pb-3 bg-slate-50 p-3 rounded-lg">
-                {tenant.display_nmra_number && <p><strong>NMRA Pharmacy Registration:</strong> {tenant.display_nmra_number}</p>}
-                {tenant.display_slmc_number && <p><strong>SLMC Certified Pharmacist Reg:</strong> {tenant.display_slmc_number}</p>}
-                {tenant.display_br_number && <p><strong>Business Registration No:</strong> {tenant.display_br_number}</p>}
+                {tenant.display_nmra_number && (
+                  <p>
+                    <strong>NMRA Pharmacy Registration:</strong>{' '}
+                    {tenant.display_nmra_number}
+                  </p>
+                )}
+                {tenant.display_slmc_number && (
+                  <p>
+                    <strong>SLMC Certified Pharmacist Reg:</strong>{' '}
+                    {tenant.display_slmc_number}
+                  </p>
+                )}
+                {tenant.display_br_number && (
+                  <p>
+                    <strong>Business Registration No:</strong>{' '}
+                    {tenant.display_br_number}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -985,7 +1332,6 @@ export default function Template003({ tenant, subdomain }: Template003Props) {
           </div>
         </div>
       )}
-
     </div>
   );
 }

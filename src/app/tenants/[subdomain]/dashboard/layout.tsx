@@ -4,16 +4,41 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { 
-  LayoutDashboard, ShoppingCart, Package, FileInput, 
-  Users, Settings, LogOut, Loader2, Activity, User,
-  Truck, BarChart3, Globe, ShieldCheck, ClipboardList,
-  Search, Bell, ChevronDown, AlertTriangle, Hourglass,
-  Building2, LifeBuoy, Link2, Monitor, ChevronRight, Layout
+import {
+  LayoutDashboard,
+  ShoppingCart,
+  Package,
+  FileInput,
+  Users,
+  Settings,
+  LogOut,
+  Loader2,
+  Activity,
+  User,
+  Truck,
+  BarChart3,
+  Globe,
+  ShieldCheck,
+  ClipboardList,
+  Search,
+  Bell,
+  ChevronDown,
+  AlertTriangle,
+  Hourglass,
+  Building2,
+  LifeBuoy,
+  Link2,
+  Monitor,
+  ChevronRight,
+  Layout,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
@@ -33,7 +58,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (pathname.startsWith('/dashboard/reports')) {
         setReportsOpen(true);
       }
-      if (pathname.startsWith('/dashboard/website-builder') || pathname.startsWith('/dashboard/domain') || pathname.startsWith('/dashboard/templates')) {
+      if (
+        pathname.startsWith('/dashboard/website-builder') ||
+        pathname.startsWith('/dashboard/domain') ||
+        pathname.startsWith('/dashboard/templates')
+      ) {
         setCustomerFacingOpen(true);
       }
     }
@@ -103,38 +132,95 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const tenantName = tenant?.name || 'Pharmacy Portal';
 
   const topMenuItems = [
-    { name: 'Dashboard',      path: '/dashboard',               icon: LayoutDashboard, exact: true },
-    { name: 'POS Terminal',   path: '/dashboard/pos',           icon: ShoppingCart,    exact: false },
-    { name: 'Inventory',      path: '/dashboard/inventory',     icon: Package,         exact: false },
-    { name: 'GRN/Receiving',  path: '/dashboard/grn',           icon: Truck,           exact: false },
-    { name: 'Customers',      path: '/dashboard/patients',      icon: Users,           exact: false },
-    { name: 'Suppliers',      path: '/dashboard/suppliers',     icon: Building2,       exact: false },
+    {
+      name: 'Dashboard',
+      path: '/dashboard',
+      icon: LayoutDashboard,
+      exact: true,
+    },
+    {
+      name: 'POS Terminal',
+      path: '/dashboard/pos',
+      icon: ShoppingCart,
+      exact: false,
+    },
+    {
+      name: 'Inventory',
+      path: '/dashboard/inventory',
+      icon: Package,
+      exact: false,
+    },
+    {
+      name: 'GRN/Receiving',
+      path: '/dashboard/grn',
+      icon: Truck,
+      exact: false,
+    },
+    {
+      name: 'Customers',
+      path: '/dashboard/patients',
+      icon: Users,
+      exact: false,
+    },
+    {
+      name: 'Suppliers',
+      path: '/dashboard/suppliers',
+      icon: Building2,
+      exact: false,
+    },
   ];
 
   const bottomMainItems = [
-    { name: 'Prescriptions',  path: '/dashboard/prescriptions', icon: ClipboardList,   exact: false },
-    { name: 'Technical Support', path: '/dashboard/support',      icon: LifeBuoy,        exact: false },
+    {
+      name: 'Prescriptions',
+      path: '/dashboard/prescriptions',
+      icon: ClipboardList,
+      exact: false,
+    },
+    {
+      name: 'Technical Support',
+      path: '/dashboard/support',
+      icon: LifeBuoy,
+      exact: false,
+    },
   ];
 
   const bottomMenuItems = [
-    { name: 'Settings', path: '/dashboard/settings',  icon: Settings,   exact: false },
-    { name: 'Security', path: '/dashboard/security',  icon: ShieldCheck, exact: false },
+    {
+      name: 'Settings',
+      path: '/dashboard/settings',
+      icon: Settings,
+      exact: false,
+    },
+    {
+      name: 'Security',
+      path: '/dashboard/security',
+      icon: ShieldCheck,
+      exact: false,
+    },
   ];
 
   // Get user initials for avatar
   const getInitials = (nameStr: string) => {
     if (!nameStr) return 'ST';
-    return nameStr.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    return nameStr
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
   };
 
   return (
     <div className="min-h-screen bg-[#f7f9fc] text-[#191c1e] font-sans flex flex-col md:flex-row h-screen overflow-hidden">
       {/* Sidebar Navigation */}
       <aside className="w-full md:w-[240px] bg-[#0f3d57] text-[#80a8c6] h-full flex flex-col shrink-0 border-r border-[#0f3d57] select-none">
-        
         {/* Branding */}
         <div className="p-6 border-b border-[#00273b]/20">
-          <h1 className="text-white font-bold text-[14px] truncate" title={tenantName}>
+          <h1
+            className="text-white font-bold text-[14px] truncate"
+            title={tenantName}
+          >
             {tenantName}
           </h1>
           <p className="text-[#6bfe9c] text-[11px] truncate mt-1">
@@ -160,7 +246,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 <Icon className="h-4.5 w-4.5 shrink-0" />
-                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">{item.name}</span>
+                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">
+                  {item.name}
+                </span>
               </Link>
             );
           })}
@@ -174,9 +262,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             >
               <div className="flex items-center gap-3">
                 <BarChart3 className="h-4.5 w-4.5 shrink-0 text-[#80a8c6] group-hover:text-white transition-colors" />
-                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">Reports</span>
+                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">
+                  Reports
+                </span>
               </div>
-              {reportsOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+              {reportsOpen ? (
+                <ChevronDown className="h-4 w-4 shrink-0" />
+              ) : (
+                <ChevronRight className="h-4 w-4 shrink-0" />
+              )}
             </button>
 
             {reportsOpen && (
@@ -244,7 +338,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 }`}
               >
                 <Icon className="h-4.5 w-4.5 shrink-0" />
-                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">{item.name}</span>
+                <span className="truncate group-hover:translate-x-1 transition-transform duration-200">
+                  {item.name}
+                </span>
               </Link>
             );
           })}
@@ -259,9 +355,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               >
                 <div className="flex items-center gap-3">
                   <Monitor className="h-4.5 w-4.5 shrink-0 text-[#80a8c6] group-hover:text-white transition-colors" />
-                  <span className="truncate group-hover:translate-x-1 transition-transform duration-200">Customer Facing</span>
+                  <span className="truncate group-hover:translate-x-1 transition-transform duration-200">
+                    Customer Facing
+                  </span>
                 </div>
-                {customerFacingOpen ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+                {customerFacingOpen ? (
+                  <ChevronDown className="h-4 w-4 shrink-0" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 shrink-0" />
+                )}
               </button>
 
               {customerFacingOpen && (
@@ -269,7 +371,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Link
                     href="/dashboard/website-builder"
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
-                      pathname === '/dashboard/website-builder' || pathname.startsWith('/dashboard/website-builder/')
+                      pathname === '/dashboard/website-builder' ||
+                      pathname.startsWith('/dashboard/website-builder/')
                         ? 'bg-white/10 text-white'
                         : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
                     }`}
@@ -281,7 +384,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Link
                     href="/dashboard/templates"
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
-                      pathname === '/dashboard/templates' || pathname.startsWith('/dashboard/templates/')
+                      pathname === '/dashboard/templates' ||
+                      pathname.startsWith('/dashboard/templates/')
                         ? 'bg-white/10 text-white'
                         : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
                     }`}
@@ -293,7 +397,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <Link
                     href="/dashboard/domain"
                     className={`flex items-center gap-2.5 px-3 py-2 rounded-md transition-colors text-xs font-medium ${
-                      pathname === '/dashboard/domain' || pathname.startsWith('/dashboard/domain/')
+                      pathname === '/dashboard/domain' ||
+                      pathname.startsWith('/dashboard/domain/')
                         ? 'bg-white/10 text-white'
                         : 'text-[#80a8c6] hover:bg-white/5 hover:text-white'
                     }`}
@@ -309,7 +414,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Divider and bottom menu */}
           <div className="pt-4 mt-4 border-t border-[#00273b]/20 space-y-1">
             {bottomMenuItems.map((item) => {
-              const isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+              const isActive =
+                pathname === item.path || pathname.startsWith(item.path + '/');
               const Icon = item.icon;
               return (
                 <Link
@@ -322,7 +428,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   }`}
                 >
                   <Icon className="h-4.5 w-4.5 shrink-0" />
-                  <span className="truncate group-hover:translate-x-1 transition-transform duration-200">{item.name}</span>
+                  <span className="truncate group-hover:translate-x-1 transition-transform duration-200">
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
@@ -336,13 +444,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {getInitials(username)}
             </div>
             <div className="truncate">
-              <p className="text-white text-sm font-medium truncate">{username}</p>
-              <p className="text-[#80a8c6] text-xs capitalize truncate">{role}</p>
+              <p className="text-white text-sm font-medium truncate">
+                {username}
+              </p>
+              <p className="text-[#80a8c6] text-xs capitalize truncate">
+                {role}
+              </p>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
-            aria-label="Logout" 
+            aria-label="Logout"
             className="text-[#80a8c6] hover:text-red-400 transition-colors shrink-0 p-1 cursor-pointer"
           >
             <LogOut className="h-4.5 w-4.5" />
@@ -357,24 +469,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Left Side: Route Title */}
           <div className="flex items-center gap-4">
             <h2 className="text-xl font-bold tracking-tight text-[#191c1e] capitalize font-display">
-              {pathname === '/dashboard' ? 'Dashboard' : pathname.split('/').pop()?.replace('-', ' ')}
+              {pathname === '/dashboard'
+                ? 'Dashboard'
+                : pathname.split('/').pop()?.replace('-', ' ')}
             </h2>
             <div className="h-4 w-px bg-[#e0e3e6]" />
             <span className="text-[11px] text-[#42474d] bg-[#f2f4f7] px-2.5 py-1 rounded-md font-semibold border border-[#e0e3e6] font-sans">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+              {new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
             </span>
           </div>
 
           {/* Center: Search */}
           <div className="flex-1 max-w-[320px] mx-4 relative hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#42474d] h-4 w-4" />
-            <input 
-              className="w-full h-9 pl-9 pr-12 bg-[#f2f4f7] border border-[#e0e3e6] rounded-lg text-xs focus:outline-none focus:border-[#0f3d57] focus:ring-1 focus:ring-[#0f3d57] transition-all text-[#191c1e] placeholder-[#42474d]/70 font-sans" 
-              placeholder="Search products, invoices, customers..." 
+            <input
+              className="w-full h-9 pl-9 pr-12 bg-[#f2f4f7] border border-[#e0e3e6] rounded-lg text-xs focus:outline-none focus:border-[#0f3d57] focus:ring-1 focus:ring-[#0f3d57] transition-all text-[#191c1e] placeholder-[#42474d]/70 font-sans"
+              placeholder="Search products, invoices, customers..."
               type="text"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-medium text-[#42474d] bg-white border border-[#e0e3e6] rounded-md font-sans">⌘K</kbd>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[9px] font-medium text-[#42474d] bg-white border border-[#e0e3e6] rounded-md font-sans">
+                ⌘K
+              </kbd>
             </div>
           </div>
 
@@ -384,14 +505,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="relative group">
               <button className="relative p-1.5 text-[#42474d] hover:text-[#0f3d57] hover:bg-[#f2f4f7] rounded-full transition-colors cursor-pointer">
                 <Bell className="h-5 w-5" />
-                <span className="absolute top-1 right-1 w-4 h-4 bg-[#ba1a1a] text-white rounded-full text-[9px] font-bold flex items-center justify-center border-2 border-white">5</span>
+                <span className="absolute top-1 right-1 w-4 h-4 bg-[#ba1a1a] text-white rounded-full text-[9px] font-bold flex items-center justify-center border-2 border-white">
+                  5
+                </span>
               </button>
-              
+
               {/* Notification Dropdown Panel */}
               <div className="absolute right-0 mt-2 w-80 bg-white border border-[#e0e3e6] rounded-xl shadow-[0_16px_32px_rgba(0,0,0,0.08)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-[9999] transform origin-top-right">
                 <div className="p-4 border-b border-[#e0e3e6] flex items-center justify-between">
-                  <h3 className="font-semibold text-[#191c1e] font-display text-sm">Notifications</h3>
-                  <button className="text-xs text-[#0f3d57] hover:underline cursor-pointer font-sans">Mark all as read</button>
+                  <h3 className="font-semibold text-[#191c1e] font-display text-sm">
+                    Notifications
+                  </h3>
+                  <button className="text-xs text-[#0f3d57] hover:underline cursor-pointer font-sans">
+                    Mark all as read
+                  </button>
                 </div>
                 <div className="max-h-[300px] overflow-y-auto font-sans">
                   {/* Alert Item */}
@@ -400,9 +527,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <AlertTriangle className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[#191c1e]">Low Stock Alert</p>
-                      <p className="text-[11px] text-[#42474d] mt-0.5">8 items are critically low</p>
-                      <p className="text-[9px] text-[#42474d]/70 mt-1">10 mins ago</p>
+                      <p className="text-xs font-semibold text-[#191c1e]">
+                        Low Stock Alert
+                      </p>
+                      <p className="text-[11px] text-[#42474d] mt-0.5">
+                        8 items are critically low
+                      </p>
+                      <p className="text-[9px] text-[#42474d]/70 mt-1">
+                        10 mins ago
+                      </p>
                     </div>
                   </div>
                   {/* Alert Item */}
@@ -411,9 +544,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       <Hourglass className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-[#191c1e]">Near Expiry Warning</p>
-                      <p className="text-[11px] text-[#42474d] mt-0.5">12 batches expiring in &lt; 30 days</p>
-                      <p className="text-[9px] text-[#42474d]/70 mt-1">1 hr ago</p>
+                      <p className="text-xs font-semibold text-[#191c1e]">
+                        Near Expiry Warning
+                      </p>
+                      <p className="text-[11px] text-[#42474d] mt-0.5">
+                        12 batches expiring in &lt; 30 days
+                      </p>
+                      <p className="text-[9px] text-[#42474d]/70 mt-1">
+                        1 hr ago
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -421,7 +560,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             <div className="h-5 w-px bg-[#e0e3e6]" />
-            
+
             {/* Language Selection */}
             <button className="flex items-center gap-1 text-[#42474d] hover:text-[#191c1e] text-xs font-semibold transition-colors cursor-pointer font-sans">
               <span>EN</span>
@@ -435,17 +574,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="w-8 h-8 rounded-full bg-[#f2f4f7] border border-[#e0e3e6] overflow-hidden flex items-center justify-center text-[#42474d] group-hover:border-[#0f3d57] transition-colors">
                 <User className="h-4 w-4" />
               </div>
-              <span className="text-xs font-semibold text-[#191c1e] hidden sm:block group-hover:text-[#0f3d57] transition-colors font-sans">{username}</span>
+              <span className="text-xs font-semibold text-[#191c1e] hidden sm:block group-hover:text-[#0f3d57] transition-colors font-sans">
+                {username}
+              </span>
             </div>
           </div>
         </header>
 
         {/* Scrollable Main Content — POS gets a full-bleed, no-padding layout */}
-        <main className={`flex-1 bg-[#f7f9fc] ${
-          pathname.endsWith('/pos')
-            ? 'overflow-hidden'
-            : 'overflow-y-auto p-8'
-        }`}>
+        <main
+          className={`flex-1 bg-[#f7f9fc] ${
+            pathname.endsWith('/pos')
+              ? 'overflow-hidden'
+              : 'overflow-y-auto p-8'
+          }`}
+        >
           {children}
         </main>
       </div>

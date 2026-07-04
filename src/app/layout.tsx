@@ -11,13 +11,15 @@ import {
   Cormorant_Garamond,
   Space_Grotesk,
   Josefin_Sans,
-  Nunito, Geist } from 'next/font/google';
+  Nunito,
+  Geist,
+} from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Providers from '@/components/Providers';
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -92,7 +94,8 @@ const allFontVars = [
 
 export const metadata: Metadata = {
   title: 'Medical.lk | Premium Pharmacy SaaS & POS',
-  description: 'The ultimate multi-tenant pharmacy management and cloud Point of Sale (POS) system.',
+  description:
+    'The ultimate multi-tenant pharmacy management and cloud Point of Sale (POS) system.',
 };
 
 export default function RootLayout({
@@ -101,11 +104,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full scroll-smooth", "font-sans", geist.variable)} suppressHydrationWarning>
-      <body className={`${allFontVars} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}>
-        <Providers>
-          {children}
-        </Providers>
+    <html
+      lang="en"
+      className={cn('h-full scroll-smooth', 'font-sans', geist.variable)}
+      suppressHydrationWarning
+    >
+      <body
+        className={`${allFontVars} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}
+      >
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

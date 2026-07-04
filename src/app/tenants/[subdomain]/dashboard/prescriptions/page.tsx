@@ -1,16 +1,42 @@
 'use client';
 
 import React from 'react';
-import { 
-  ClipboardList, Search, FileText, Calendar, 
-  Sparkles, CheckCircle2, User 
+import {
+  ClipboardList,
+  Search,
+  FileText,
+  Calendar,
+  Sparkles,
+  CheckCircle2,
+  User,
 } from 'lucide-react';
 
 export default function PrescriptionsRegistry() {
   const mockPrescriptions = [
-    { id: '1', rxNumber: 'RX-84920', patient: 'Kamal Silva', doctor: 'Dr. A. B. Perera', date: 'Wednesday, 10 June 2026', status: 'Dispensed' },
-    { id: '2', rxNumber: 'RX-84919', patient: 'Sunil Perera', doctor: 'Dr. S. K. Alwis', date: 'Tuesday, 9 June 2026', status: 'Dispensed' },
-    { id: '3', rxNumber: 'RX-84918', patient: 'Ruwan Silva', doctor: 'Dr. A. B. Perera', date: 'Monday, 8 June 2026', status: 'Pending Review' },
+    {
+      id: '1',
+      rxNumber: 'RX-84920',
+      patient: 'Kamal Silva',
+      doctor: 'Dr. A. B. Perera',
+      date: 'Wednesday, 10 June 2026',
+      status: 'Dispensed',
+    },
+    {
+      id: '2',
+      rxNumber: 'RX-84919',
+      patient: 'Sunil Perera',
+      doctor: 'Dr. S. K. Alwis',
+      date: 'Tuesday, 9 June 2026',
+      status: 'Dispensed',
+    },
+    {
+      id: '3',
+      rxNumber: 'RX-84918',
+      patient: 'Ruwan Silva',
+      doctor: 'Dr. A. B. Perera',
+      date: 'Monday, 8 June 2026',
+      status: 'Pending Review',
+    },
   ];
 
   return (
@@ -18,7 +44,8 @@ export default function PrescriptionsRegistry() {
       {/* Header */}
       <div>
         <h1 className="font-display text-2xl font-bold text-[#191c1e] flex items-center gap-2">
-          <ClipboardList className="text-[#0f3d57] h-6 w-6" /> Prescriptions Registry
+          <ClipboardList className="text-[#0f3d57] h-6 w-6" /> Prescriptions
+          Registry
         </h1>
         <p className="text-sm text-[#42474d] mt-1">
           Review, approve, and track patient prescription orders.
@@ -50,25 +77,34 @@ export default function PrescriptionsRegistry() {
             </thead>
             <tbody className="text-sm divide-y divide-[#eceef1] text-[#191c1e]">
               {mockPrescriptions.map((rx) => (
-                <tr key={rx.id} className="hover:bg-[#f2f4f7]/50 transition-colors">
-                  <td className="p-4 font-semibold text-[#0f3d57]">{rx.rxNumber}</td>
+                <tr
+                  key={rx.id}
+                  className="hover:bg-[#f2f4f7]/50 transition-colors"
+                >
+                  <td className="p-4 font-semibold text-[#0f3d57]">
+                    {rx.rxNumber}
+                  </td>
                   <td className="p-4">
                     <span className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-[#42474d]/70" /> {rx.patient}
+                      <User className="h-4 w-4 text-[#42474d]/70" />{' '}
+                      {rx.patient}
                     </span>
                   </td>
                   <td className="p-4">{rx.doctor}</td>
                   <td className="p-4 text-[#42474d]">
                     <span className="flex items-center gap-1">
-                      <Calendar className="h-3.5 w-3.5 text-[#42474d]/50" /> {rx.date}
+                      <Calendar className="h-3.5 w-3.5 text-[#42474d]/50" />{' '}
+                      {rx.date}
                     </span>
                   </td>
                   <td className="p-4 text-right">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
-                      rx.status === 'Dispensed' 
-                        ? 'bg-[#6bfe9c]/30 text-[#00743a]' 
-                        : 'bg-orange-100 text-orange-700'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                        rx.status === 'Dispensed'
+                          ? 'bg-[#6bfe9c]/30 text-[#00743a]'
+                          : 'bg-orange-100 text-orange-700'
+                      }`}
+                    >
                       {rx.status}
                     </span>
                   </td>
@@ -78,7 +114,6 @@ export default function PrescriptionsRegistry() {
           </table>
         </div>
       </div>
-
     </div>
   );
 }

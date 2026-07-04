@@ -2,11 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { 
-  Settings, Loader2, Check, User, MapPin, 
-  Phone, Mail, Building, Receipt, Percent, 
-  Printer, ShieldAlert, AlertTriangle, CheckCircle,
-  Globe, Clock, ChevronDown
+import {
+  Settings,
+  Loader2,
+  Check,
+  User,
+  MapPin,
+  Phone,
+  Mail,
+  Building,
+  Receipt,
+  Percent,
+  Printer,
+  ShieldAlert,
+  AlertTriangle,
+  CheckCircle,
+  Globe,
+  Clock,
+  ChevronDown,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -30,7 +43,11 @@ export default function BusinessSettings() {
   const [saveError, setSaveError] = useState('');
 
   // 1. Fetch current settings
-  const { data: config, isLoading, refetch } = useQuery<any>({
+  const {
+    data: config,
+    isLoading,
+    refetch,
+  } = useQuery<any>({
     queryKey: ['tenant-config'],
     queryFn: () => apiFetch('/api/tenant/public'),
   });
@@ -46,7 +63,9 @@ export default function BusinessSettings() {
       setLogoUrl(config.logo_url || '');
 
       // Load local-only config mockups if saved
-      const localPrefs = localStorage.getItem(`pharmacy-prefs-${config.subdomain}`);
+      const localPrefs = localStorage.getItem(
+        `pharmacy-prefs-${config.subdomain}`
+      );
       if (localPrefs) {
         try {
           const parsed = JSON.parse(localPrefs);
@@ -54,7 +73,8 @@ export default function BusinessSettings() {
           if (parsed.receiptWidth) setReceiptWidth(parsed.receiptWidth);
           if (parsed.currency) setCurrency(parsed.currency);
           if (parsed.timezone) setTimezone(parsed.timezone);
-          if (parsed.nearExpiryDays !== undefined) setNearExpiryDays(parsed.nearExpiryDays);
+          if (parsed.nearExpiryDays !== undefined)
+            setNearExpiryDays(parsed.nearExpiryDays);
         } catch (e) {
           console.error(e);
         }
@@ -64,27 +84,31 @@ export default function BusinessSettings() {
 
   // 2. Update config mutation
   const updateConfigMutation = useMutation({
-    mutationFn: (payload: any) => apiFetch('/api/tenant/config', {
-      method: 'PUT',
-      body: JSON.stringify(payload),
-    }),
+    mutationFn: (payload: any) =>
+      apiFetch('/api/tenant/config', {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      }),
     onSuccess: () => {
       refetch();
       if (config?.subdomain) {
-        localStorage.setItem(`pharmacy-prefs-${config.subdomain}`, JSON.stringify({
-          taxRate,
-          receiptWidth,
-          currency,
-          timezone,
-          nearExpiryDays
-        }));
+        localStorage.setItem(
+          `pharmacy-prefs-${config.subdomain}`,
+          JSON.stringify({
+            taxRate,
+            receiptWidth,
+            currency,
+            timezone,
+            nearExpiryDays,
+          })
+        );
       }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     },
     onError: (err: any) => {
       setSaveError(err.message || 'Failed to save modifications.');
-    }
+    },
   });
 
   const handleSave = (e: React.FormEvent) => {
@@ -98,7 +122,7 @@ export default function BusinessSettings() {
       contact_address: address.trim() || null,
       contact_phone: phone.trim() || null,
       contact_email: email.trim() || null,
-      logo_url: logoUrl.trim() || null
+      logo_url: logoUrl.trim() || null,
     });
   };
 
@@ -114,13 +138,19 @@ export default function BusinessSettings() {
   return (
     <div className="max-w-[800px] mx-auto w-full text-on-background text-left font-sans space-y-ds-lg">
       <div>
-        <h2 className="font-display text-headline-lg font-bold text-primary mb-1">Pharmacy Profile &amp; Settings</h2>
-        <p className="text-body-sm text-on-surface-variant font-medium">Manage pharmacy business registry information, POS billing defaults, and printers.</p>
+        <h2 className="font-display text-headline-lg font-bold text-primary mb-1">
+          Pharmacy Profile &amp; Settings
+        </h2>
+        <p className="text-body-sm text-on-surface-variant font-medium">
+          Manage pharmacy business registry information, POS billing defaults,
+          and printers.
+        </p>
       </div>
 
       {saveSuccess && (
         <div className="p-4 bg-secondary-container/20 border border-secondary/20 text-[#00743a] rounded-xl flex items-center gap-2 font-semibold text-xs">
-          <CheckCircle className="h-4.5 w-4.5 text-secondary" /> Settings modifications applied and saved successfully!
+          <CheckCircle className="h-4.5 w-4.5 text-secondary" /> Settings
+          modifications applied and saved successfully!
         </div>
       )}
 
@@ -131,7 +161,6 @@ export default function BusinessSettings() {
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
-        
         {/* Business Profile Details */}
         <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)] space-y-4">
           <h3 className="font-display text-title-lg font-bold text-primary border-b border-outline-variant/30 pb-2 uppercase tracking-wide flex items-center gap-2">
@@ -141,7 +170,9 @@ export default function BusinessSettings() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Pharmacy Business Name *</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Pharmacy Business Name *
+              </label>
               <input
                 type="text"
                 required
@@ -152,7 +183,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">City / Location</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                City / Location
+              </label>
               <input
                 type="text"
                 placeholder="e.g. Colombo 03"
@@ -163,7 +196,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Contact Phone</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Contact Phone
+              </label>
               <input
                 type="text"
                 value={phone}
@@ -173,7 +208,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Contact Email</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Contact Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -183,7 +220,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Registered Office Address</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Registered Office Address
+              </label>
               <input
                 type="text"
                 value={address}
@@ -193,7 +232,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Logo Brand URL</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Logo Brand URL
+              </label>
               <input
                 type="text"
                 placeholder="e.g. https://domain.com/logo.png"
@@ -249,7 +290,9 @@ export default function BusinessSettings() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">Currency Unit</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                Currency Unit
+              </label>
               <input
                 type="text"
                 value={currency}
@@ -268,10 +311,14 @@ export default function BusinessSettings() {
                 min="5"
                 max="365"
                 value={nearExpiryDays}
-                onChange={(e) => setNearExpiryDays(Number(e.target.value) || 30)}
+                onChange={(e) =>
+                  setNearExpiryDays(Number(e.target.value) || 30)
+                }
                 className="w-full px-3 py-2 bg-background border border-outline-variant rounded-lg focus:border-primary outline-none text-xs text-right font-mono"
               />
-              <span className="text-[10px] text-outline mt-0.5">Alert matches batches expiring within this many days.</span>
+              <span className="text-[10px] text-outline mt-0.5">
+                Alert matches batches expiring within this many days.
+              </span>
             </div>
           </div>
         </section>
@@ -285,7 +332,9 @@ export default function BusinessSettings() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">System Timezone</label>
+              <label className="block text-[11px] font-bold text-on-surface-variant uppercase tracking-wide">
+                System Timezone
+              </label>
               <div className="relative">
                 <select
                   value={timezone}
@@ -322,7 +371,6 @@ export default function BusinessSettings() {
             )}
           </button>
         </div>
-
       </form>
     </div>
   );

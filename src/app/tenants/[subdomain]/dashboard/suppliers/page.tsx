@@ -3,8 +3,15 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { 
-  Building2, Plus, Search, Loader2, Phone, Mail, MapPin, Check 
+import {
+  Building2,
+  Plus,
+  Search,
+  Loader2,
+  Phone,
+  Mail,
+  MapPin,
+  Check,
 } from 'lucide-react';
 import { apiFetch } from '@/utils/api';
 
@@ -20,17 +27,22 @@ export default function SuppliersDirectory() {
   const [formError, setFormError] = useState('');
 
   // 1. Fetch suppliers
-  const { data: suppliers = [], isLoading, refetch } = useQuery<any[]>({
+  const {
+    data: suppliers = [],
+    isLoading,
+    refetch,
+  } = useQuery<any[]>({
     queryKey: ['suppliers-list'],
-    queryFn: () => apiFetch('/api/inventory/suppliers')
+    queryFn: () => apiFetch('/api/inventory/suppliers'),
   });
 
   // 2. Create supplier mutation
   const createSupplierMutation = useMutation({
-    mutationFn: (payload: any) => apiFetch('/api/inventory/suppliers', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+    mutationFn: (payload: any) =>
+      apiFetch('/api/inventory/suppliers', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
     onSuccess: () => {
       refetch();
       setShowAddSupplier(false);
@@ -41,7 +53,7 @@ export default function SuppliersDirectory() {
     },
     onError: (err: any) => {
       setFormError(err.message || 'Failed to register supplier profile.');
-    }
+    },
   });
 
   const handleSupplierSubmit = (e: React.FormEvent) => {
@@ -57,7 +69,7 @@ export default function SuppliersDirectory() {
       name: name.trim(),
       phone: phone.trim() || null,
       email: email.trim() || null,
-      address: address.trim() || null
+      address: address.trim() || null,
     });
   };
 
@@ -116,20 +128,26 @@ export default function SuppliersDirectory() {
         ) : filteredSuppliers.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-[#42474d] gap-2 text-sm text-center max-w-sm mx-auto">
             <Building2 className="h-8 w-8 text-[#42474d]/30" />
-            <span className="font-semibold text-[#191c1e]">No suppliers registered</span>
+            <span className="font-semibold text-[#191c1e]">
+              No suppliers registered
+            </span>
             <span className="text-xs text-[#42474d]">
-              {searchQuery ? "No matches found. Try another search term." : "Register suppliers to associate with stock batches and Good Received Notes (GRN)."}
+              {searchQuery
+                ? 'No matches found. Try another search term.'
+                : 'Register suppliers to associate with stock batches and Good Received Notes (GRN).'}
             </span>
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
             {filteredSuppliers.map((sup) => (
-              <div 
+              <div
                 key={sup.id}
                 className="p-5 rounded-xl border border-[#eceef1] flex flex-col justify-between hover:border-[#0f3d57]/30 transition-all bg-[#f7f9fc]"
               >
                 <div>
-                  <h3 className="font-display font-bold text-base text-[#191c1e]">{sup.name}</h3>
+                  <h3 className="font-display font-bold text-base text-[#191c1e]">
+                    {sup.name}
+                  </h3>
                   <div className="flex flex-col gap-2 text-xs text-[#42474d] mt-4">
                     {sup.phone && (
                       <div className="flex items-center gap-2">
@@ -163,7 +181,9 @@ export default function SuppliersDirectory() {
           <div className="bg-white border border-[#eceef1] rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center gap-3 border-b border-[#eceef1] pb-4 mb-6">
               <Building2 className="h-5 w-5 text-[#0f3d57]" />
-              <h3 className="text-lg font-bold text-[#191c1e]">Register Supplier Profile</h3>
+              <h3 className="text-lg font-bold text-[#191c1e]">
+                Register Supplier Profile
+              </h3>
             </div>
 
             {formError && (

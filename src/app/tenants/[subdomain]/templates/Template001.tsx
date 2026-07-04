@@ -2,10 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import nextDynamic from 'next/dynamic';
-import { 
-  MapPin, Mail, Phone, Loader2, Activity, Heart, Clock, 
-  Globe, Calendar, CheckCircle, ShieldCheck, Sparkles, 
-  MessageSquare, Menu, Search, ChevronRight, Check
+import {
+  MapPin,
+  Mail,
+  Phone,
+  Loader2,
+  Activity,
+  Heart,
+  Clock,
+  Globe,
+  Calendar,
+  CheckCircle,
+  ShieldCheck,
+  Sparkles,
+  MessageSquare,
+  Menu,
+  Search,
+  ChevronRight,
+  Check,
 } from 'lucide-react';
 import { getFontFamily } from '@/utils/fontConfig';
 
@@ -16,7 +30,7 @@ const LeafletMap = nextDynamic(() => import('@/components/LeafletMap'), {
       <Loader2 className="h-5 w-5 animate-spin text-[#006d37]" />
       <span>Loading map...</span>
     </div>
-  )
+  ),
 });
 
 interface Template001Props {
@@ -68,26 +82,34 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
     return (
       <div className="min-h-screen bg-[#f8f9ff] flex flex-col items-center justify-center text-[#42474d] gap-4 font-sans p-6 text-center">
         <Activity className="h-10 w-10 text-red-500 animate-pulse" />
-        <h2 className="text-lg font-bold text-red-600">Pharmacy Website Not Found</h2>
-        <p className="text-xs max-w-sm">Please verify the URL or ensure the pharmacy trial is active.</p>
+        <h2 className="text-lg font-bold text-red-600">
+          Pharmacy Website Not Found
+        </h2>
+        <p className="text-xs max-w-sm">
+          Please verify the URL or ensure the pharmacy trial is active.
+        </p>
       </div>
     );
   }
 
   const primaryColor = tenant.brand_color_primary || '#00273b';
   const secondaryColor = tenant.brand_color_secondary || '#006d37';
-  
+
   // Custom builder states
   const logoHeight = tenant.logo_height || 40;
   const headingsFont = tenant.headings_font || 'poppins';
   const bodyFont = tenant.body_font || 'inter';
-  
+
   const heroHeadline = tenant.hero_headline || `Welcome to ${tenant.name}`;
-  const heroSubheadline = tenant.hero_subheadline || tenant.website_description || 'Your trusted community pharmacy. Providing expert care, authentic medicines, and reliable health services.';
+  const heroSubheadline =
+    tenant.hero_subheadline ||
+    tenant.website_description ||
+    'Your trusted community pharmacy. Providing expert care, authentic medicines, and reliable health services.';
   const heroButtonText = tenant.hero_button_text || 'Get Directions';
-  const heroBgImage = (!tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')) 
-    ? '/templates/hero-001.png' 
-    : tenant.hero_bg_image;
+  const heroBgImage =
+    !tenant.hero_bg_image || tenant.hero_bg_image.includes('unsplash.com')
+      ? '/templates/hero-001.png'
+      : tenant.hero_bg_image;
   const autoCloseHolidays = tenant.auto_close_holidays !== false;
 
   // Resolve opening hours
@@ -150,12 +172,42 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
 
   // Resolve services
   let services = [
-    { title: 'Prescription Fulfillment', description: 'Fast, accurate dispensing of medications with thorough interaction checks by our licensed pharmacists.', icon: 'Check' },
-    { title: 'Home Delivery', description: 'Convenient doorstep delivery across Colombo within 24 hours. Cold chain maintained for sensitive drugs.', icon: 'Clock' },
-    { title: 'Health Consultations', description: 'Private consultations to discuss medication management, side effects, and general wellness plans.', icon: 'Heart' },
-    { title: 'Cosmetics & Derma', description: 'Curated selection of dermatologically tested skincare and personal care products.', icon: 'Sparkles' },
-    { title: 'Health Monitoring', description: 'In-store blood pressure checking, blood sugar testing, and BMI calculation services.', icon: 'Activity' },
-    { title: 'Baby & Mother Care', description: 'Everything you need for maternal health and infant care, from nutrition to hygiene essentials.', icon: 'ShieldCheck' }
+    {
+      title: 'Prescription Fulfillment',
+      description:
+        'Fast, accurate dispensing of medications with thorough interaction checks by our licensed pharmacists.',
+      icon: 'Check',
+    },
+    {
+      title: 'Home Delivery',
+      description:
+        'Convenient doorstep delivery across Colombo within 24 hours. Cold chain maintained for sensitive drugs.',
+      icon: 'Clock',
+    },
+    {
+      title: 'Health Consultations',
+      description:
+        'Private consultations to discuss medication management, side effects, and general wellness plans.',
+      icon: 'Heart',
+    },
+    {
+      title: 'Cosmetics & Derma',
+      description:
+        'Curated selection of dermatologically tested skincare and personal care products.',
+      icon: 'Sparkles',
+    },
+    {
+      title: 'Health Monitoring',
+      description:
+        'In-store blood pressure checking, blood sugar testing, and BMI calculation services.',
+      icon: 'Activity',
+    },
+    {
+      title: 'Baby & Mother Care',
+      description:
+        'Everything you need for maternal health and infant care, from nutrition to hygiene essentials.',
+      icon: 'ShieldCheck',
+    },
   ];
   if (tenant.services_json) {
     try {
@@ -170,19 +222,32 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
-      case 'Check': return <Check size={20} />;
-      case 'Clock': return <Clock size={20} />;
-      case 'Heart': return <Heart size={20} />;
-      case 'Sparkles': return <Sparkles size={20} />;
-      case 'Activity': return <Activity size={20} />;
-      case 'ShieldCheck': return <ShieldCheck size={20} />;
-      case 'Mail': return <Mail size={20} />;
-      case 'Phone': return <Phone size={20} />;
-      case 'MapPin': return <MapPin size={20} />;
-      case 'Globe': return <Globe size={20} />;
-      case 'Calendar': return <Calendar size={20} />;
-      case 'CheckCircle': return <CheckCircle size={20} />;
-      default: return <CheckCircle size={20} />;
+      case 'Check':
+        return <Check size={20} />;
+      case 'Clock':
+        return <Clock size={20} />;
+      case 'Heart':
+        return <Heart size={20} />;
+      case 'Sparkles':
+        return <Sparkles size={20} />;
+      case 'Activity':
+        return <Activity size={20} />;
+      case 'ShieldCheck':
+        return <ShieldCheck size={20} />;
+      case 'Mail':
+        return <Mail size={20} />;
+      case 'Phone':
+        return <Phone size={20} />;
+      case 'MapPin':
+        return <MapPin size={20} />;
+      case 'Globe':
+        return <Globe size={20} />;
+      case 'Calendar':
+        return <Calendar size={20} />;
+      case 'CheckCircle':
+        return <CheckCircle size={20} />;
+      default:
+        return <CheckCircle size={20} />;
     }
   };
 
@@ -190,7 +255,7 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
   const headingStyle = {
     fontFamily: getFontFamily(headingsFont),
   };
-  
+
   const bodyStyle = {
     fontFamily: getFontFamily(bodyFont),
   };
@@ -200,43 +265,58 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
     if (tenant.map_link) {
       window.open(tenant.map_link, '_blank');
     } else if (tenant.contact_address) {
-      window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant.contact_address)}`, '_blank');
+      window.open(
+        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(tenant.contact_address)}`,
+        '_blank'
+      );
     }
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-[#f8f9ff] text-[#0b1c30] flex flex-col selection:bg-teal-50 selection:text-teal-900 font-sans"
       style={bodyStyle}
     >
       <title>{tenant.website_title || tenant.name}</title>
-      
+
       {/* Announcement Banner */}
       <div className="bg-[#ffb961] text-[#533200] py-2 px-4 text-center font-bold text-xs tracking-wide shadow-sm">
-        10% off vitamins this week. <a className="underline hover:text-[#2b1700] ml-1 transition-colors" href="#services">Learn More</a>
+        10% off vitamins this week.{' '}
+        <a
+          className="underline hover:text-[#2b1700] ml-1 transition-colors"
+          href="#services"
+        >
+          Learn More
+        </a>
       </div>
 
       {/* Navigation Bar */}
-      <nav className={`bg-white sticky top-0 w-full z-50 border-b border-[#c2c7cd]/40 shadow-sm transition-all duration-200`}>
+      <nav
+        className={`bg-white sticky top-0 w-full z-50 border-b border-[#c2c7cd]/40 shadow-sm transition-all duration-200`}
+      >
         <div className="flex justify-between items-center w-full px-6 md:px-10 max-w-7xl mx-auto h-16">
           {/* Logo Brand Block */}
           <div className="flex items-center gap-2 max-w-[60%] md:max-w-none">
             {tenant.logo_url ? (
-              <img 
-                src={tenant.logo_url} 
-                alt={tenant.name} 
-                style={{ height: `${logoHeight}px` }} 
-                className="object-contain" 
+              <img
+                src={tenant.logo_url}
+                alt={tenant.name}
+                style={{ height: `${logoHeight}px` }}
+                className="object-contain"
               />
             ) : (
-              <div 
+              <div
                 className="rounded-lg flex items-center justify-center text-white font-bold shrink-0"
-                style={{ backgroundColor: primaryColor, width: `${logoHeight + 4}px`, height: `${logoHeight + 4}px` }}
+                style={{
+                  backgroundColor: primaryColor,
+                  width: `${logoHeight + 4}px`,
+                  height: `${logoHeight + 4}px`,
+                }}
               >
                 {tenant.name.substring(0, 2).toUpperCase()}
               </div>
             )}
-            <span 
+            <span
               className="font-bold text-base md:text-lg tracking-tight truncate"
               style={{ ...headingStyle, color: primaryColor }}
             >
@@ -246,16 +326,30 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-6 text-sm font-semibold text-[#42474d]">
-            <a className="hover:text-[#0b1c30] transition-colors" href="#">Home</a>
-            <a className="hover:text-[#0b1c30] transition-colors" href="#about">About Us</a>
-            <a className="hover:text-[#0b1c30] transition-colors" href="#services">Services</a>
-            <a className="hover:text-[#0b1c30] transition-colors" href="#details">Hours &amp; Location</a>
+            <a className="hover:text-[#0b1c30] transition-colors" href="#">
+              Home
+            </a>
+            <a className="hover:text-[#0b1c30] transition-colors" href="#about">
+              About Us
+            </a>
+            <a
+              className="hover:text-[#0b1c30] transition-colors"
+              href="#services"
+            >
+              Services
+            </a>
+            <a
+              className="hover:text-[#0b1c30] transition-colors"
+              href="#details"
+            >
+              Hours &amp; Location
+            </a>
           </div>
 
           {/* Nav Actions */}
           <div className="flex gap-2">
             {tenant.contact_phone && (
-              <a 
+              <a
                 href={`tel:${tenant.contact_phone}`}
                 className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-bold uppercase tracking-wider transition-colors"
                 style={{ borderColor: primaryColor, color: primaryColor }}
@@ -265,7 +359,7 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
               </a>
             )}
             {tenant.contact_phone && (
-              <a 
+              <a
                 href={`https://wa.me/${tenant.contact_phone.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noreferrer"
@@ -275,11 +369,11 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
                 WhatsApp
               </a>
             )}
-            
+
             {/* Mobile Hamburger menu */}
-            <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
-              aria-label="Toggle Menu" 
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle Menu"
               className="p-2 md:hidden text-[#42474d] hover:text-[#0b1c30] focus:outline-none shrink-0"
             >
               <Menu size={22} />
@@ -290,13 +384,37 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
         {/* Mobile Navigation Dropdown */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-[#c2c7cd]/30 bg-white px-6 py-4 space-y-3 shadow-md">
-            <a className="block text-sm font-semibold text-[#42474d] py-1" href="#" onClick={() => setMobileMenuOpen(false)}>Home</a>
-            <a className="block text-sm font-semibold text-[#42474d] py-1" href="#about" onClick={() => setMobileMenuOpen(false)}>About Us</a>
-            <a className="block text-sm font-semibold text-[#42474d] py-1" href="#services" onClick={() => setMobileMenuOpen(false)}>Services</a>
-            <a className="block text-sm font-semibold text-[#42474d] py-1" href="#details" onClick={() => setMobileMenuOpen(false)}>Hours &amp; Location</a>
+            <a
+              className="block text-sm font-semibold text-[#42474d] py-1"
+              href="#"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Home
+            </a>
+            <a
+              className="block text-sm font-semibold text-[#42474d] py-1"
+              href="#about"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About Us
+            </a>
+            <a
+              className="block text-sm font-semibold text-[#42474d] py-1"
+              href="#services"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Services
+            </a>
+            <a
+              className="block text-sm font-semibold text-[#42474d] py-1"
+              href="#details"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Hours &amp; Location
+            </a>
             {tenant.contact_phone && (
               <div className="pt-2">
-                <a 
+                <a
                   href={`tel:${tenant.contact_phone}`}
                   className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border text-xs font-bold uppercase tracking-wider"
                   style={{ borderColor: primaryColor, color: primaryColor }}
@@ -312,19 +430,18 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
 
       {/* Main Content */}
       <main>
-        
         {/* Hero Section */}
         <section className="relative min-h-[75vh] flex items-center bg-[#00273b] overflow-hidden">
           {/* Background Image with Tint Overlay */}
           <div className="absolute inset-0 z-0">
-            <div 
+            <div
               className="absolute inset-0 opacity-80 mix-blend-multiply z-10"
               style={{ backgroundColor: primaryColor }}
             ></div>
-            <img 
-              src={heroBgImage} 
-              alt="Pharmacy showroom" 
-              className="object-cover w-full h-full" 
+            <img
+              src={heroBgImage}
+              alt="Pharmacy showroom"
+              className="object-cover w-full h-full"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/templates/hero-001.png';
               }}
@@ -337,7 +454,7 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
                 <span className="w-2 h-2 rounded-full bg-[#6bfe9c]"></span>
                 Licensed Pharmacy &bull; Est. 2010
               </div>
-              <h1 
+              <h1
                 className="text-4xl md:text-6xl font-bold leading-tight tracking-tight text-white"
                 style={headingStyle}
               >
@@ -347,7 +464,7 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
                 {heroSubheadline}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <button 
+                <button
                   onClick={handleGetDirections}
                   className="px-8 py-4 rounded-lg bg-[#006d37] hover:bg-[#00743a] text-white font-bold text-xs uppercase tracking-wider shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-[0.98] cursor-pointer"
                   style={{ backgroundColor: secondaryColor }}
@@ -356,7 +473,7 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
                   {heroButtonText}
                 </button>
                 {tenant.contact_phone && (
-                  <a 
+                  <a
                     href={`tel:${tenant.contact_phone}`}
                     className="px-8 py-4 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-transform active:scale-[0.98] cursor-pointer text-center"
                   >
@@ -374,40 +491,48 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 py-6 bg-white rounded-xl shadow-lg border border-[#c2c7cd]/20 -translate-y-6">
               <div className="text-center px-4 border-r border-[#c2c7cd]/20 last:border-0">
-                <div 
+                <div
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
                   {statExperience}
                 </div>
-                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Years Experience</div>
+                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">
+                  Years Experience
+                </div>
               </div>
               <div className="text-center px-4 border-r border-[#c2c7cd]/20 last:border-0">
-                <div 
+                <div
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
                   {statPatients}
                 </div>
-                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Happy Patients</div>
+                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">
+                  Happy Patients
+                </div>
               </div>
               <div className="text-center px-4 border-r border-[#c2c7cd]/20 last:border-0">
-                <div 
+                <div
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
                   {statProducts}
                 </div>
-                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Products Catalog</div>
+                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">
+                  Products Catalog
+                </div>
               </div>
               <div className="text-center px-4">
-                <div 
+                <div
                   className="text-xl md:text-2xl font-bold mb-0.5"
                   style={{ color: primaryColor }}
                 >
                   {statWaitTime}
                 </div>
-                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">Avg Wait Time</div>
+                <div className="text-[10px] font-bold text-[#42474d] uppercase tracking-wider">
+                  Avg Wait Time
+                </div>
               </div>
             </div>
           </div>
@@ -418,78 +543,104 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             {/* About Image Showcase */}
             <div className="relative">
-              <img 
-                alt="Pharmacist Assisting Customer" 
-                className="rounded-2xl shadow-xl w-full object-cover aspect-square max-h-[440px]" 
-                src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80" 
+              <img
+                alt="Pharmacist Assisting Customer"
+                className="rounded-2xl shadow-xl w-full object-cover aspect-square max-h-[440px]"
+                src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=600&q=80"
               />
               <div className="absolute -bottom-4 -right-4 bg-white p-5 rounded-xl shadow-xl border border-[#c2c7cd]/20 max-w-[210px] text-left">
-                <div 
+                <div
                   className="flex items-center gap-2 mb-1.5"
                   style={{ color: secondaryColor }}
                 >
                   <ShieldCheck size={26} />
-                  <span className="font-bold text-xs uppercase tracking-wider">Verified</span>
+                  <span className="font-bold text-xs uppercase tracking-wider">
+                    Verified
+                  </span>
                 </div>
-                <div className="font-bold text-xs text-[#0b1c30] leading-tight font-display">Licensed Care Pharmacy</div>
-                <div className="text-[10px] text-[#42474d] mt-1 font-mono">Reg: {tenant.display_slmc_number || 'SLMC-PH-8921'}</div>
+                <div className="font-bold text-xs text-[#0b1c30] leading-tight font-display">
+                  Licensed Care Pharmacy
+                </div>
+                <div className="text-[10px] text-[#42474d] mt-1 font-mono">
+                  Reg: {tenant.display_slmc_number || 'SLMC-PH-8921'}
+                </div>
               </div>
             </div>
 
             {/* About description */}
             <div className="text-left space-y-6">
               <div>
-                <div 
+                <div
                   className="text-xs font-bold uppercase tracking-widest mb-2"
                   style={{ color: secondaryColor }}
                 >
                   About Us
                 </div>
-                <h2 
+                <h2
                   className="text-2xl md:text-4xl font-bold leading-tight"
                   style={{ ...headingStyle, color: primaryColor }}
                 >
                   Committed to Your Health and Wellness
                 </h2>
               </div>
-              
+
               <p className="text-sm md:text-base text-[#42474d] leading-relaxed">
-                At {tenant.name}, we combine clinical expertise with personalized care to provide you with the safest, most efficient pharmacy experience. We believe that access to authentic medication and professional advice is a fundamental right.
+                At {tenant.name}, we combine clinical expertise with
+                personalized care to provide you with the safest, most efficient
+                pharmacy experience. We believe that access to authentic
+                medication and professional advice is a fundamental right.
               </p>
               <p className="text-sm md:text-base text-[#42474d] leading-relaxed">
-                Our team of certified pharmacists is dedicated to your health journey, ensuring you understand your prescriptions and empowering you to make informed wellness decisions.
+                Our team of certified pharmacists is dedicated to your health
+                journey, ensuring you understand your prescriptions and
+                empowering you to make informed wellness decisions.
               </p>
 
               <div className="space-y-4 pt-2">
                 <div className="flex items-start gap-3">
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${secondaryColor}15`, color: secondaryColor }}
+                    style={{
+                      backgroundColor: `${secondaryColor}15`,
+                      color: secondaryColor,
+                    }}
                   >
                     <CheckCircle size={18} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-[#0b1c30]">100% Authentic Medicines</h4>
-                    <p className="text-[11px] text-[#42474d] mt-0.5">Sourced directly from authorized clinical distributors.</p>
+                    <h4 className="font-bold text-xs text-[#0b1c30]">
+                      100% Authentic Medicines
+                    </h4>
+                    <p className="text-[11px] text-[#42474d] mt-0.5">
+                      Sourced directly from authorized clinical distributors.
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${secondaryColor}15`, color: secondaryColor }}
+                    style={{
+                      backgroundColor: `${secondaryColor}15`,
+                      color: secondaryColor,
+                    }}
                   >
                     <Heart size={18} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-xs text-[#0b1c30]">Expert Pharmacist Advice</h4>
-                    <p className="text-[11px] text-[#42474d] mt-0.5">Free consultations for all prescriptions and wellness inquiries.</p>
+                    <h4 className="font-bold text-xs text-[#0b1c30]">
+                      Expert Pharmacist Advice
+                    </h4>
+                    <p className="text-[11px] text-[#42474d] mt-0.5">
+                      Free consultations for all prescriptions and wellness
+                      inquiries.
+                    </p>
                   </div>
                 </div>
               </div>
               {certificates.length > 0 && (
                 <div className="pt-4">
-                  <button 
+                  <button
                     onClick={() => setShowCertificatesModal(true)}
                     className="px-5 py-2.5 bg-white border hover:bg-slate-50 transition-colors text-xs font-bold uppercase tracking-wider rounded-lg flex items-center gap-1.5 shadow-sm cursor-pointer"
                     style={{ borderColor: primaryColor, color: primaryColor }}
@@ -504,16 +655,19 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
         </section>
 
         {/* Services Grid */}
-        <section id="services" className="py-16 md:py-24 bg-[#eff4ff] px-6 border-t border-b border-[#c2c7cd]/20">
+        <section
+          id="services"
+          className="py-16 md:py-24 bg-[#eff4ff] px-6 border-t border-b border-[#c2c7cd]/20"
+        >
           <div className="max-w-7xl mx-auto text-left">
             <div className="text-center md:text-left mb-12">
-              <div 
+              <div
                 className="text-xs font-bold uppercase tracking-widest mb-2"
                 style={{ color: secondaryColor }}
               >
                 Our Services
               </div>
-              <h2 
+              <h2
                 className="text-2xl md:text-4xl font-bold"
                 style={{ ...headingStyle, color: primaryColor }}
               >
@@ -523,16 +677,23 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {services.map((svc, idx) => (
-                <div key={idx} className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between">
+                <div
+                  key={idx}
+                  className="bg-white rounded-xl p-6 border border-[#c2c7cd]/30 hover:-translate-y-1 transition-transform duration-300 shadow-sm flex flex-col justify-between"
+                >
                   <div>
-                    <div 
+                    <div
                       className="w-12 h-12 rounded-lg flex items-center justify-center mb-6 text-white font-bold"
                       style={{ backgroundColor: secondaryColor }}
                     >
                       {getIconComponent(svc.icon)}
                     </div>
-                    <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">{svc.title}</h3>
-                    <p className="text-xs text-[#42474d] leading-relaxed">{svc.description}</p>
+                    <h3 className="font-bold text-sm text-[#0b1c30] mb-2 font-display">
+                      {svc.title}
+                    </h3>
+                    <p className="text-xs text-[#42474d] leading-relaxed">
+                      {svc.description}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -544,13 +705,13 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
         <section id="details" className="py-16 md:py-24 bg-white px-6">
           <div className="max-w-7xl mx-auto text-left space-y-12">
             <div>
-              <div 
+              <div
                 className="text-xs font-bold uppercase tracking-widest mb-2"
                 style={{ color: secondaryColor }}
               >
                 Hours &amp; Location
               </div>
-              <h2 
+              <h2
                 className="text-2xl md:text-4xl font-bold"
                 style={{ ...headingStyle, color: primaryColor }}
               >
@@ -559,43 +720,68 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-              
               {/* Opening Hours list card */}
               <div className="md:col-span-5 bg-white border border-[#c2c7cd]/40 rounded-xl p-6 shadow-sm space-y-4">
-                
                 <div className="flex justify-between items-center py-2 border-b border-[#c2c7cd]/20">
-                  <span className="font-bold text-xs text-[#0b1c30]">Monday - Friday</span>
-                  <span className="text-xs text-[#42474d] font-mono">{mondayOpen} - {mondayClose}</span>
+                  <span className="font-bold text-xs text-[#0b1c30]">
+                    Monday - Friday
+                  </span>
+                  <span className="text-xs text-[#42474d] font-mono">
+                    {mondayOpen} - {mondayClose}
+                  </span>
                 </div>
-                
+
                 <div className="flex justify-between items-center py-2 border-b border-[#c2c7cd]/20 bg-[#eff4ff]/60 -mx-6 px-6">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-xs text-[#0b1c30]">Today</span>
+                    <span className="font-bold text-xs text-[#0b1c30]">
+                      Today
+                    </span>
                     {isOpenNow ? (
-                      <span className="bg-[#2ecc71]/20 text-[#006d37] font-bold text-[9px] px-2 py-0.5 rounded-full uppercase">Open Now</span>
+                      <span className="bg-[#2ecc71]/20 text-[#006d37] font-bold text-[9px] px-2 py-0.5 rounded-full uppercase">
+                        Open Now
+                      </span>
                     ) : (
-                      <span className="bg-red-100 text-red-700 font-bold text-[9px] px-2 py-0.5 rounded-full uppercase">Closed</span>
+                      <span className="bg-red-100 text-red-700 font-bold text-[9px] px-2 py-0.5 rounded-full uppercase">
+                        Closed
+                      </span>
                     )}
                   </div>
-                  <span className="text-xs font-bold text-[#0b1c30] font-mono">{mondayOpen} - {mondayClose}</span>
+                  <span className="text-xs font-bold text-[#0b1c30] font-mono">
+                    {mondayOpen} - {mondayClose}
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b border-[#c2c7cd]/20">
-                  <span className="font-bold text-xs text-[#0b1c30]">Saturday</span>
-                  <span className="text-xs text-[#42474d] font-mono">09:00 AM - 07:00 PM</span>
+                  <span className="font-bold text-xs text-[#0b1c30]">
+                    Saturday
+                  </span>
+                  <span className="text-xs text-[#42474d] font-mono">
+                    09:00 AM - 07:00 PM
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center py-2">
-                  <span className="font-bold text-xs text-[#0b1c30]">Sunday</span>
-                  <span className="text-xs text-[#42474d] font-mono italic">{sundayOpen}</span>
+                  <span className="font-bold text-xs text-[#0b1c30]">
+                    Sunday
+                  </span>
+                  <span className="text-xs text-[#42474d] font-mono italic">
+                    {sundayOpen}
+                  </span>
                 </div>
 
                 {autoCloseHolidays && (
                   <div className="pt-4 border-t border-[#c2c7cd]/20 text-[10px] text-[#42474d]/80 flex gap-1.5 items-start leading-relaxed">
-                    <CheckCircle size={12} className="shrink-0 mt-0.5" style={{ color: secondaryColor }} />
+                    <CheckCircle
+                      size={12}
+                      className="shrink-0 mt-0.5"
+                      style={{ color: secondaryColor }}
+                    />
                     <span>
-                      Closed on Christmas Day (Dec 25) and all Sri Lankan public holidays 
-                      {exceptions.length > 0 && ` (${exceptions.map(e => e.name).join(', ')})`}.
+                      Closed on Christmas Day (Dec 25) and all Sri Lankan public
+                      holidays
+                      {exceptions.length > 0 &&
+                        ` (${exceptions.map((e) => e.name).join(', ')})`}
+                      .
                     </span>
                   </div>
                 )}
@@ -604,14 +790,21 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
               {/* Maps Location card */}
               <div className="md:col-span-7 bg-white border border-[#c2c7cd]/40 rounded-xl overflow-hidden shadow-sm">
                 <div className="w-full h-48 border-b border-[#c2c7cd]/30">
-                  <LeafletMap address={tenant.contact_address || 'Colombo, Sri Lanka'} mapLink={tenant.map_link} />
+                  <LeafletMap
+                    address={tenant.contact_address || 'Colombo, Sri Lanka'}
+                    mapLink={tenant.map_link}
+                  />
                 </div>
                 <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="text-left">
-                    <p className="font-bold text-xs text-[#0b1c30]">{tenant.contact_address || 'No address configured yet.'}</p>
-                    <p className="text-[10px] text-[#42474d] mt-1">Colombo, Sri Lanka</p>
+                    <p className="font-bold text-xs text-[#0b1c30]">
+                      {tenant.contact_address || 'No address configured yet.'}
+                    </p>
+                    <p className="text-[10px] text-[#42474d] mt-1">
+                      Colombo, Sri Lanka
+                    </p>
                   </div>
-                  <button 
+                  <button
                     onClick={handleGetDirections}
                     className="px-5 py-2.5 bg-[#eff4ff] hover:bg-[#c9e6ff] text-[#00273b] font-bold text-xs uppercase tracking-wider rounded-lg flex items-center justify-center gap-1.5 transition-transform active:scale-[0.98]"
                   >
@@ -620,58 +813,84 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
                   </button>
                 </div>
               </div>
-
             </div>
           </div>
         </section>
-
       </main>
 
       {/* Footer */}
-      <footer 
-        className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-10 py-12 text-left max-w-7xl mx-auto border-t border-[#c2c7cd]/30"
-      >
+      <footer className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-10 py-12 text-left max-w-7xl mx-auto border-t border-[#c2c7cd]/30">
         <div className="space-y-3">
-          <h2 
+          <h2
             className="text-base font-bold font-display"
             style={{ color: primaryColor }}
           >
             {tenant.name}
           </h2>
-          <p className="text-xs text-[#42474d] max-w-xs leading-relaxed">Your trusted neighborhood community healthcare partner.</p>
-          
+          <p className="text-xs text-[#42474d] max-w-xs leading-relaxed">
+            Your trusted neighborhood community healthcare partner.
+          </p>
+
           {/* Compliance Credentials Row */}
-          {(tenant.display_nmra_number || tenant.display_br_number || tenant.display_slmc_number) && (
+          {(tenant.display_nmra_number ||
+            tenant.display_br_number ||
+            tenant.display_slmc_number) && (
             <div className="text-[10px] text-[#72787e] space-y-1 font-mono pt-1 leading-relaxed">
-              {tenant.display_nmra_number && <div>NMRA Reg: {tenant.display_nmra_number}</div>}
-              {tenant.display_br_number && <div>BR Number: {tenant.display_br_number}</div>}
-              {tenant.display_slmc_number && <div>SLMC Reg: {tenant.display_slmc_number}</div>}
+              {tenant.display_nmra_number && (
+                <div>NMRA Reg: {tenant.display_nmra_number}</div>
+              )}
+              {tenant.display_br_number && (
+                <div>BR Number: {tenant.display_br_number}</div>
+              )}
+              {tenant.display_slmc_number && (
+                <div>SLMC Reg: {tenant.display_slmc_number}</div>
+              )}
             </div>
           )}
 
           <div className="text-[10px] text-[#72787e] pt-2">
-            &copy; {new Date().getFullYear()} {tenant.name}. Powered by <a href="https://quantumblaze.lk" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#00273b] hover:underline">Quantum Blaze</a>
+            &copy; {new Date().getFullYear()} {tenant.name}. Powered by{' '}
+            <a
+              href="https://quantumblaze.lk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[#00273b] hover:underline"
+            >
+              Quantum Blaze
+            </a>
           </div>
         </div>
 
         <div className="flex flex-col gap-2.5 text-xs text-[#42474d]">
           <h4 className="font-bold text-[#0b1c30] mb-1">Services</h4>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Prescription Upload</a>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Drug Interaction Checker</a>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Health Blog</a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Prescription Upload
+          </a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Drug Interaction Checker
+          </a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Health Blog
+          </a>
         </div>
 
         <div className="flex flex-col gap-2.5 text-xs text-[#42474d]">
           <h4 className="font-bold text-[#0b1c30] mb-1">Legal</h4>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Privacy Policy</a>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Terms of Service</a>
-          <a className="hover:text-[#0b1c30] hover:underline" href="#">Location Finder</a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Privacy Policy
+          </a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Terms of Service
+          </a>
+          <a className="hover:text-[#0b1c30] hover:underline" href="#">
+            Location Finder
+          </a>
         </div>
       </footer>
 
       {/* Floating Action Button (WhatsApp green) */}
       {tenant.contact_phone && (
-        <a 
+        <a
           href={`https://wa.me/${tenant.contact_phone.replace(/[^0-9]/g, '')}`}
           target="_blank"
           rel="noreferrer"
@@ -689,11 +908,16 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-white border border-[#c2c7cd]/40 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 duration-200 text-left">
             <div className="flex justify-between items-center mb-4 border-b border-[#c2c7cd]/20 pb-3">
-              <div className="flex items-center gap-2 text-[#006d37]" style={{ color: secondaryColor }}>
+              <div
+                className="flex items-center gap-2 text-[#006d37]"
+                style={{ color: secondaryColor }}
+              >
                 <ShieldCheck size={22} />
-                <h3 className="font-bold text-sm md:text-base uppercase tracking-wider font-display">Verified Credentials</h3>
+                <h3 className="font-bold text-sm md:text-base uppercase tracking-wider font-display">
+                  Verified Credentials
+                </h3>
               </div>
-              <button 
+              <button
                 type="button"
                 onClick={() => setShowCertificatesModal(false)}
                 className="text-outline hover:text-[#0b1c30] text-2xl font-bold p-1 cursor-pointer"
@@ -705,16 +929,44 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
               {/* Credential items list */}
               <div className="space-y-1.5 text-xs font-mono border-b border-[#c2c7cd]/10 pb-3 bg-[#eff4ff]/40 p-3 rounded-lg">
-                {tenant.display_nmra_number && <p><strong>NMRA Pharmacy Registration:</strong> {tenant.display_nmra_number}</p>}
-                {tenant.display_slmc_number && <p><strong>SLMC Certified Pharmacist Reg:</strong> {tenant.display_slmc_number}</p>}
-                {tenant.display_br_number && <p><strong>Business Registration No:</strong> {tenant.display_br_number}</p>}
+                {tenant.display_nmra_number && (
+                  <p>
+                    <strong>NMRA Pharmacy Registration:</strong>{' '}
+                    {tenant.display_nmra_number}
+                  </p>
+                )}
+                {tenant.display_slmc_number && (
+                  <p>
+                    <strong>SLMC Certified Pharmacist Reg:</strong>{' '}
+                    {tenant.display_slmc_number}
+                  </p>
+                )}
+                {tenant.display_br_number && (
+                  <p>
+                    <strong>Business Registration No:</strong>{' '}
+                    {tenant.display_br_number}
+                  </p>
+                )}
               </div>
 
               {/* Certificate images */}
               {certificates.map((cert, idx) => (
-                <div key={idx} className="border border-[#c2c7cd]/35 rounded-xl p-3 bg-[#f8f9ff] flex flex-col items-center">
-                  <span className="text-xs font-bold text-primary-navy self-start mb-2">{cert.name}</span>
-                  <img src={cert.url} alt={cert.name} className="max-h-64 object-contain rounded-lg border border-[#c2c7cd]/20 shadow-sm" onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=400&q=80'; }} />
+                <div
+                  key={idx}
+                  className="border border-[#c2c7cd]/35 rounded-xl p-3 bg-[#f8f9ff] flex flex-col items-center"
+                >
+                  <span className="text-xs font-bold text-primary-navy self-start mb-2">
+                    {cert.name}
+                  </span>
+                  <img
+                    src={cert.url}
+                    alt={cert.name}
+                    className="max-h-64 object-contain rounded-lg border border-[#c2c7cd]/20 shadow-sm"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=400&q=80';
+                    }}
+                  />
                 </div>
               ))}
             </div>
@@ -730,7 +982,6 @@ export default function Template001({ tenant, subdomain }: Template001Props) {
           </div>
         </div>
       )}
-
     </div>
   );
 }
