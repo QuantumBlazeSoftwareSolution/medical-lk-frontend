@@ -394,23 +394,23 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 max-w-5xl mx-auto px-6 z-10">
-        <div className="flex flex-col items-center text-center">
-          {/* Hero Content */}
-          <div className="max-w-3xl w-full flex flex-col items-center">
+      <section className="relative pt-12 pb-24 md:pt-24 md:pb-32 max-w-7xl mx-auto px-6 z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Hero Content (Left Side) */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
             <h1 className="gsap-hero-title font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6 text-slate-900 leading-[1.15]">
               Supercharge Your <br />
               <span className="text-teal-600">Pharmacy POS</span> <br />& Stock
               Management
             </h1>
 
-            <p className="gsap-hero-subtitle max-w-xl text-slate-600 text-lg md:text-xl mb-10 leading-relaxed mx-auto">
+            <p className="gsap-hero-subtitle max-w-xl text-slate-600 text-lg md:text-xl mb-10 leading-relaxed">
               Scan barcodes, track batch expirations, run bulk inventory
               operations, and issue instant silent thermal receipts via WebUSB
               extension in under 12ms.
             </p>
 
-            <div className="gsap-hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+            <div className="gsap-hero-cta flex flex-col sm:flex-row items-center gap-4 w-full">
               <Link
                 href="/register"
                 className="w-full sm:w-auto px-8 py-4 text-base font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-md transition-all hover:translate-y-[-2px] active:translate-y-[0px] text-center"
@@ -426,7 +426,7 @@ export default function LandingPage() {
             </div>
 
             {/* Micro stats banner */}
-            <div className="mt-12 pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 max-w-lg w-full justify-center">
+            <div className="mt-12 pt-8 border-t border-slate-200/80 grid grid-cols-3 gap-6 max-w-lg w-full">
               <div>
                 <h4 className="text-2xl font-bold text-slate-900">12ms</h4>
                 <p className="text-xs text-slate-500">Receipt Print Speed</p>
@@ -441,7 +441,9 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="h-[600px] w-full">
+
+          {/* Ripple Slider (Right Side) */}
+          <div className="lg:col-span-6 h-[400px] sm:h-[500px] lg:h-[600px] w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200/40">
             <RippleDisplacementSlider
               slides={rippleSlides}
               showTitle={false}

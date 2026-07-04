@@ -114,8 +114,8 @@ bool isInsideBox(vec2 uv, vec2 boxMin, vec2 boxMax) {
 }
 
 void main() {
-  vec2 boxMin = mix(vec2(0.25, 0.175), vec2(0.0), uMobile);
-  vec2 boxMax = mix(vec2(0.75, 0.825), vec2(1.0), uMobile);
+  vec2 boxMin = vec2(0.0);
+  vec2 boxMax = vec2(1.0);
 
   float aspectRatio = uResolution.y / uResolution.x;
   vec2 coord = vec2(vUv.x, vUv.y * aspectRatio);
