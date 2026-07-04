@@ -14,6 +14,8 @@ export interface RippleSlide {
 export interface RippleDisplacementSliderProps {
   className?: string;
   slides?: RippleSlide[];
+  showTitle?: boolean;
+  showDescription?: boolean;
 }
 
 const DEFAULT_SLIDES: RippleSlide[] = [
@@ -170,7 +172,9 @@ const rippleConfig = {
 
 export function RippleDisplacementSlider({ 
   className,
-  slides = DEFAULT_SLIDES
+  slides = DEFAULT_SLIDES,
+  showTitle = true,
+  showDescription = true
 }: RippleDisplacementSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -393,17 +397,21 @@ export function RippleDisplacementSlider({
     >
       <canvas ref={canvasRef} className="block w-full h-full absolute inset-0 z-0" />
       
-      <div 
-        ref={contentRef}
-        className="slide-content absolute inset-0 w-full h-full mix-blend-difference select-none pointer-events-none z-[2]"
-        style={{ opacity: texturesLoaded ? 1 : 0, transition: "opacity 0.5s ease" }}
-      >
-        <div className="slide-title absolute top-1/2 left-12 -translate-y-1/2 w-max text-white max-[1000px]:top-1/2 max-[1000px]:left-1/2 max-[1000px]:-translate-x-1/2 max-[1000px]:-translate-y-1/2">
-          <h1 className="text-[clamp(2rem,4vw,6rem)] font-medium tracking-[-0.02em] leading-tight">
-            {renderSplitTitle(slides[currentIndex].title)}
-          </h1>
+      {(showTitle || showDescription) && (
+        <div 
+          ref={contentRef}
+          className="slide-content absolute inset-0 w-full h-full mix-blend-difference select-none pointer-events-none z-[2]"
+          style={{ opacity: texturesLoaded ? 1 : 0, transition: "opacity 0.5s ease" }}
+        >
+          {showTitle && (
+            <div className="slide-title absolute top-1/2 left-12 -translate-y-1/2 w-max text-white max-[1000px]:top-1/2 max-[1000px]:left-1/2 max-[1000px]:-translate-x-1/2 max-[1000px]:-translate-y-1/2">
+              <h1 className="text-[clamp(2rem,4vw,6rem)] font-medium tracking-[-0.02em] leading-tight">
+                {renderSplitTitle(slides[currentIndex].title)}
+              </h1>
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

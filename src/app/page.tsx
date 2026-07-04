@@ -442,7 +442,11 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="h-[600px] w-full">
-            <RippleDisplacementSlider slides={rippleSlides} />
+            <RippleDisplacementSlider
+              slides={rippleSlides}
+              showTitle={false}
+              showDescription={false}
+            />
           </div>
         </div>
       </section>
