@@ -215,6 +215,24 @@ export default function DeveloperBackDoorDashboard() {
     }
   };
 
+  const [systemLogs, setSystemLogs] = useState<string[]>([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+
+  const fetchSystemLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/logs?lines=200`);
+      if (res.ok) {
+        const data = await res.json();
+        setSystemLogs(data.logs || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
   // Switch tab loader triggers
   const handleTabChange = (tab: any) => {
     setActiveTab(tab);
@@ -222,6 +240,7 @@ export default function DeveloperBackDoorDashboard() {
     if (tab === 'pharmacies') fetchTenants();
     if (tab === 'medicines') fetchMedicines();
     if (tab === 'templates') fetchTemplates();
+    if (tab === 'diagnostics') fetchSystemLogs();
   };
 
   // Administrative Actions
@@ -1229,6 +1248,54 @@ export default function DeveloperBackDoorDashboard() {
                     </span>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Application Logs Terminal */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2.5 text-teal-400">
+                  <Activity size={18} />
+                  <h3 className="font-bold text-xs uppercase tracking-wider">
+                    Application Logs Console
+                  </h3>
+                </div>
+                <button
+                  onClick={fetchSystemLogs}
+                  disabled={loadingLogs}
+                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 hover:border-teal-700 text-slate-300 hover:text-teal-400 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
+                >
+                  <RefreshCw size={11} className={loadingLogs ? 'animate-spin' : ''} />
+                  Refresh Logs
+                </button>
+              </div>
+
+              {loadingLogs && systemLogs.length === 0 ? (
+                <div className="h-64 flex items-center justify-center bg-slate-950 rounded-xl border border-slate-800/80">
+                  <RefreshCw size={20} className="animate-spin text-teal-400" />
+                </div>
+              ) : (
+                <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-4.5 font-mono text-[11px] text-slate-300 overflow-y-auto h-96 scrollbar-thin scrollbar-thumb-slate-800 leading-relaxed space-y-1 select-text">
+                  {systemLogs.length === 0 ? (
+                    <div className="text-slate-600 italic text-center py-10">No logs available in app.log</div>
+                  ) : (
+                    systemLogs.map((log, idx) => {
+                      let colorClass = 'text-slate-300';
+                      if (log.includes(' - ERROR - ')) colorClass = 'text-red-400 font-bold';
+                      else if (log.includes(' - WARNING - ')) colorClass = 'text-yellow-400';
+                      else if (log.includes(' - INFO - ')) colorClass = 'text-teal-400/90';
+                      
+                      return (
+                        <div key={idx} className={`${colorClass} hover:bg-slate-900/40 py-0.5 px-1 rounded transition-colors`}>
+                          {log}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+              <div className="text-[10px] text-slate-500 font-medium">
+                Showing latest 200 system log entries from <code className="font-mono text-slate-400 bg-slate-950 px-1 py-0.5 rounded">app.log</code> on the FastAPI host.
               </div>
             </div>
           </div>
