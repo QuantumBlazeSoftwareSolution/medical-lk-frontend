@@ -11,16 +11,13 @@ import {
   Cormorant_Garamond,
   Space_Grotesk,
   Josefin_Sans,
-  Nunito,
-} from 'next/font/google';
+  Nunito, Geist } from 'next/font/google';
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import Providers from '@/components/Providers';
+import { cn } from "@/lib/utils";
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -79,7 +76,7 @@ const nunito = Nunito({
 });
 
 const allFontVars = [
-  inter.variable,
+  geist.variable,
   plusJakartaSans.variable,
   playfairDisplay.variable,
   montserrat.variable,
@@ -104,7 +101,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className={cn("h-full scroll-smooth", "font-sans", geist.variable)} suppressHydrationWarning>
       <body className={`${allFontVars} font-sans bg-slate-950 text-slate-100 min-h-full antialiased`}>
         <Providers>
           {children}

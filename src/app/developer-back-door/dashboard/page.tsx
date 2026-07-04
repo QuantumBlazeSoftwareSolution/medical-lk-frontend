@@ -7,6 +7,7 @@ import {
   CheckCircle, XCircle, Plus, Search, Building, Clock, 
   ArrowRight, Lock, RefreshCw, Database, Server, LogOut, ChevronRight
 } from 'lucide-react';
+import { Switch } from "@/components/ui/switch";
 import Template001 from '@/app/tenants/[subdomain]/templates/Template001';
 import Template002 from '@/app/tenants/[subdomain]/templates/Template002';
 import Template003 from '@/app/tenants/[subdomain]/templates/Template003';
@@ -224,6 +225,14 @@ export default function DeveloperBackDoorDashboard() {
   };
 
   const toggleTemplateActive = async (id: string, currentStatus: boolean) => {
+    const confirmMessage = currentStatus 
+      ? `Are you sure you want to deactivate ${id}? This will prevent pharmacies from using this layout.`
+      : `Are you sure you want to activate ${id} so it is available for pharmacies to choose?`;
+      
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+    
     setActionLoading(`template-active-${id}`);
     try {
       const res = await fetch(`${API_BASE}/api/admin/templates/${id}`, {
@@ -784,18 +793,11 @@ export default function DeveloperBackDoorDashboard() {
                           <span className="block text-[10px] font-bold text-slate-300">Layout Availability</span>
                           <span className="text-[9px] text-slate-500">Enable/disable for pharmacy selection</span>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => toggleTemplateActive(template.id, template.is_active)}
+                        <Switch 
+                          checked={template.is_active}
+                          onCheckedChange={() => toggleTemplateActive(template.id, template.is_active)}
                           disabled={actionLoading === `template-active-${template.id}`}
-                          className={`w-10 h-5 rounded-full relative transition-colors cursor-pointer disabled:opacity-50 ${
-                            template.is_active ? 'bg-teal-500' : 'bg-slate-800'
-                          }`}
-                        >
-                          <span className={`absolute top-[2px] w-3.5 h-3.5 bg-white rounded-full transition-transform ${
-                            template.is_active ? 'translate-x-[22px]' : 'translate-x-[4px]'
-                          }`} />
-                        </button>
+                        />
                       </div>
 
                     </div>
