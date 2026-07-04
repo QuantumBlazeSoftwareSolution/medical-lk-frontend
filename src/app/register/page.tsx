@@ -27,6 +27,7 @@ import {
   Clipboard,
 } from 'lucide-react';
 import { BASE_URL } from '@/utils/api';
+import { RESERVED_SUBDOMAINS } from '@/lib/data/reserved-subdomains';
 
 export default function RegisterWizard() {
   const [step, setStep] = useState(1);
@@ -88,13 +89,18 @@ export default function RegisterWizard() {
       setSubdomainAvailable(null);
       return;
     }
+    const cleanSub = sub.trim().toLowerCase();
+    if (RESERVED_SUBDOMAINS.includes(cleanSub)) {
+      setSubdomainAvailable(false);
+      return;
+    }
     setSubdomainChecking(true);
     setSubdomainAvailable(null);
     try {
       // Call public config endpoint on this subdomain to check if it already exists
       const response = await fetch(`${BASE_URL}/api/tenant/public`, {
         headers: {
-          'X-Tenant-Subdomain': sub,
+          'X-Tenant-Subdomain': cleanSub,
         },
       });
       if (response.ok) {
