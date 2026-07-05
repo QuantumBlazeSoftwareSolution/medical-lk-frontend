@@ -1304,9 +1304,22 @@ export default function DeveloperBackDoorDashboard() {
                   ) : (
                     sortedSystemLogs.map((log, idx) => {
                       let colorClass = 'text-slate-300';
-                      if (log.includes(' - ERROR - ')) colorClass = 'text-red-400 font-bold';
-                      else if (log.includes(' - WARNING - ')) colorClass = 'text-yellow-400';
-                      else if (log.includes(' - INFO - ')) colorClass = 'text-teal-400/90';
+                      
+                      // Highlight based on HTTP status codes in middleware log strings
+                      if (log.includes(' - Status: 5')) {
+                        colorClass = 'text-red-400 font-bold'; // Server error (Red)
+                      } else if (log.includes(' - Status: 4')) {
+                        colorClass = 'text-yellow-400'; // Client error / 404 Bot scan (Yellow)
+                      } else if (log.includes(' - Status: 3')) {
+                        colorClass = 'text-cyan-400'; // Redirects (Cyan)
+                      } else if (log.includes(' - Status: 2')) {
+                        colorClass = 'text-emerald-400'; // Success 200 OK (Green)
+                      } else {
+                        // Fallback checking standard logger tags
+                        if (log.includes(' - ERROR - ')) colorClass = 'text-red-400 font-bold';
+                        else if (log.includes(' - WARNING - ')) colorClass = 'text-yellow-400';
+                        else if (log.includes(' - INFO - ')) colorClass = 'text-teal-400/90';
+                      }
                       
                       return (
                         <div key={idx} className={`${colorClass} hover:bg-slate-900/40 py-0.5 px-1 rounded transition-colors`}>
