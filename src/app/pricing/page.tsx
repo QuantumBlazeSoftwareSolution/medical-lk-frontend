@@ -22,6 +22,14 @@ import {
 } from 'lucide-react';
 
 export default function PricingDetail() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center text-xs text-slate-500">Loading plan pricing...</div>}>
+      <PricingContent />
+    </React.Suspense>
+  );
+}
+
+function PricingContent() {
   const searchParams = useSearchParams();
   const initialPlan = searchParams.get('plan') || 'basic';
   const [activePlan, setActivePlan] = useState<string>(initialPlan);

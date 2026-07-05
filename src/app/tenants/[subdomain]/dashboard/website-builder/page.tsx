@@ -44,6 +44,7 @@ import {
   getFontFamily,
   getFontsByCategory,
 } from '@/utils/fontConfig';
+import { WEBSITE_TEMPLATES } from '../../templates';
 
 export default function WebsiteBuilder() {
   const [activeTab, setActiveTab] = useState<
@@ -208,6 +209,7 @@ export default function WebsiteBuilder() {
   const [showCertificatesModal, setShowCertificatesModal] = useState(false);
 
   // System states
+  const [activeTemplate, setActiveTemplate] = useState('template-001');
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -239,6 +241,7 @@ export default function WebsiteBuilder() {
       setAddress(config.contact_address || '');
       setLogoUrl(config.logo_url || '');
       setFaviconUrl(config.favicon_url || '');
+      if (config.template_id) setActiveTemplate(config.template_id);
 
       // Load DB values first
       if (config.headings_font) setHeadingsFont(config.headings_font);
@@ -495,6 +498,7 @@ export default function WebsiteBuilder() {
       favicon_url: faviconUrl.trim() || null,
       headings_font: headingsFont,
       body_font: bodyFont,
+      template_id: activeTemplate,
       logo_height: Number(logoHeight) || 40,
       sticky_header: stickyHeader,
       hero_headline: heroHeadline,
@@ -1056,6 +1060,39 @@ export default function WebsiteBuilder() {
                       </span>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Layout Template Selector */}
+              <div className="bg-white p-5 rounded-xl border border-outline-variant/30 shadow-sm relative overflow-hidden group">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-highlight-teal opacity-100"></div>
+                <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[#00273b] mb-4">
+                  Select Theme Layout Template
+                </h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'template-001', name: 'Template 01', desc: 'Classic Corporate' },
+                    { id: 'template-002', name: 'Template 02', desc: 'ProHealth Medical' },
+                    { id: 'template-003', name: 'Template 03', desc: 'Genex Modern' },
+                  ].map((temp) => (
+                    <button
+                      key={temp.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveTemplate(temp.id);
+                        registerChange();
+                      }}
+                      className={`border rounded-lg p-2.5 flex flex-col items-center gap-1.5 transition-all cursor-pointer text-center ${
+                        activeTemplate === temp.id
+                          ? 'border-highlight-teal bg-[#f8f9ff] ring-1 ring-highlight-teal/30'
+                          : 'border-outline-variant/60 hover:bg-[#f7f9fc]'
+                      }`}
+                    >
+                      <Layout className="h-5 w-5 text-outline group-hover:text-highlight-teal" />
+                      <span className="text-[10px] font-bold block">{temp.name}</span>
+                      <span className="text-[8px] text-outline block">{temp.desc}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -2159,7 +2196,7 @@ export default function WebsiteBuilder() {
         {/* Simulated Browser Window wrapper */}
         <div className="flex-1 p-6 overflow-y-auto flex items-center justify-center custom-scrollbar">
           {previewDevice === 'desktop' ? (
-            /* DESKTOP VIEWPORT SCREEN */
+            /* DESKTOP VIEWPORT SCREEN - IFRAME INJECTION */
             <div className="w-full max-w-[1024px] bg-white rounded-xl shadow-2xl overflow-hidden border border-outline-variant/60 flex flex-col min-h-[600px] h-[75vh] self-start transition-all duration-300 relative">
               {/* Desktop address bar chrome */}
               <div className="h-10 bg-surface-container-low border-b border-outline-variant flex items-center px-4 gap-2.5 shrink-0">
@@ -2175,594 +2212,61 @@ export default function WebsiteBuilder() {
                     style={{ color: secondaryColor }}
                   />
                   <span>
-                    https://{config?.subdomain || 'test'}.pharmacyhub.lk
+                    https://{config?.subdomain || 'test'}.{typeof window !== 'undefined' ? window.location.origin.replace(/^https?:\/\//, '').replace(/^[a-z0-9-]+\./, '') : 'medical.lk'}
                   </span>
                 </div>
               </div>
 
-              {/* Simulated Website Body Container */}
-              <div
-                className="flex-1 overflow-y-auto text-[#0b1c30] bg-[#f8f9ff] font-sans text-xs select-text relative flex flex-col"
-                style={{ fontFamily: getFontFamily(bodyFont) }}
-              >
-                {/* Announcement Banner */}
-                <div className="bg-[#ffb961] text-[#533200] py-2 px-4 text-center font-bold text-[10px] tracking-wide shadow-sm shrink-0">
-                  10% off vitamins this week.{' '}
-                  <a
-                    className="underline hover:text-[#2b1700] ml-1 transition-colors"
-                    href="#"
-                  >
-                    Learn More
-                  </a>
-                </div>
-
-                {/* Header (Sticky binding) */}
-                <header
-                  className={`border-b border-[#c2c7cd]/40 bg-white/95 backdrop-blur-md z-40 px-6 py-3 flex justify-between items-center shrink-0 ${
-                    stickyHeader ? 'sticky top-0' : ''
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {logoUrl ? (
-                      <img
-                        src={logoUrl}
-                        alt="logo"
-                        style={{ height: `${logoHeight}px` }}
-                        className="object-contain"
-                      />
-                    ) : (
-                      <div
-                        className="rounded-lg flex items-center justify-center text-white font-bold"
-                        style={{
-                          backgroundColor: primaryColor,
-                          width: `${logoHeight + 4}px`,
-                          height: `${logoHeight + 4}px`,
-                        }}
-                      >
-                        {name ? name.substring(0, 2).toUpperCase() : 'PH'}
-                      </div>
-                    )}
-                    <span
-                      className="font-bold text-sm tracking-tight text-primary-navy font-display"
-                      style={{
-                        fontFamily: getFontFamily(headingsFont),
-                        color: primaryColor,
-                      }}
-                    >
-                      {name || 'Pharmacy Name'}
-                    </span>
-                  </div>
-
-                  <nav className="flex gap-5 text-[10px] font-semibold text-[#42474d]">
-                    <a
-                      className="transition-colors"
-                      href="#"
-                      style={{ color: secondaryColor }}
-                    >
-                      Home
-                    </a>
-                    <a
-                      className="hover:text-[#0b1c30] transition-colors"
-                      href="#"
-                    >
-                      About Us
-                    </a>
-                    <a
-                      className="hover:text-[#0b1c30] transition-colors"
-                      href="#"
-                    >
-                      Services
-                    </a>
-                    <a
-                      className="hover:text-[#0b1c30] transition-colors"
-                      href="#"
-                    >
-                      Hours &amp; Location
-                    </a>
-                  </nav>
-
-                  <div className="flex gap-2">
-                    {phone && (
-                      <a
-                        href={`tel:${phone}`}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-colors"
-                        style={{
-                          borderColor: primaryColor,
-                          color: primaryColor,
-                        }}
-                      >
-                        <Phone size={10} />
-                        Call Now
-                      </a>
-                    )}
-                    {phone && (
-                      <a
-                        href={`https://wa.me/${phone.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#25D366] text-white transition-colors text-[9px] font-bold uppercase tracking-wider shadow-sm"
-                      >
-                        <MessageSquare size={10} />
-                        WhatsApp
-                      </a>
-                    )}
-                  </div>
-                </header>
-
-                {/* Hero Section */}
-                <section className="relative min-h-[280px] flex items-center bg-[#00273b] overflow-hidden shrink-0">
-                  <div className="absolute inset-0 z-0">
-                    <div
-                      className="absolute inset-0 opacity-80 mix-blend-multiply z-10"
-                      style={{ backgroundColor: primaryColor }}
-                    ></div>
-                    <img
-                      src={heroBgImage}
-                      alt="Pharmacy showroom"
-                      className="object-cover w-full h-full"
-                    />
-                  </div>
-
-                  <div className="relative z-20 w-full px-6 py-10 text-left">
-                    <div className="max-w-md text-white space-y-3">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-[9px] font-bold tracking-wide text-[#a3cbeb]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#6bfe9c]"></span>
-                        Licensed Pharmacy &bull; Est. 2010
-                      </div>
-                      <h1
-                        className="text-2xl md:text-3xl font-bold leading-tight tracking-tight text-white"
-                        style={{ fontFamily: getFontFamily(headingsFont) }}
-                      >
-                        {heroHeadline}
-                      </h1>
-                      <p className="text-[10px] md:text-xs opacity-90 leading-relaxed max-w-sm text-[#eaf1ff]">
-                        {heroSubheadline}
-                      </p>
-                      <div className="flex gap-2.5 pt-1">
-                        <button
-                          className="px-4 py-2 rounded bg-[#006d37] text-white font-bold text-[9px] uppercase tracking-wider shadow-md flex items-center gap-1 cursor-pointer"
-                          style={{ backgroundColor: secondaryColor }}
-                        >
-                          <MapPin size={10} />
-                          {heroButtonText}
-                        </button>
-                        {phone && (
-                          <a
-                            href={`tel:${phone}`}
-                            className="px-4 py-2 rounded bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[9px] uppercase tracking-wider flex items-center gap-1 cursor-pointer text-center"
-                          >
-                            <Phone size={10} />
-                            Call Us
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Stats Strip */}
-                <section className="bg-[#eff4ff] border-b border-[#c2c7cd]/30 relative z-30 px-6 shrink-0">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="grid grid-cols-4 gap-2 py-3 bg-white rounded-lg shadow border border-[#c2c7cd]/20 -translate-y-4">
-                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div
-                          className="text-sm font-bold"
-                          style={{ color: primaryColor }}
-                        >
-                          {statExperience}
-                        </div>
-                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">
-                          Experience
-                        </div>
-                      </div>
-                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div
-                          className="text-sm font-bold"
-                          style={{ color: primaryColor }}
-                        >
-                          {statPatients}
-                        </div>
-                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">
-                          Patients
-                        </div>
-                      </div>
-                      <div className="text-center px-2 border-r border-[#c2c7cd]/20 last:border-0">
-                        <div
-                          className="text-sm font-bold"
-                          style={{ color: primaryColor }}
-                        >
-                          {statProducts}
-                        </div>
-                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">
-                          Products
-                        </div>
-                      </div>
-                      <div className="text-center px-2">
-                        <div
-                          className="text-sm font-bold"
-                          style={{ color: primaryColor }}
-                        >
-                          {statWaitTime}
-                        </div>
-                        <div className="text-[8px] font-bold text-[#42474d] uppercase tracking-wider">
-                          Wait Time
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* About Us */}
-                <section className="py-8 bg-white px-6 shrink-0">
-                  <div className="grid grid-cols-2 gap-8 items-center max-w-3xl mx-auto">
-                    <div className="relative">
-                      <img
-                        alt="Pharmacist Assisting Customer"
-                        className="rounded-lg shadow w-full object-cover aspect-square max-h-[180px]"
-                        src="https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=400&q=80"
-                      />
-                      <div className="absolute -bottom-2 -right-2 bg-white p-2.5 rounded-lg shadow-md border border-[#c2c7cd]/20 max-w-[110px] text-left">
-                        <div
-                          className="flex items-center gap-1 mb-0.5 text-secondary"
-                          style={{ color: secondaryColor }}
-                        >
-                          <ShieldCheck size={14} />
-                          <span className="font-bold text-[8px] uppercase tracking-wider">
-                            Verified
-                          </span>
-                        </div>
-                        <div className="font-bold text-[9px] text-[#0b1c30] leading-tight font-display">
-                          Licensed Care
-                        </div>
-                        <div className="text-[7px] text-[#42474d] mt-0.5 font-mono">
-                          SLMC-PH-8921
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-left space-y-2.5">
-                      <div>
-                        <div
-                          className="text-[8px] font-bold uppercase tracking-widest mb-1.5"
-                          style={{ color: secondaryColor }}
-                        >
-                          About Us
-                        </div>
-                        <h2
-                          className="text-base font-bold leading-tight"
-                          style={{
-                            fontFamily: getFontFamily(headingsFont),
-                            color: primaryColor,
-                          }}
-                        >
-                          Committed to Your Health and Wellness
-                        </h2>
-                      </div>
-                      <p className="text-[10px] text-[#42474d] leading-relaxed">
-                        We combine clinical expertise with personalized care to
-                        provide you with the safest, most efficient pharmacy
-                        experience.
-                      </p>
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex items-start gap-1.5">
-                          <CheckCircle
-                            size={10}
-                            className="text-secondary mt-0.5"
-                            style={{ color: secondaryColor }}
-                          />
-                          <span className="text-[9px] text-[#0b1c30] font-bold">
-                            100% Authentic Medicines
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-1.5">
-                          <CheckCircle
-                            size={10}
-                            className="text-secondary mt-0.5"
-                            style={{ color: secondaryColor }}
-                          />
-                          <span className="text-[9px] text-[#0b1c30] font-bold">
-                            Expert Pharmacist Advice
-                          </span>
-                        </div>
-                      </div>
-                      {certificates.length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setShowCertificatesModal(true)}
-                          className="mt-2 px-3 py-1 bg-white hover:bg-surface-container-low border rounded-md text-[8px] font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
-                          style={{
-                            borderColor: primaryColor,
-                            color: primaryColor,
-                          }}
-                        >
-                          <ShieldCheck size={11} />
-                          View Licenses &amp; Certificates
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Services Section */}
-                <section className="py-8 bg-[#eff4ff] px-6 border-t border-b border-[#c2c7cd]/20 shrink-0">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="mb-4 text-center">
-                      <div
-                        className="text-[8px] font-bold uppercase tracking-widest mb-1"
-                        style={{ color: secondaryColor }}
-                      >
-                        Our Services
-                      </div>
-                      <h2
-                        className="text-base font-bold"
-                        style={{
-                          fontFamily: getFontFamily(headingsFont),
-                          color: primaryColor,
-                        }}
-                      >
-                        Comprehensive Pharmacy Care
-                      </h2>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      {services.map((svc, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-white rounded-lg p-3 border border-[#c2c7cd]/30 shadow-sm flex flex-col justify-between text-left"
-                        >
-                          <div>
-                            <div
-                              className="w-6 h-6 rounded flex items-center justify-center mb-2 text-white font-bold"
-                              style={{ backgroundColor: secondaryColor }}
-                            >
-                              {getIconComponent(svc.icon)}
-                            </div>
-                            <h3 className="font-bold text-[10px] text-[#0b1c30] mb-0.5 font-display">
-                              {svc.title}
-                            </h3>
-                            <p className="text-[8px] text-[#42474d]">
-                              {svc.description}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Hours & Location Section */}
-                <section className="py-8 bg-white px-6 shrink-0">
-                  <div className="max-w-3xl mx-auto space-y-4">
-                    <div className="text-left">
-                      <div
-                        className="text-[8px] font-bold uppercase tracking-widest mb-1"
-                        style={{ color: secondaryColor }}
-                      >
-                        Visit Us
-                      </div>
-                      <h2
-                        className="text-base font-bold"
-                        style={{
-                          fontFamily: getFontFamily(headingsFont),
-                          color: primaryColor,
-                        }}
-                      >
-                        Hours &amp; Location
-                      </h2>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Hours card */}
-                      <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-4 shadow-sm text-[9px] space-y-2">
-                        <div className="flex justify-between items-center py-1 border-b border-[#c2c7cd]/20">
-                          <span className="font-bold text-[#0b1c30]">
-                            Monday - Friday
-                          </span>
-                          <span className="font-mono text-[#42474d]">
-                            {mondayOpen} - {mondayClose}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center py-1 border-b border-[#c2c7cd]/20 bg-[#eff4ff]/60 -mx-4 px-4">
-                          <span className="font-bold text-[#0b1c30]">
-                            Saturday
-                          </span>
-                          <span className="font-mono text-[#42474d]">
-                            09:00 AM - 07:00 PM
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center py-1">
-                          <span className="font-bold text-[#0b1c30]">
-                            Sunday
-                          </span>
-                          <span className="font-mono text-[#42474d] italic">
-                            {sundayOpen}
-                          </span>
-                        </div>
-
-                        {autoCloseHolidays && (
-                          <div className="pt-2 border-t border-[#c2c7cd]/20 text-[7px] text-[#42474d] flex gap-1 items-start">
-                            <CheckCircle
-                              size={8}
-                              className="shrink-0 mt-0.5 text-secondary"
-                              style={{ color: secondaryColor }}
-                            />
-                            <span>Closed on public holidays.</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Map card */}
-                      <div className="bg-[#f8f9ff] border border-outline-variant/40 rounded-lg p-4 shadow-sm flex flex-col justify-between text-[9px]">
-                        <div className="text-left">
-                          <p className="font-bold text-[#0b1c30]">
-                            {address || 'No address configured yet.'}
-                          </p>
-                          {phone && (
-                            <p className="font-mono text-[8px] mt-1 text-[#42474d]">
-                              📞 {phone}
-                            </p>
-                          )}
-                        </div>
-
-                        {mapLink ? (
-                          <div className="h-10 mt-2 bg-white rounded border border-[#c2c7cd]/30 flex items-center justify-center text-[7px] text-[#42474d] uppercase font-bold gap-1">
-                            <Globe
-                              size={8}
-                              className="text-secondary animate-pulse"
-                            />{' '}
-                            Map Loaded
-                          </div>
-                        ) : (
-                          <div className="h-10 mt-2 rounded border border-dashed border-[#c2c7cd] flex items-center justify-center text-[7px] text-[#72787e] uppercase">
-                            No Map Added
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Footer */}
-                <footer className="mt-auto border-t border-[#c2c7cd]/30 px-6 py-6 bg-white shrink-0 text-left">
-                  <div className="grid grid-cols-2 gap-4 max-w-3xl mx-auto text-[9px] text-[#42474d]">
-                    <div>
-                      <h4
-                        className="font-bold mb-1"
-                        style={{ color: primaryColor }}
-                      >
-                        {name || 'Pharmacy'}
-                      </h4>
-                      <p className="text-[8px]">
-                        Your trusted community healthcare partner.
-                      </p>
-
-                      {/* Compliance Credentials Row */}
-                      {(displayNmraNumber ||
-                        displayBrNumber ||
-                        displaySlmcNumber) && (
-                        <div className="text-[7px] text-[#72787e] mt-1.5 space-x-2 font-mono">
-                          {displayNmraNumber && (
-                            <span>NMRA: {displayNmraNumber}</span>
-                          )}
-                          {displayBrNumber && (
-                            <span>BR: {displayBrNumber}</span>
-                          )}
-                          {displaySlmcNumber && (
-                            <span>SLMC: {displaySlmcNumber}</span>
-                          )}
-                        </div>
-                      )}
-
-                      <p className="text-[7px] text-[#72787e] mt-2">
-                        &copy; {new Date().getFullYear()} {name}. Powered by{' '}
-                        <span
-                          className="font-semibold"
-                          style={{ color: primaryColor }}
-                        >
-                          Quantum Blaze
-                        </span>
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <h4 className="font-bold mb-1 text-[#0b1c30]">Contact</h4>
-                      <p>{address}</p>
-                      <p>{phone}</p>
-                    </div>
-                  </div>
-                </footer>
-
-                {/* Certificates Lightbox Modal Overlay (Simulated Preview) */}
-                {showCertificatesModal && (
-                  <div className="absolute inset-0 bg-primary-navy/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
-                    <div className="bg-white border border-[#c2c7cd]/50 rounded-xl p-5 max-w-sm w-full shadow-2xl relative animate-in zoom-in-95 duration-200 text-left">
-                      <div className="flex justify-between items-center mb-3 border-b border-[#c2c7cd]/20 pb-2">
-                        <div
-                          className="flex items-center gap-1 text-[#006d37]"
-                          style={{ color: secondaryColor }}
-                        >
-                          <ShieldCheck size={16} />
-                          <span className="font-bold text-xs uppercase tracking-wider font-display">
-                            Verified Credentials
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setShowCertificatesModal(false)}
-                          className="text-outline hover:text-[#0b1c30] text-sm font-bold p-1 cursor-pointer"
-                        >
-                          &times;
-                        </button>
-                      </div>
-
-                      <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                        {/* Credential items list */}
-                        <div className="space-y-1 text-[9px] font-mono border-b border-[#c2c7cd]/10 pb-2 bg-[#f8f9ff] p-2 rounded">
-                          {displayNmraNumber && (
-                            <p>
-                              <strong>NMRA Registration:</strong>{' '}
-                              {displayNmraNumber}
-                            </p>
-                          )}
-                          {displaySlmcNumber && (
-                            <p>
-                              <strong>SLMC Pharmacist Reg:</strong>{' '}
-                              {displaySlmcNumber}
-                            </p>
-                          )}
-                          {displayBrNumber && (
-                            <p>
-                              <strong>Business Registration:</strong>{' '}
-                              {displayBrNumber}
-                            </p>
-                          )}
-                        </div>
-
-                        {/* Certificate images */}
-                        {certificates.map((cert, idx) => (
-                          <div
-                            key={idx}
-                            className="border border-[#c2c7cd]/35 rounded-lg p-2 bg-white flex flex-col items-center"
-                          >
-                            <span className="text-[9px] font-bold text-primary-navy self-start mb-1">
-                              {cert.name}
-                            </span>
-                            <img
-                              src={cert.url}
-                              alt={cert.name}
-                              className="max-h-36 object-contain rounded border border-[#c2c7cd]/20"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  'https://images.unsplash.com/photo-1586015555751-63bb77f4322a?auto=format&fit=crop&w=300&q=80';
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => setShowCertificatesModal(false)}
-                        className="mt-4 w-full py-1.5 bg-primary-navy text-white font-bold rounded text-[10px] uppercase tracking-wider cursor-pointer"
-                        style={{ backgroundColor: primaryColor }}
-                      >
-                        Close Gallery
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Floating WhatsApp FAB inside desktop browser body */}
-                {phone && (
-                  <div className="absolute bottom-4 right-4 w-10 h-10 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center z-50">
-                    <svg
-                      className="w-5 h-5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"></path>
-                    </svg>
-                  </div>
-                )}
+              {/* Dynamic Live Site Direct Component Preview with real-time state synchronization */}
+              <div className="flex-grow w-full overflow-y-auto bg-white select-text" style={{ height: 'calc(75vh - 40px)' }}>
+                {(() => {
+                  const SelectedTemplate = WEBSITE_TEMPLATES[activeTemplate] || WEBSITE_TEMPLATES['template-001'];
+                  const previewTenant = {
+                    ...config,
+                    name: name,
+                    logo_url: logoUrl,
+                    favicon_url: faviconUrl,
+                    brand_color_primary: primaryColor,
+                    brand_color_secondary: secondaryColor,
+                    website_title: title,
+                    website_description: seoDescription,
+                    contact_phone: phone,
+                    contact_email: email,
+                    contact_address: address,
+                    map_link: mapLink,
+                    headings_font: headingsFont,
+                    body_font: bodyFont,
+                    logo_height: logoHeight,
+                    sticky_header: stickyHeader,
+                    hero_headline: heroHeadline,
+                    hero_subheadline: heroSubheadline,
+                    hero_button_text: heroButtonText,
+                    hero_bg_image: heroBgImage,
+                    auto_close_holidays: autoCloseHolidays,
+                    seo_keywords: seoKeywords,
+                    display_nmra_number: displayNmraNumber,
+                    display_br_number: displayBrNumber,
+                    display_slmc_number: displaySlmcNumber,
+                    certificates_json: JSON.stringify(certificates),
+                    services_json: JSON.stringify(services),
+                    opening_hours: JSON.stringify({
+                      MondayOpen: mondayOpen,
+                      MondayClose: mondayClose,
+                      TuesdayOpen: tuesdayOpen,
+                      TuesdayClose: tuesdayClose,
+                      WednesdayOpen: wednesdayOpen,
+                      WednesdayClose: wednesdayClose,
+                      ThursdayOpen: thursdayOpen,
+                      ThursdayClose: thursdayClose,
+                      FridayOpen: fridayOpen,
+                      FridayClose: fridayClose,
+                      SaturdayOpen: saturdayOpen,
+                      SaturdayClose: saturdayClose,
+                      SundayOpen: sundayOpen,
+                    })
+                  };
+                  return <SelectedTemplate tenant={previewTenant} subdomain={config?.subdomain || 'test'} />;
+                })()}
               </div>
             </div>
           ) : (
@@ -2773,295 +2277,57 @@ export default function WebsiteBuilder() {
                 <div className="w-12 h-1 bg-slate-800 rounded-full"></div>
               </div>
 
-              {/* simulated phone content container */}
-              <div
-                className="flex-grow overflow-y-auto w-full pt-6 select-text text-left relative flex flex-col bg-[#f8f9ff]"
-                style={{ fontFamily: getFontFamily(bodyFont) }}
-              >
-                {/* Announcement Banner */}
-                <div className="bg-[#ffb961] text-[#533200] py-1 px-3 text-center font-bold text-[8px] tracking-wide shadow-sm shrink-0">
-                  10% off vitamins this week.
-                </div>
-
-                {/* Mobile simulated header */}
-                <header className="flex justify-between items-center px-4 py-2.5 border-b border-[#c2c7cd]/30 bg-white/95 sticky top-0 z-40 shrink-0">
-                  <div className="flex items-center gap-1.5">
-                    {logoUrl ? (
-                      <img
-                        src={logoUrl}
-                        alt="logo"
-                        style={{ height: '20px' }}
-                        className="object-contain"
-                      />
-                    ) : (
-                      <div
-                        className="w-5 h-5 rounded flex items-center justify-center text-white font-bold text-[9px]"
-                        style={{ backgroundColor: primaryColor }}
-                      >
-                        {name ? name.substring(0, 2).toUpperCase() : 'PH'}
-                      </div>
-                    )}
-                    <span
-                      className="font-bold text-xs tracking-tight"
-                      style={{
-                        fontFamily: getFontFamily(headingsFont),
-                        color: primaryColor,
-                      }}
-                    >
-                      {name || 'Pharmacy'}
-                    </span>
-                  </div>
-
-                  {/* Hamburger icon */}
-                  <div className="w-6 h-6 rounded flex flex-col justify-center gap-0.5 items-end p-1 cursor-pointer">
-                    <span className="w-4 h-0.5 bg-[#00273b]"></span>
-                    <span className="w-3 h-0.5 bg-[#00273b]"></span>
-                    <span className="w-4 h-0.5 bg-[#00273b]"></span>
-                  </div>
-                </header>
-
-                {/* Mobile Hero section (Stacked Layout) */}
-                <section className="bg-[#f7f9fc] flex flex-col relative shrink-0">
-                  <div className="h-32 w-full relative">
-                    <img
-                      src={heroBgImage}
-                      alt="store showcase"
-                      className="object-cover w-full h-full"
-                    />
-                    <div
-                      className="absolute inset-0 opacity-80 mix-blend-multiply"
-                      style={{ backgroundColor: primaryColor }}
-                    ></div>
-                  </div>
-                  <div className="p-4 -mt-4 bg-white mx-3 rounded-lg border border-[#c2c7cd]/20 shadow-md text-center relative z-10 mb-4">
-                    <div className="inline-block px-2.5 py-0.5 bg-secondary-container/30 text-[#00743a] text-[8px] font-bold uppercase tracking-wider rounded-full mb-1.5">
-                      Open Today &bull; Reg: SLMC-8921
-                    </div>
-                    <h2
-                      className="text-base font-bold mb-1.5 leading-tight"
-                      style={{
-                        fontFamily: getFontFamily(headingsFont),
-                        color: primaryColor,
-                      }}
-                    >
-                      {heroHeadline}
-                    </h2>
-                    <p className="text-[#42474d] text-[9px] leading-relaxed mb-3">
-                      {heroSubheadline}
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      <button
-                        type="button"
-                        className="w-full py-1.5 text-white rounded font-bold text-[9px] uppercase tracking-wider shadow cursor-pointer animate-none"
-                        style={{ backgroundColor: secondaryColor }}
-                      >
-                        {heroButtonText}
-                      </button>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Mobile Stats Strip */}
-                <section className="px-3 pb-4 shrink-0">
-                  <div className="grid grid-cols-2 gap-2 bg-white rounded-lg border border-[#c2c7cd]/20 p-2.5 shadow-sm text-center">
-                    <div>
-                      <div
-                        className="text-xs font-bold"
-                        style={{ color: primaryColor }}
-                      >
-                        {statExperience}
-                      </div>
-                      <div className="text-[7px] text-[#42474d] uppercase font-bold">
-                        Experience
-                      </div>
-                    </div>
-                    <div>
-                      <div
-                        className="text-xs font-bold"
-                        style={{ color: primaryColor }}
-                      >
-                        {statPatients}
-                      </div>
-                      <div className="text-[7px] text-[#42474d] uppercase font-bold">
-                        Patients
-                      </div>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Mobile About Us */}
-                <section className="px-3 pb-4 shrink-0">
-                  <div className="bg-white rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2.5">
-                    <div>
-                      <span
-                        className="text-[8px] font-bold uppercase tracking-wider text-secondary"
-                        style={{ color: secondaryColor }}
-                      >
-                        About Us
-                      </span>
-                      <h3
-                        className="text-xs font-bold leading-tight"
-                        style={{ color: primaryColor }}
-                      >
-                        Committed to Your Health
-                      </h3>
-                    </div>
-                    <p className="text-[9px] text-[#42474d] leading-relaxed">
-                      We combine clinical expertise with personalized care to
-                      provide you with the safest pharmacy experience.
-                    </p>
-                    <div className="flex items-center gap-1.5">
-                      <ShieldCheck
-                        size={12}
-                        className="text-secondary"
-                        style={{ color: secondaryColor }}
-                      />
-                      <span className="text-[8px] font-bold text-[#0b1c30]">
-                        SLMC Verified Registered Care
-                      </span>
-                    </div>
-                    {certificates.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => setShowCertificatesModal(true)}
-                        className="mt-2 w-full py-1 border rounded text-[8px] font-bold uppercase tracking-wider flex items-center justify-center gap-1 cursor-pointer bg-white hover:bg-slate-50 transition-colors"
-                        style={{
-                          borderColor: primaryColor,
-                          color: primaryColor,
-                        }}
-                      >
-                        <ShieldCheck size={10} />
-                        View Licenses &amp; Certificates
-                      </button>
-                    )}
-                  </div>
-                </section>
-
-                {/* Mobile Services */}
-                <section className="px-3 pb-4 shrink-0">
-                  <div className="bg-[#eff4ff] rounded-lg border border-[#c2c7cd]/20 p-3 shadow-sm space-y-2">
-                    <h3
-                      className="text-xs font-bold text-center"
-                      style={{ color: primaryColor }}
-                    >
-                      Our Services
-                    </h3>
-                    <div className="space-y-1.5">
-                      {services.map((svc, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-white p-2 rounded border border-[#c2c7cd]/20 flex items-center gap-2"
-                        >
-                          <span
-                            style={{ color: secondaryColor }}
-                            className="shrink-0 flex items-center justify-center"
-                          >
-                            {getIconComponent(svc.icon, 10)}
-                          </span>
-                          <span className="text-[8px] font-bold text-[#0b1c30] truncate">
-                            {svc.title}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Mobile opening hours stacked */}
-                <section className="px-3 pb-6 space-y-3 shrink-0">
-                  {/* Hours */}
-                  <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-3 shadow-sm text-[9px]">
-                    <div
-                      className="flex items-center gap-1.5 mb-2"
-                      style={{ color: primaryColor }}
-                    >
-                      <Calendar size={12} />
-                      <span className="font-bold font-display uppercase tracking-wider">
-                        Opening Hours
-                      </span>
-                    </div>
-                    <div className="space-y-1 font-mono">
-                      <div className="flex justify-between border-b border-[#c2c7cd]/15 py-0.5">
-                        <span>Mon - Sat</span>
-                        <span>
-                          {mondayOpen} - {mondayClose}
-                        </span>
-                      </div>
-                      <div className="flex justify-between py-0.5">
-                        <span>Sunday</span>
-                        <span className="italic">{sundayOpen}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Visit Us */}
-                  <div className="bg-white border border-[#c2c7cd]/40 rounded-lg p-3 shadow-sm text-[9px] flex flex-col justify-between">
-                    <div
-                      className="flex items-center gap-1.5 mb-1.5"
-                      style={{ color: primaryColor }}
-                    >
-                      <MapPin size={12} />
-                      <span className="font-bold font-display uppercase tracking-wider">
-                        Visit Us
-                      </span>
-                    </div>
-                    <address className="not-italic text-[#42474d] space-y-0.5 leading-relaxed">
-                      <p className="font-bold" style={{ color: primaryColor }}>
-                        {name || 'Pharmacy Name'}
-                      </p>
-                      <p>{address || 'No address configured yet.'}</p>
-                    </address>
-                  </div>
-                </section>
-
-                {/* Footer */}
-                <footer className="mt-auto border-t border-[#c2c7cd]/30 p-4 bg-white shrink-0 text-center text-[8px] text-[#42474d]">
-                  <p className="font-bold" style={{ color: primaryColor }}>
-                    {name}
-                  </p>
-
-                  {/* Compliance strip */}
-                  {(displayNmraNumber ||
-                    displayBrNumber ||
-                    displaySlmcNumber) && (
-                    <div className="text-[6px] text-[#72787e] mt-1 font-mono space-y-0.5">
-                      {displayNmraNumber && (
-                        <div>NMRA Reg: {displayNmraNumber}</div>
-                      )}
-                      {displayBrNumber && <div>BR Reg: {displayBrNumber}</div>}
-                      {displaySlmcNumber && (
-                        <div>SLMC Reg: {displaySlmcNumber}</div>
-                      )}
-                    </div>
-                  )}
-
-                  <p className="text-[7px] text-[#72787e] mt-1">
-                    &copy; {new Date().getFullYear()} {name}. Powered by{' '}
-                    <span
-                      className="font-semibold"
-                      style={{ color: primaryColor }}
-                    >
-                      Quantum Blaze
-                    </span>
-                  </p>
-                </footer>
-
-                {/* Mobile Floating Action Button (WhatsApp green) inside phone screen */}
-                {phone && (
-                  <div className="absolute bottom-4 right-4 w-9 h-9 bg-[#25D366] text-white rounded-full shadow-lg flex items-center justify-center z-50">
-                    <svg
-                      className="w-4.5 h-4.5"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.129.332.202.043.073.043.423-.101.827z"></path>
-                    </svg>
-                  </div>
-                )}
+              {/* Dynamic Live Site Mobile Direct Preview */}
+              <div className="w-full h-full overflow-y-auto bg-white pt-6 custom-scrollbar">
+                {(() => {
+                  const SelectedTemplate = WEBSITE_TEMPLATES[activeTemplate] || WEBSITE_TEMPLATES['template-001'];
+                  const previewTenant = {
+                    ...config,
+                    name: name,
+                    logo_url: logoUrl,
+                    favicon_url: faviconUrl,
+                    brand_color_primary: primaryColor,
+                    brand_color_secondary: secondaryColor,
+                    website_title: title,
+                    website_description: seoDescription,
+                    contact_phone: phone,
+                    contact_email: email,
+                    contact_address: address,
+                    map_link: mapLink,
+                    headings_font: headingsFont,
+                    body_font: bodyFont,
+                    logo_height: logoHeight,
+                    sticky_header: stickyHeader,
+                    hero_headline: heroHeadline,
+                    hero_subheadline: heroSubheadline,
+                    hero_button_text: heroButtonText,
+                    hero_bg_image: heroBgImage,
+                    auto_close_holidays: autoCloseHolidays,
+                    seo_keywords: seoKeywords,
+                    display_nmra_number: displayNmraNumber,
+                    display_br_number: displayBrNumber,
+                    display_slmc_number: displaySlmcNumber,
+                    certificates_json: JSON.stringify(certificates),
+                    services_json: JSON.stringify(services),
+                    opening_hours: JSON.stringify({
+                      MondayOpen: mondayOpen,
+                      MondayClose: mondayClose,
+                      TuesdayOpen: tuesdayOpen,
+                      TuesdayClose: tuesdayClose,
+                      WednesdayOpen: wednesdayOpen,
+                      WednesdayClose: wednesdayClose,
+                      ThursdayOpen: thursdayOpen,
+                      ThursdayClose: thursdayClose,
+                      FridayOpen: fridayOpen,
+                      FridayClose: fridayClose,
+                      SaturdayOpen: saturdayOpen,
+                      SaturdayClose: saturdayClose,
+                      SundayOpen: sundayOpen,
+                    })
+                  };
+                  return <SelectedTemplate tenant={previewTenant} subdomain={config?.subdomain || 'test'} />;
+                })()}
               </div>
-
-              {/* Mobile home indicator bar */}
-              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-28 h-1 bg-slate-900 rounded-full z-50"></div>
             </div>
           )}
         </div>
