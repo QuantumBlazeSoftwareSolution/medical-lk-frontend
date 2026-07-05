@@ -919,7 +919,7 @@ export default function LandingPage() {
               </div>
 
               <Link
-                href="/register?plan=basic"
+                href="/pricing?plan=basic"
                 className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
               >
                 Sign Up In 60 Seconds
@@ -1016,7 +1016,7 @@ export default function LandingPage() {
               </div>
 
               <Link
-                href="/register?plan=premium"
+                href="/pricing?plan=premium"
                 className="block w-full py-4 px-6 text-center text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-xl transition-all active:scale-[0.98] shadow-sm"
               >
                 Get Started with Premium

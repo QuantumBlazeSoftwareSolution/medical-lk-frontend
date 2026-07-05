@@ -217,6 +217,7 @@ export default function DeveloperBackDoorDashboard() {
 
   const [systemLogs, setSystemLogs] = useState<string[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
+  const [logSortOrder, setLogSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const fetchSystemLogs = async () => {
     setLoadingLogs(true);
@@ -232,6 +233,14 @@ export default function DeveloperBackDoorDashboard() {
       setLoadingLogs(false);
     }
   };
+
+  const sortedSystemLogs = React.useMemo(() => {
+    const logsCopy = [...systemLogs];
+    if (logSortOrder === 'desc') {
+      return logsCopy.reverse();
+    }
+    return logsCopy;
+  }, [systemLogs, logSortOrder]);
 
   // Switch tab loader triggers
   const handleTabChange = (tab: any) => {
@@ -1253,21 +1262,35 @@ export default function DeveloperBackDoorDashboard() {
 
             {/* Application Logs Terminal */}
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="flex items-center gap-2.5 text-teal-400">
                   <Activity size={18} />
                   <h3 className="font-bold text-xs uppercase tracking-wider">
                     Application Logs Console
                   </h3>
                 </div>
-                <button
-                  onClick={fetchSystemLogs}
-                  disabled={loadingLogs}
-                  className="px-3 py-1.5 bg-slate-950 border border-slate-800 hover:border-teal-700 text-slate-300 hover:text-teal-400 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all cursor-pointer"
-                >
-                  <RefreshCw size={11} className={loadingLogs ? 'animate-spin' : ''} />
-                  Refresh Logs
-                </button>
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Sorting dropdown */}
+                  <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Order:</span>
+                    <select
+                      value={logSortOrder}
+                      onChange={(e) => setLogSortOrder(e.target.value as any)}
+                      className="bg-transparent border-0 text-[10px] font-bold text-slate-300 focus:outline-none focus:ring-0 cursor-pointer"
+                    >
+                      <option value="asc" className="bg-slate-950 text-slate-300">Oldest First (Asc)</option>
+                      <option value="desc" className="bg-slate-950 text-slate-300">Newest First (Desc)</option>
+                    </select>
+                  </div>
+                  <button
+                    onClick={fetchSystemLogs}
+                    disabled={loadingLogs}
+                    className="px-3 py-1.5 bg-slate-950 border border-slate-800 hover:border-teal-700 text-slate-300 hover:text-teal-400 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 active:scale-95 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    <RefreshCw size={11} className={loadingLogs ? 'animate-spin' : ''} />
+                    Refresh Logs
+                  </button>
+                </div>
               </div>
 
               {loadingLogs && systemLogs.length === 0 ? (
@@ -1276,10 +1299,10 @@ export default function DeveloperBackDoorDashboard() {
                 </div>
               ) : (
                 <div className="bg-slate-950 border border-slate-800/80 rounded-xl p-4.5 font-mono text-[11px] text-slate-300 overflow-y-auto h-96 scrollbar-thin scrollbar-thumb-slate-800 leading-relaxed space-y-1 select-text">
-                  {systemLogs.length === 0 ? (
+                  {sortedSystemLogs.length === 0 ? (
                     <div className="text-slate-600 italic text-center py-10">No logs available in app.log</div>
                   ) : (
-                    systemLogs.map((log, idx) => {
+                    sortedSystemLogs.map((log, idx) => {
                       let colorClass = 'text-slate-300';
                       if (log.includes(' - ERROR - ')) colorClass = 'text-red-400 font-bold';
                       else if (log.includes(' - WARNING - ')) colorClass = 'text-yellow-400';
@@ -1295,7 +1318,7 @@ export default function DeveloperBackDoorDashboard() {
                 </div>
               )}
               <div className="text-[10px] text-slate-500 font-medium">
-                Showing latest 200 system log entries from <code className="font-mono text-slate-400 bg-slate-950 px-1 py-0.5 rounded">app.log</code> on the FastAPI host.
+                Showing latest 200 system log entries sorted dynamically by timestamp.
               </div>
             </div>
           </div>
