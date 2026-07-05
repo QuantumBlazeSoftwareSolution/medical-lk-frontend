@@ -2135,14 +2135,25 @@ export default function WebsiteBuilder() {
             </button>
           </div>
 
-          <a
-            href={`http://${config?.subdomain || 'test'}.localhost:3000`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-primary-navy font-semibold flex items-center gap-1 hover:text-highlight-teal transition-colors text-xs"
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                const origin = window.location.origin;
+                const activeSub = config?.subdomain || 'test';
+                let targetUrl = '';
+                if (origin.includes('localhost')) {
+                  targetUrl = `http://${activeSub}.localhost:3000`;
+                } else {
+                  const cleanDomain = origin.replace(/^https?:\/\//, '').replace(/^[a-z0-9-]+\./, '');
+                  targetUrl = `https://${activeSub}.${cleanDomain}`;
+                }
+                window.open(targetUrl, '_blank', 'noreferrer');
+              }
+            }}
+            className="text-primary-navy font-semibold flex items-center gap-1 hover:text-highlight-teal transition-colors text-xs cursor-pointer"
           >
             Open Live Subdomain
-          </a>
+          </button>
         </div>
 
         {/* Simulated Browser Window wrapper */}

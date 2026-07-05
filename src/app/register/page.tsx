@@ -235,10 +235,19 @@ export default function RegisterWizard() {
   const isStrong = hasMinLength && hasNumSymbol && hasUpperLower;
 
   const copyToClipboard = () => {
-    const portalUrl = `http://${subdomain}.localhost:3000/portal/login`;
-    navigator.clipboard.writeText(portalUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (typeof window !== 'undefined') {
+      const origin = window.location.origin;
+      let portalUrl = '';
+      if (origin.includes('localhost')) {
+        portalUrl = `http://${subdomain}.localhost:3000/portal/login`;
+      } else {
+        const cleanDomain = origin.replace(/^https?:\/\//, '');
+        portalUrl = `https://${subdomain}.${cleanDomain}/portal/login`;
+      }
+      navigator.clipboard.writeText(portalUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -589,7 +598,9 @@ export default function RegisterWizard() {
                         />
                         <div className="bg-[#f2f4f7] px-4 py-3 border-l border-slate-200 flex items-center justify-center shrink-0">
                           <span className="text-xs font-semibold text-slate-500 font-mono">
-                            .medical.lk
+                            {typeof window !== 'undefined'
+                              ? `.${window.location.origin.replace(/^https?:\/\//, '')}`
+                              : '.medical.lk'}
                           </span>
                         </div>
                       </div>
@@ -615,7 +626,9 @@ export default function RegisterWizard() {
                               <p className="text-[10px] text-slate-500 mt-0.5">
                                 Live portal will be generated at:{' '}
                                 <span className="underline font-semibold text-teal-700">
-                                  {subdomain}.medical.lk
+                                  {typeof window !== 'undefined'
+                                    ? `${subdomain}.${window.location.origin.replace(/^https?:\/\//, '')}`
+                                    : `${subdomain}.medical.lk`}
                                 </span>
                               </p>
                             </div>
@@ -937,7 +950,9 @@ export default function RegisterWizard() {
                         </span>
                         <div className="flex items-center justify-between bg-white border border-slate-200 p-2.5 rounded-lg mt-1 select-all font-mono text-xs text-slate-700">
                           <span className="truncate mr-2">
-                            {subdomain}.medical.lk
+                            {typeof window !== 'undefined'
+                              ? `${subdomain}.${window.location.origin.replace(/^https?:\/\//, '')}`
+                              : `${subdomain}.medical.lk`}
                           </span>
                           <button
                             type="button"
@@ -978,21 +993,47 @@ export default function RegisterWizard() {
 
                   {/* Actions Grid */}
                   <div className="grid sm:grid-cols-2 gap-4">
-                    <a
-                      href={`http://${subdomain}.localhost:3000/portal/login`}
-                      className="py-4 px-6 bg-[#006d37] hover:bg-[#005228] text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-sm flex flex-col items-center justify-center gap-1.5"
+                    <button
+                      onClick={() => {
+                        if (typeof window !== 'undefined') {
+                          const origin = window.location.origin; // e.g. http://localhost:3000 or https://vihangaheshan.dev
+                          let targetUrl = '';
+                          if (origin.includes('localhost')) {
+                            targetUrl = `http://${subdomain}.localhost:3000/portal/login`;
+                          } else {
+                            // If running in production e.g. vihangaheshan.dev, redirect to subdomain.vihangaheshan.dev
+                            // Strip protocol to map subdomain dynamically
+                            const cleanDomain = origin.replace(/^https?:\/\//, '');
+                            targetUrl = `https://${subdomain}.${cleanDomain}/portal/login`;
+                          }
+                          window.location.href = targetUrl;
+                        }
+                      }}
+                      className="py-4 px-6 bg-[#006d37] hover:bg-[#005228] text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-sm flex flex-col items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <Globe className="h-5 w-5 shrink-0" />
                       <span>Go to Dashboard</span>
-                    </a>
+                    </button>
 
-                    <a
-                      href={`http://${subdomain}.localhost:3000`}
-                      className="py-4 px-6 bg-white border border-slate-200 hover:bg-[#f7f9fc] text-[#00273b] font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] flex flex-col items-center justify-center gap-1.5"
+                    <button
+                      onClick={() => {
+                        if (typeof window !== 'undefined') {
+                          const origin = window.location.origin;
+                          let targetUrl = '';
+                          if (origin.includes('localhost')) {
+                            targetUrl = `http://${subdomain}.localhost:3000`;
+                          } else {
+                            const cleanDomain = origin.replace(/^https?:\/\//, '');
+                            targetUrl = `https://${subdomain}.${cleanDomain}`;
+                          }
+                          window.location.href = targetUrl;
+                        }
+                      }}
+                      className="py-4 px-6 bg-white border border-slate-200 hover:bg-[#f7f9fc] text-[#00273b] font-bold rounded-xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] flex flex-col items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <Building2 className="h-5 w-5 shrink-0" />
                       <span>View Public Site</span>
-                    </a>
+                    </button>
                   </div>
 
                   <p className="text-[10px] text-slate-400 leading-normal">

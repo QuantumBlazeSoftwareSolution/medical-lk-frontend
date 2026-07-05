@@ -129,12 +129,19 @@ export default function DomainPage() {
                 </span>
                 <button
                   type="button"
-                  onClick={() =>
-                    handleCopy(
-                      `http://${subdomain}.localhost:3000`,
-                      'subdomain'
-                    )
-                  }
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      const origin = window.location.origin;
+                      let targetUrl = '';
+                      if (origin.includes('localhost')) {
+                        targetUrl = `http://${subdomain}.localhost:3000`;
+                      } else {
+                        const cleanDomain = origin.replace(/^https?:\/\//, '').replace(/^[a-z0-9-]+\./, ''); // get root domain e.g. vihangaheshan.dev
+                        targetUrl = `https://${subdomain}.${cleanDomain}`;
+                      }
+                      handleCopy(targetUrl, 'subdomain');
+                    }
+                  }}
                   className="p-2 border border-slate-200 hover:bg-white text-slate-600 rounded-lg transition-colors cursor-pointer"
                   title="Copy link"
                 >

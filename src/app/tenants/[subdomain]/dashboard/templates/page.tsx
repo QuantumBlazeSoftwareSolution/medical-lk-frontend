@@ -153,15 +153,25 @@ export default function WebsiteTemplatesPage() {
           </div>
         </div>
 
-        <a
-          href={`http://${subdomain}.localhost:3000`}
-          target="_blank"
-          rel="noreferrer"
-          className="self-start sm:self-auto px-4 py-2 border border-[#0f3d57] text-[#0f3d57] font-semibold hover:bg-[#0f3d57]/5 rounded-xl transition-all text-xs inline-flex items-center gap-1.5"
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              const origin = window.location.origin;
+              let targetUrl = '';
+              if (origin.includes('localhost')) {
+                targetUrl = `http://${subdomain}.localhost:3000`;
+              } else {
+                const cleanDomain = origin.replace(/^https?:\/\//, '').replace(/^[a-z0-9-]+\./, '');
+                targetUrl = `https://${subdomain}.${cleanDomain}`;
+              }
+              window.open(targetUrl, '_blank', 'noreferrer');
+            }
+          }}
+          className="self-start sm:self-auto px-4 py-2 border border-[#0f3d57] text-[#0f3d57] font-semibold hover:bg-[#0f3d57]/5 rounded-xl transition-all text-xs inline-flex items-center gap-1.5 cursor-pointer"
         >
           <Eye size={14} />
           <span>View Public Site</span>
-        </a>
+        </button>
       </div>
 
       {success && (
@@ -225,16 +235,26 @@ export default function WebsiteTemplatesPage() {
                         Active
                       </span>
                     )}
-                    <a
-                      href={`http://${subdomain}.localhost:3000?template=${card.id}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-[10px] text-[#0f3d57] font-semibold hover:underline flex items-center gap-0.5"
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (typeof window !== 'undefined') {
+                          const origin = window.location.origin;
+                          let targetUrl = '';
+                          if (origin.includes('localhost')) {
+                            targetUrl = `http://${subdomain}.localhost:3000?template=${card.id}`;
+                          } else {
+                            const cleanDomain = origin.replace(/^https?:\/\//, '').replace(/^[a-z0-9-]+\./, '');
+                            targetUrl = `https://${subdomain}.${cleanDomain}?template=${card.id}`;
+                          }
+                          window.open(targetUrl, '_blank', 'noreferrer');
+                        }
+                      }}
+                      className="text-[10px] text-[#0f3d57] font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <Eye size={10} />
                       <span>Preview Live</span>
-                    </a>
+                    </button>
                   </div>
                 </div>
 
